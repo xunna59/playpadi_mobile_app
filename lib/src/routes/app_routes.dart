@@ -5,6 +5,7 @@ import '../views/splash_screen.dart';
 import '../views/auth/auth_screen.dart';
 import '../views/auth/register_step_one.dart';
 import '../views/auth/register_step_two.dart';
+import '../views/core/dashboard_screen.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -13,6 +14,7 @@ class AppRoutes {
   static const String registerStepOne = '/registerStepOne';
   static const String registerStepTwo = '/registerStepTwo';
   static const String login = '/login';
+  static const String dashboard = '/dashboard';
 
   static Route<dynamic>? generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -28,11 +30,13 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const RegisterStepTwo());
       case login:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
+      case dashboard:
+        return MaterialPageRoute(builder: (_) => const DashboardScreen());
+
       default:
         return MaterialPageRoute(
-          builder:
-              (_) =>
-                  const Scaffold(body: Center(child: Text('Route not found'))),
+          builder: (_) =>
+              const Scaffold(body: Center(child: Text('Route not found'))),
         );
     }
   }

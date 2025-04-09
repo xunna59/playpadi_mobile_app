@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/primary_button.dart';
+import '../../routes/app_routes.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -105,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
             PrimaryButton(
               text: 'Log in',
               onPressed: () {
-                // Handle login logic
+                Navigator.pushNamed(context, AppRoutes.dashboard);
               },
             ),
             const SizedBox(height: 30),

@@ -6,6 +6,7 @@ import 'src/views/auth/auth_screen.dart';
 import 'src/views/auth/register_step_one.dart';
 import 'src/views/auth/register_step_two.dart';
 import 'src/views/auth/login_screen.dart';
+import 'src/views/core/dashboard_screen.dart';
 
 import 'src/views/home_screen.dart';
 import 'src/views/splash_screen.dart';
@@ -35,6 +36,7 @@ class MyApp extends ConsumerWidget {
         '/registerStepOne': (context) => const RegisterStepOne(),
         '/registerStepTwo': (context) => const RegisterStepTwo(),
         '/login': (context) => const LoginScreen(),
+        '/dashboard': (context) => const DashboardScreen(),
       },
     );
   }
