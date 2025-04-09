@@ -23,70 +23,72 @@ class MatchCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        elevation: 4,
+        elevation: 2,
+        color: colorScheme.secondary,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Container(
-          width:
-              (MediaQuery.of(context).size.width - 48) /
-              2, // Divide space equally
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            image: DecorationImage(
-              image: NetworkImage(imageUrl), // Display image from URL
-              fit: BoxFit.cover,
+        child: Column(
+          children: [
+            // Top half with image
+            ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+              child: Image.network(
+                imageUrl,
+                width: double.infinity,
+                height: 150,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Icon placed at the top-left
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(icon, color: colorScheme.primary),
-                ),
+            // Bottom half with icon, title, subtitle, and button
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 16.0,
               ),
-              // Title and Subtitle
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onBackground,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Search Icon
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary,
+                          borderRadius: BorderRadius.circular(
+                            12,
+                          ), // Rounded corners
+                        ),
+                        child: Icon(icon, color: Colors.white),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      subtitle,
-                      style: TextStyle(color: colorScheme.onBackground),
-                    ),
-                  ],
-                ),
-              ),
-              // Action Button (bottom of card)
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colorScheme.primary,
-                    foregroundColor: colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+
+                      const SizedBox(height: 8),
+                      // Title and Subtitle
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
+                          fontSize: 18,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: TextStyle(color: colorScheme.onSurface),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Action Button
+                    ],
                   ),
-                  icon: Icon(icon),
-                  label: const Text('Action'),
-                  onPressed: onTap,
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

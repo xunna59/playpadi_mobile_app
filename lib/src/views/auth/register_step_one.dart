@@ -51,12 +51,10 @@ class RegisterStepOne extends ConsumerWidget {
           children: [
             const SizedBox(height: 20),
             Center(
-              child: Text(
-                '✉️',
-                style: TextStyle(
-                  fontSize: 60,
-                  color: isDark ? Colors.white : Colors.black,
-                ),
+              child: Image.asset(
+                'assets/icons/mail.png', // Update this path as needed
+                width: 60,
+                height: 60,
               ),
             ),
             const SizedBox(height: 20),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../views/auth/final_step_screen.dart';
 import '../views/auth/login_screen.dart';
 import '../views/home_screen.dart';
 import '../views/splash_screen.dart';
@@ -13,6 +14,7 @@ class AppRoutes {
   static const String auth = '/auth';
   static const String registerStepOne = '/registerStepOne';
   static const String registerStepTwo = '/registerStepTwo';
+  static const String finalSteps = '/finalSteps';
   static const String login = '/login';
   static const String dashboard = '/dashboard';
 
@@ -28,6 +30,8 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const RegisterStepOne());
       case registerStepTwo:
         return MaterialPageRoute(builder: (_) => const RegisterStepTwo());
+      case finalSteps:
+        return MaterialPageRoute(builder: (_) => const FinalStepScreen());
       case login:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case dashboard:
@@ -35,8 +39,9 @@ class AppRoutes {
 
       default:
         return MaterialPageRoute(
-          builder: (_) =>
-              const Scaffold(body: Center(child: Text('Route not found'))),
+          builder:
+              (_) =>
+                  const Scaffold(body: Center(child: Text('Route not found'))),
         );
     }
   }

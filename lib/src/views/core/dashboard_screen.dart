@@ -26,19 +26,20 @@ class DashboardScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
+      // Wrap the body in a SingleChildScrollView to make it scrollable
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // To do section
             const Text(
               'To do...',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Card(
-              elevation: 4,
+              elevation: 2,
+              color: colorScheme.secondary,
               child: ListTile(
                 leading: const Icon(Icons.edit),
                 title: const Text('Edit your player preferences'),
@@ -52,32 +53,31 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-
-            // "Play your perfect match" section
             const Text(
               'Play your perfect match',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // Using MatchCard for the 'Play your perfect match' section
+            Column(
               children: [
                 MatchCard(
                   icon: Icons.search,
                   title: 'Book a court',
                   subtitle: 'If you already know who you are playing with',
                   imageUrl:
-                      'https://example.com/your-image.jpg', // Replace with actual URL or asset
+                      'https://beaconathletics.com/wp-content/uploads/2015/02/21September_BeaconAthletics_1836.jpg?x45230', // Replace with actual image URL
                   onTap: () {
                     // Navigate to book court
                   },
                 ),
+                const SizedBox(height: 16),
                 MatchCard(
                   icon: Icons.group,
                   title: 'Play an open match',
                   subtitle: 'If you are looking for players at your level',
                   imageUrl:
-                      'https://example.com/your-image.jpg', // Replace with actual URL or asset
+                      'https://beaconathletics.com/wp-content/uploads/2015/02/21September_BeaconAthletics_1836.jpg?x45230', // Replace with actual image URL
                   onTap: () {
                     // Navigate to open match
                   },

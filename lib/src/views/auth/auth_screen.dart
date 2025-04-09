@@ -48,13 +48,13 @@ class AuthScreen extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             AuthButton(
-              icon: Icons.apple,
+              imageUrl: 'assets/icons/apple.png',
               text: 'Continue with Apple',
               onPressed: () {},
             ),
             const SizedBox(height: 12),
             AuthButton(
-              icon: Icons.g_mobiledata,
+              imageUrl: 'assets/icons/google.png',
               text: 'Continue with Google',
               onPressed: () {},
             ),
@@ -72,7 +72,7 @@ class AuthScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             AuthButton(
-              icon: Icons.email,
+              imageUrl: 'assets/icons/email.png',
               text: 'Continue with Email',
               onPressed: () {
                 Navigator.pushNamed(context, AppRoutes.registerStepOne);
@@ -82,7 +82,7 @@ class AuthScreen extends StatelessWidget {
             Text.rich(
               TextSpan(
                 text: 'By registering you are accepting our ',
-                style: const TextStyle(color: Colors.white70, fontSize: 12),
+                style: const TextStyle(color: Colors.white70, fontSize: 14),
                 children: [
                   TextSpan(
                     text: 'terms of use',

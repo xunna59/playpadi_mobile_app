@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../routes/app_routes.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/primary_button.dart';
 
@@ -94,7 +95,7 @@ class _RegisterStepTwoState extends State<RegisterStepTwo> {
             PrimaryButton(
               text: 'Sign up',
               onPressed: () {
-                // Submit form logic here
+                Navigator.pushNamed(context, AppRoutes.finalSteps);
               },
             ),
             const SizedBox(height: 30),

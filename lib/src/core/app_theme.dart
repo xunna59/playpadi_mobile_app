@@ -8,7 +8,7 @@ final lightTheme = ThemeData(
     primary: Color.fromRGBO(120, 66, 255, 1),
     onPrimary: Colors.white,
 
-    secondary: Colors.orangeAccent,
+    secondary: Colors.white,
     onSecondary: Colors.black,
     surface: Colors.grey,
     onSurface: Colors.black,
@@ -28,7 +28,7 @@ final darkTheme = ThemeData(
   colorScheme: const ColorScheme.dark(
     primary: Color.fromRGBO(120, 66, 255, 1),
     onPrimary: Colors.white,
-    secondary: Colors.orangeAccent,
+    secondary: Colors.white24,
     onSecondary: Colors.black,
     surface: Colors.grey,
     onSurface: Colors.white,

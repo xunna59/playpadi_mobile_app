@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'src/controllers/theme_controller.dart';
 import 'src/core/app_theme.dart';
 import 'src/views/auth/auth_screen.dart';
+import 'src/views/auth/final_step_screen.dart';
 import 'src/views/auth/register_step_one.dart';
 import 'src/views/auth/register_step_two.dart';
 import 'src/views/auth/login_screen.dart';
@@ -35,6 +36,7 @@ class MyApp extends ConsumerWidget {
         '/auth': (context) => const AuthScreen(),
         '/registerStepOne': (context) => const RegisterStepOne(),
         '/registerStepTwo': (context) => const RegisterStepTwo(),
+        '/finalSteps': (context) => const FinalStepScreen(),
         '/login': (context) => const LoginScreen(),
         '/dashboard': (context) => const DashboardScreen(),
       },
