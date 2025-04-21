@@ -1,0 +1,81 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../providers/match_provider.dart';
+import '../../routes/app_routes.dart';
+import '../../widgets/match_card.dart';
+
+class HomeTab extends ConsumerWidget {
+  const HomeTab({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'To do...',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          Card(
+            elevation: 2,
+            color: colorScheme.secondary,
+            child: ListTile(
+              leading: Image.asset(
+                'assets/icons/paddle_bat.png',
+                width: 25,
+                height: 25,
+                fit: BoxFit.contain,
+              ),
+              title: const Text(
+                'Edit your player preferences',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: const Text(
+                'Best hand, court side, match type, Preferred time to play',
+              ),
+              trailing: const Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.pushNamed(context, AppRoutes.playerPrefernces);
+              },
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'Play your perfect match',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          Column(
+            children: [
+              MatchCard(
+                icon: Icons.search,
+                title: 'Book a court',
+                subtitle: 'If you already know who you are playing with',
+                imageUrl: 'assets/background/book_court.png',
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.eventCenter);
+                },
+              ),
+              const SizedBox(height: 16),
+              MatchCard(
+                icon: Icons.group,
+                title: 'Play an open match',
+                subtitle: 'If you are looking for players at your level',
+                imageUrl: 'assets/background/open_match.png',
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.playOpenMatches);
+                  ref.invalidate(matchesFutureProvider);
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}

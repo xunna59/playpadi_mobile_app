@@ -23,7 +23,7 @@ class MatchCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        elevation: 2,
+        elevation: 1,
         color: colorScheme.secondary,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Column(
@@ -34,7 +34,7 @@ class MatchCard extends StatelessWidget {
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
               ),
-              child: Image.network(
+              child: Image.asset(
                 imageUrl,
                 width: double.infinity,
                 height: 150,

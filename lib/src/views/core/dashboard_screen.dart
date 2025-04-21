@@ -1,100 +1,161 @@
 import 'package:flutter/material.dart';
-import '../../widgets/match_card.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../routes/app_routes.dart';
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+
+import 'home_tab_screen.dart';
+import 'profile_tab_screen.dart';
+
+class DashboardScreen extends ConsumerStatefulWidget {
+  const DashboardScreen({Key? key}) : super(key: key);
+
+  @override
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final tabs = <Widget>[const HomeTab(), const ProfileTab()];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Hi Tunde ✌️'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {
-              // Notification action
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              // Profile action
-            },
-          ),
-        ],
-      ),
-      // Wrap the body in a SingleChildScrollView to make it scrollable
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text(
-              'To do...',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            Card(
-              elevation: 2,
-              color: colorScheme.secondary,
-              child: ListTile(
-                leading: const Icon(Icons.edit),
-                title: const Text('Edit your player preferences'),
-                subtitle: const Text(
-                  'Best hand, court side, match type, Preferred time to play',
+      appBar:
+          _selectedIndex == 0
+              ? AppBar(
+                title: const Text('Hi Tunde ✌️'),
+                leading: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.black,
+                    child: const Icon(Icons.add, color: Colors.black),
+                  ),
                 ),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () {
-                  // Navigate to preferences screen
-                },
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications_outlined),
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRoutes.notifications);
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.menu),
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRoutes.profileScreen);
+                    },
+                  ),
+                ],
+              )
+              : AppBar(
+                automaticallyImplyLeading: false,
+                title: const Text('Profile'),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications_outlined),
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRoutes.notifications);
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.menu),
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRoutes.profileScreen);
+                    },
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Play your perfect match',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            // Using MatchCard for the 'Play your perfect match' section
-            Column(
-              children: [
-                MatchCard(
-                  icon: Icons.search,
-                  title: 'Book a court',
-                  subtitle: 'If you already know who you are playing with',
-                  imageUrl:
-                      'https://beaconathletics.com/wp-content/uploads/2015/02/21September_BeaconAthletics_1836.jpg?x45230', // Replace with actual image URL
-                  onTap: () {
-                    // Navigate to book court
-                  },
-                ),
-                const SizedBox(height: 16),
-                MatchCard(
-                  icon: Icons.group,
-                  title: 'Play an open match',
-                  subtitle: 'If you are looking for players at your level',
-                  imageUrl:
-                      'https://beaconathletics.com/wp-content/uploads/2015/02/21September_BeaconAthletics_1836.jpg?x45230', // Replace with actual image URL
-                  onTap: () {
-                    // Navigate to open match
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+      body: IndexedStack(index: _selectedIndex, children: tabs),
+      floatingActionButton:
+          _selectedIndex == 0
+              ? SpeedDial(
+                icon: Icons.add,
+                activeIcon: Icons.close,
+                backgroundColor: colorScheme.primary,
+                foregroundColor: Colors.white,
+                overlayColor: Colors.black,
+                overlayOpacity: 0.5,
+                spacing: 10,
+                spaceBetweenChildren: 8,
+                children: [
+                  SpeedDialChild(
+                    labelWidget: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text(
+                            'Booking',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          SizedBox(width: 8),
+                          Icon(Icons.search, color: Colors.white),
+                        ],
+                      ),
+                    ),
+                    backgroundColor: Colors.transparent,
+                    onTap: () => print('Booking tapped'),
+                  ),
+                  SpeedDialChild(
+                    labelWidget: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text('Match', style: TextStyle(color: Colors.white)),
+                          SizedBox(width: 8),
+                          Icon(Icons.sports_tennis, color: Colors.white),
+                        ],
+                      ),
+                    ),
+                    backgroundColor: Colors.transparent,
+                    onTap: () => print('Match tapped'),
+                  ),
+                ],
+              )
+              : null,
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        selectedItemColor: colorScheme.primary,
+        unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
+            icon: Icon(Icons.account_circle_outlined),
             label: 'Profile',
           ),
         ],
+        backgroundColor: Colors.white,
+        iconSize: 28.0,
+        selectedFontSize: 12,
+        unselectedFontSize: 12,
+        selectedLabelStyle: const TextStyle(height: 1.1),
+        unselectedLabelStyle: const TextStyle(height: 1.1),
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

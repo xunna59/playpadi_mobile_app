@@ -1,4 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../routes/app_routes.dart';
 
 final formControllerProvider = StateNotifierProvider<FormController, FormState>(
   (ref) => FormController(),
@@ -78,7 +81,15 @@ class FormController extends StateNotifier<FormState> {
     },
   ];
 
-  void goToNextStep(String? selectedValue) {
+  // Move to the previous step
+  void goToPreviousStep() {
+    if (state.currentStep > 0) {
+      state = state.copyWith(currentStep: state.currentStep - 1);
+    }
+  }
+
+  // Go to the next step or navigate to the final screen if the form is complete
+  void goToNextStep(String? selectedValue, BuildContext context) {
     if (selectedValue != null) {
       final currentStepData = steps[state.currentStep];
       final selectedOption = currentStepData['options']?.firstWhere(
@@ -97,11 +108,11 @@ class FormController extends StateNotifier<FormState> {
       // Move to the next step
       state = state.copyWith(currentStep: state.currentStep + 1);
     } else {
-      // Form completion logic
-      print('Form Completed! Total Points: ${state.totalPoints}');
+      Navigator.pushNamed(context, AppRoutes.completedSteps);
     }
   }
 
+  // Store the selected option for each question
   void setSelectedOption(String value, int stepIndex) {
     if (stepIndex == 0) {
       state = state.copyWith(selectedPadelExperience: value);
