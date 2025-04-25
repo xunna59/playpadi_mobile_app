@@ -149,7 +149,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             label: 'Profile',
           ),
         ],
-        backgroundColor: Colors.white,
+        backgroundColor: colorScheme.secondary,
         iconSize: 28.0,
         selectedFontSize: 12,
         unselectedFontSize: 12,

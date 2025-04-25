@@ -4,7 +4,9 @@ import '../../widgets/custom_text_field.dart';
 import '../../widgets/primary_button.dart';
 
 class RegisterStepTwo extends StatefulWidget {
-  const RegisterStepTwo({super.key});
+  const RegisterStepTwo({super.key, required this.validEmail});
+
+  final String validEmail;
 
   @override
   State<RegisterStepTwo> createState() => _RegisterStepTwoState();
@@ -16,6 +18,7 @@ class _RegisterStepTwoState extends State<RegisterStepTwo> {
   final phoneController = TextEditingController();
   final passwordController = TextEditingController();
   bool wantsUpdates = false;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -30,76 +33,132 @@ class _RegisterStepTwoState extends State<RegisterStepTwo> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Sign up',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onBackground,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Create your PlayPadi account',
-              style: TextStyle(
-                fontSize: 14,
-                color: colorScheme.onBackground.withOpacity(0.6),
-              ),
-            ),
-            const SizedBox(height: 28),
-            CustomTextField(hintText: 'Full name', controller: nameController),
-            const SizedBox(height: 16),
-            CustomTextField(
-              hintText: 'Email',
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              hintText: 'Phone number',
-              controller: phoneController,
-              keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              hintText: 'Password',
-              controller: passwordController,
-              keyboardType: TextInputType.visiblePassword,
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Checkbox(
-                  value: wantsUpdates,
-                  activeColor: colorScheme.primary,
-                  onChanged: (value) {
-                    setState(() {
-                      wantsUpdates = value ?? false;
-                    });
-                  },
-                ),
-                const Expanded(
-                  child: Text(
-                    'I want to stay updated with exclusive offers.',
-                    overflow: TextOverflow.ellipsis,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: 16),
+                        Text(
+                          'Sign up',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onBackground,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Create your PlayPadi account',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: colorScheme.onBackground.withOpacity(0.6),
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+                        CustomTextField(
+                          hintText: 'Full name',
+                          controller: nameController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your full name';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          hintText: 'Email',
+                          controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your email';
+                            }
+                            if (!RegExp(
+                              r'^[^@]+@[^@]+\.[^@]+',
+                            ).hasMatch(value)) {
+                              return 'Please enter a valid email address';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          hintText: 'Phone number',
+                          controller: phoneController,
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your phone number';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          hintText: 'Password',
+                          controller: passwordController,
+                          keyboardType: TextInputType.visiblePassword,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your password';
+                            }
+                            if (value.length < 6) {
+                              return 'Password must be at least 6 characters long';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: wantsUpdates,
+                              activeColor: colorScheme.primary,
+                              onChanged: (value) {
+                                setState(() {
+                                  wantsUpdates = value ?? false;
+                                });
+                              },
+                            ),
+                            const Expanded(
+                              child: Text(
+                                'I want to stay updated with exclusive offers.',
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Spacer(),
+                        PrimaryButton(
+                          text: 'Sign up',
+                          onPressed: () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              // If the form is valid, proceed to the next step
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.finalSteps,
+                              );
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 30),
+                      ],
+                    ),
                   ),
                 ),
-              ],
-            ),
-            const Spacer(),
-            PrimaryButton(
-              text: 'Sign up',
-              onPressed: () {
-                Navigator.pushNamed(context, AppRoutes.finalSteps);
-              },
-            ),
-            const SizedBox(height: 30),
-          ],
+              ),
+            );
+          },
         ),
       ),
     );

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/match_model.dart';
 import '../../../providers/match_provider.dart';
 import '../../../widgets/available_matches_card.dart';
 

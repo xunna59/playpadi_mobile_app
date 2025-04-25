@@ -4,19 +4,21 @@ class CustomTextField extends StatelessWidget {
   final String hintText;
   final TextEditingController controller;
   final TextInputType keyboardType;
+  final String? Function(String?)? validator;
 
   const CustomTextField({
     super.key,
     required this.hintText,
     required this.controller,
     this.keyboardType = TextInputType.text,
+    this.validator,
   });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return TextField(
+    return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       style: TextStyle(color: colorScheme.onSurface),
@@ -34,7 +36,6 @@ class CustomTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: colorScheme.primary, width: 1.8),
         ),
-        // Optionally show error border (if needed in form validation)
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.red.shade400, width: 1.5),
@@ -44,6 +45,7 @@ class CustomTextField extends StatelessWidget {
           borderSide: BorderSide(color: Colors.red.shade600, width: 1.8),
         ),
       ),
+      validator: validator, // Add the validator here
     );
   }
 }

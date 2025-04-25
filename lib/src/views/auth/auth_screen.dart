@@ -1,9 +1,49 @@
 import 'package:flutter/material.dart';
+import '../../../playpadi_library.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/auth_button.dart';
 
-class AuthScreen extends StatelessWidget {
+class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
+
+  @override
+  State<AuthScreen> createState() => _AuthScreenState();
+}
+
+class _AuthScreenState extends State<AuthScreen> {
+  void _handleGoogleSignIn() async {
+    final client = APIClient();
+
+    try {
+      await client.signInWithGoogle();
+
+      if (!mounted) return;
+
+      // Should only get here if token was found
+      debugPrint(
+        '✅ signInWithGoogle succeeded; isAuthorized=${client.isAuthorized}, token=${client.token}',
+      );
+
+      Navigator.pushReplacementNamed(context, AppRoutes.home);
+    } catch (e, stack) {
+      debugPrint('❌ _handleGoogleSignIn caught → $e\n$stack');
+      if (!mounted) return;
+
+      String errorMessage;
+
+      if (e is UserCanceledSignInException) {
+        errorMessage = 'Sign-in was canceled. Please try again.';
+      } else if (e is TokenNotFoundException) {
+        errorMessage = 'Token not found in the authentication response.';
+      } else {
+        errorMessage = 'An unexpected error occurred. Please try again.';
+      }
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(errorMessage)));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +54,7 @@ class AuthScreen extends StatelessWidget {
           image: DecorationImage(
             image: const AssetImage(
               'assets/background/onboarding_background.png',
-            ), // Your image path
+            ),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
               Colors.black.withOpacity(0.7),
@@ -50,15 +90,14 @@ class AuthScreen extends StatelessWidget {
             AuthButton(
               imageUrl: 'assets/icons/apple.png',
               text: 'Continue with Apple',
-              onPressed: () {},
+              onPressed: () {}, // Optional: Add Apple sign-in later
             ),
             const SizedBox(height: 12),
             AuthButton(
               imageUrl: 'assets/icons/google.png',
               text: 'Continue with Google',
-              onPressed: () {},
+              onPressed: () => _handleGoogleSignIn(),
             ),
-
             const SizedBox(height: 12),
             Row(
               children: const [

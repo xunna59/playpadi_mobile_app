@@ -19,6 +19,7 @@ final lightTheme = ThemeData(
     elevation: 0,
   ),
   textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.black)),
+  snackBarTheme: SnackBarThemeData(backgroundColor: Colors.redAccent),
 );
 
 final darkTheme = ThemeData(
@@ -30,7 +31,7 @@ final darkTheme = ThemeData(
     onPrimary: Colors.white,
     tertiary: Colors.black,
 
-    secondary: Colors.white24,
+    secondary: Colors.white12,
     onSecondary: Colors.black,
     surface: Colors.grey,
     onSurface: Colors.white,
@@ -41,4 +42,5 @@ final darkTheme = ThemeData(
     elevation: 0,
   ),
   textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.white)),
+  snackBarTheme: SnackBarThemeData(backgroundColor: Colors.redAccent),
 );

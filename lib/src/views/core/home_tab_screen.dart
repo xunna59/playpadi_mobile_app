@@ -72,6 +72,14 @@ class HomeTab extends ConsumerWidget {
                   ref.invalidate(matchesFutureProvider);
                 },
               ),
+              const SizedBox(height: 16),
+              IconButton(
+                icon: const Icon(Icons.school),
+                iconSize: 30.0,
+                onPressed: () {
+                  Navigator.pushNamed(context, AppRoutes.academyScreen);
+                },
+              ),
             ],
           ),
         ],
