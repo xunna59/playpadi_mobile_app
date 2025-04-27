@@ -6,8 +6,6 @@ import '../models/event_center_model.dart'; // Import the controller
 class EventCenterCard extends StatelessWidget {
   final EventCenter eventCenter;
 
-  // static const _imageBaseUrl = 'https://your-api.example.com/uploads/';
-
   const EventCenterCard({required this.eventCenter, super.key});
 
   @override

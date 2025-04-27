@@ -33,7 +33,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       final profile = await controller.fetchUserProfile();
       setState(() {
         _profile = profile; // Update the state with the profile
-        print(_profile?.displayPicture);
+        //   print(_profile?.displayPicture);
       });
     } on ServerErrorException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

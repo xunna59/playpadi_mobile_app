@@ -1,18 +1,34 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../playpadi_library.dart';
 import '../models/court_model.dart';
+import '../models/event_center_model.dart';
 
 class CourtController {
-  final String _url = 'https://xunnatech.com/api/fetch-courts.json';
+  final APIClient client = APIClient();
 
-  Future<List<CourtModel>> fetchCourts() async {
-    final response = await http.get(Uri.parse(_url));
+  Future<EventCenter?> fetchCenterById(id) async {
+    Map<String, String> data = {'id': id.toString()};
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body) as List;
-      return data.map((json) => CourtModel.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load courts');
+    try {
+      final response = await client.fetchSportsCenterById(data);
+
+      print(response);
+      if (response is Map<String, dynamic>) {
+        if (response['data'] is Map<String, dynamic> &&
+            response['data']['sportsCenter'] is Map<String, dynamic>) {
+          final rawCenter = response['data']['sportsCenter'];
+          return EventCenter.fromJson(rawCenter);
+        } else if (response['sportsCenter'] is Map<String, dynamic>) {
+          final rawCenter = response['sportsCenter'];
+          return EventCenter.fromJson(rawCenter);
+        }
+        return EventCenter.fromJson(response);
+      }
+      return null;
+    } catch (e, st) {
+      print('Error: $e');
+      return null;
     }
   }
 }

@@ -179,6 +179,44 @@ class APIClient {
     });
   }
 
+  Future<dynamic> fetchSportsCenterById(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/api/fetch-sports-center/${data['id']}',
+      method: 'get',
+      headers: ['Content-Type: application/json'],
+      body: null,
+    );
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
+  Future<dynamic> fetchSlots(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/api/fetch-slots/${data['id']}',
+      method: 'get',
+      headers: ['Content-Type: application/json'],
+      body: null,
+    );
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
   void _resetToken() {
     id = '';
     token = '';
