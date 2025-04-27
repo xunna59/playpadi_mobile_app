@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../playpadi_library.dart';
 import '../../controllers/theme_controller.dart';
+import '../../core/activity_overlay.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/primary_button.dart';
@@ -10,15 +12,84 @@ class RegisterStepOne extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final client = APIClient();
+
     final emailController = TextEditingController();
     final themeMode = ref.watch(themeControllerProvider);
     final themeNotifier = ref.read(themeControllerProvider.notifier);
     final formKey = GlobalKey<FormState>();
-    final validEmail = emailController.text;
     final isDark =
         themeMode == ThemeMode.dark ||
         (themeMode == ThemeMode.system &&
             MediaQuery.of(context).platformBrightness == Brightness.dark);
+
+    void _validateEmail() async {
+      Map<String, String> data = {'email': emailController.text};
+
+      debugPrint('Login data: $data');
+
+      LoadingOverlay.show(context);
+      debugPrint('Loading overlay shown');
+
+      try {
+        await client.validateEmail(data, () {
+          debugPrint('#################################');
+
+          final validEmail = emailController.text;
+          Navigator.pushNamed(
+            context,
+            AppRoutes.registerStepTwo,
+            arguments: validEmail,
+          );
+        });
+      } on NetworkErrorException catch (e) {
+        //    if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } on InvalidResponseException {
+        //  if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'An Error Occured, Try Again',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } on ServerErrorException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } finally {
+        LoadingOverlay.hide();
+      }
+    }
 
     return Scaffold(
       backgroundColor: isDark ? Colors.black : Colors.white,
@@ -127,12 +198,7 @@ class RegisterStepOne extends ConsumerWidget {
 
                           onPressed: () {
                             if (formKey.currentState?.validate() ?? false) {
-                              // If the form is valid, proceed to the next step
-                              Navigator.pushNamed(
-                                context,
-                                AppRoutes.registerStepTwo,
-                                arguments: validEmail,
-                              );
+                              _validateEmail();
                             }
                           },
                         ),

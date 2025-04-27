@@ -11,11 +11,11 @@ class EventCentersScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch the state of event centers
-    final eventCentersState = ref.watch(eventCentersControllerProvider);
+    final centersAsync = ref.watch(eventCentersProvider);
 
-    // Ensure fetching data when screen loads if it's not already fetched
-    if (eventCentersState is AsyncLoading) {
-      ref.read(eventCentersControllerProvider.notifier).fetchEventCenters();
+    // Function to refresh the data
+    Future<void> _reloadData(WidgetRef ref) async {
+      ref.refresh(eventCentersProvider);
     }
 
     return Scaffold(
@@ -74,33 +74,50 @@ class EventCentersScreen extends ConsumerWidget {
 
             const SizedBox(height: 16),
 
-            // Event Centers List (handle loading, error, or success states)
+            // Use RefreshIndicator for pull-to-refresh functionality
             Expanded(
-              child: eventCentersState.when(
-                data: (eventCenters) {
-                  return ListView.builder(
-                    itemCount: eventCenters.length,
-                    itemBuilder: (context, index) {
-                      // Wrap EventCenterCard with GestureDetector or InkWell for navigation
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            AppRoutes.eventCenterDetails,
-                            arguments:
-                                eventCenters[index], // Pass the event center data as arguments
-                          );
-                        },
-                        child: EventCenterCard(
-                          eventCenter: eventCenters[index],
-                        ),
-                      );
-                    },
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error:
-                    (error, stackTrace) => Center(child: Text('Error: $error')),
+              child: RefreshIndicator(
+                // 1) Return the Future that completes when the provider finishes fetching
+                onRefresh: () => ref.refresh(eventCentersProvider.future),
+                // 2) Always wrap each branch in a scrollable with AlwaysScrollableScrollPhysics
+                child: centersAsync.when(
+                  data: (centers) {
+                    return ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: centers.length,
+                      itemBuilder: (context, index) {
+                        final center = centers[index];
+                        return GestureDetector(
+                          onTap:
+                              () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.eventCenterDetails,
+                                arguments: center,
+                              ),
+                          child: EventCenterCard(eventCenter: center),
+                        );
+                      },
+                    );
+                  },
+                  loading: () {
+                    return ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: const [
+                        SizedBox(height: 200),
+                        Center(child: CircularProgressIndicator()),
+                      ],
+                    );
+                  },
+                  error: (e, _) {
+                    return ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        const SizedBox(height: 200),
+                        Center(child: Text('Error: $e')),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ],

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../playpadi_library.dart';
+import '../../controllers/user_Profile_controller.dart';
+import '../../models/user_profile_model.dart';
 import '../../routes/app_routes.dart';
 
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -8,7 +11,7 @@ import 'home_tab_screen.dart';
 import 'profile_tab_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
@@ -16,6 +19,36 @@ class DashboardScreen extends ConsumerStatefulWidget {
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int _selectedIndex = 0;
+  final controller = UserProfileController();
+  UserProfile? _profile;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserProfile();
+  }
+
+  Future<void> loadUserProfile() async {
+    try {
+      final profile = await controller.fetchUserProfile();
+      setState(() {
+        _profile = profile; // Update the state with the profile
+        print(_profile?.displayPicture);
+      });
+    } on ServerErrorException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('There was a server error. Please try again later.'),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to load profile. Please try again later.'),
+        ),
+      );
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -27,19 +60,32 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final tabs = <Widget>[const HomeTab(), const ProfileTab()];
-
+    // if (_profile == null) {
+    //   return Center(
+    //     child: CircularProgressIndicator(),
+    //   );
+    // }
     return Scaffold(
       appBar:
           _selectedIndex == 0
               ? AppBar(
-                title: const Text('Hi Tunde ✌️'),
+                title: Text('Hi  ${_profile?.firstName} ✌️'),
                 leading: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Colors.black,
-                    child: const Icon(Icons.add, color: Colors.black),
-                  ),
+                  child:
+                      _profile?.displayPicture != null
+                          ? CircleAvatar(
+                            radius: 30,
+                            backgroundImage: NetworkImage(
+                              _profile!.displayPicture!,
+                            ),
+                          )
+                          : const CircleAvatar(
+                            radius: 30,
+                            backgroundImage: AssetImage(
+                              'assets/images/user.png',
+                            ),
+                          ),
                 ),
                 actions: [
                   IconButton(

@@ -110,15 +110,61 @@ class APIClient {
     });
   }
 
+  Future<dynamic> validateEmail(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/auth/validate-email',
+      method: 'post',
+      headers: ['Content-Type: application/json'],
+      body: jsonEncode(data),
+    );
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+
+      if (callback is Function) {
+        return callback();
+      }
+    });
+  }
+
   Future<dynamic> fetchProfile([dynamic callback]) async {
     if (!isAuthorized) {
       throw UnauthorizedRequestException();
     }
 
     Request payload = Request(
-      '${baseUrl}profile',
+      '${baseUrl}/api/fetch-profile',
       method: 'get',
-      headers: ['Content-Type: application/json', 'token: $token'],
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
+      body: null,
+    );
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
+  Future<dynamic> fetchSportsCenters([dynamic callback]) async {
+    if (!isAuthorized) {
+      throw UnauthorizedRequestException();
+    }
+
+    Request payload = Request(
+      '${baseUrl}/api/fetch-sports-centers',
+      method: 'get',
+      headers: ['Content-Type: application/json'],
       body: null,
     );
     return await request(payload, (Response response) {
@@ -132,30 +178,6 @@ class APIClient {
       }
     });
   }
-
-  //   Future<dynamic> getOTP(Map data, [dynamic callback]) async {
-  //   Request payload = Request(
-  //     '${baseUrl}reotp/${data['otp']}',
-  //     method: 'get',
-  //     headers: [
-  //       'Content-Type: application/json',
-  //       'id: $id',
-  //       'token: $token',
-  //       'expiry: $expiry',
-  //     ],
-  //     body: null,
-  //   );
-  //   return await request(payload, (Response response) {
-  //     if (response.status != Response.SUCCESS) {
-  //       throw ServerErrorException(response.code, response.message);
-  //     }
-  //     if (callback is Function) {
-  //       return callback(response.data);
-  //     } else {
-  //       return response.data;
-  //     }
-  //   });
-  // }
 
   void _resetToken() {
     id = '';

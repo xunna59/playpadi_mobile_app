@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
         debugPrint('Login successful');
 
         if (!mounted) return; // <- Important
-        Navigator.pushNamed(context, AppRoutes.dashboard);
+        Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
       });
     } on NetworkErrorException catch (e) {
       if (!mounted) return;

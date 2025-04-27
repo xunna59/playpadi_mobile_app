@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 // import '../controllers/event_centers_controller.dart';
+import '../core/constants.dart';
 import '../models/event_center_model.dart'; // Import the controller
 
 class EventCenterCard extends StatelessWidget {
   final EventCenter eventCenter;
+
+  // static const _imageBaseUrl = 'https://your-api.example.com/uploads/';
 
   const EventCenterCard({required this.eventCenter, super.key});
 
@@ -15,19 +18,23 @@ class EventCenterCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8),
       color: colorScheme.secondary,
 
-      elevation: 1,
+      elevation: 0.2,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Top image section remains unchanged.
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
-            ),
-            child: const Image(
-              image: AssetImage('assets/background/book_court.png'),
-              fit: BoxFit.cover,
+          Container(
+            height: 180,
+            width: double.infinity,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+              child: Image.network(
+                '$imageBaseUrl${eventCenter.coverImage}',
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           // Wrap all body content in one Container with a white background
@@ -45,19 +52,19 @@ class EventCenterCard extends StatelessWidget {
                         child: Text(
                           eventCenter.name,
                           style: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      Text(eventCenter.price),
+                      Text('₦${eventCenter.sessionPrice}/hr'),
                     ],
                   ),
                 ),
                 // Location section
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(eventCenter.location),
+                  child: Text(eventCenter.address),
                 ),
                 // Available times as chips row
                 Padding(

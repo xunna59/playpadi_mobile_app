@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../routes/app_routes.dart';
-import '../../widgets/custom_text_field.dart';
+import '../../widgets/custom_text_field.dart'; // Make sure CustomTextField is implemented correctly
 import '../../widgets/primary_button.dart';
 
 class RegisterStepTwo extends StatefulWidget {
@@ -14,11 +14,31 @@ class RegisterStepTwo extends StatefulWidget {
 
 class _RegisterStepTwoState extends State<RegisterStepTwo> {
   final nameController = TextEditingController();
-  final emailController = TextEditingController();
+  late final TextEditingController
+  emailController; // Declare but initialize in initState
   final phoneController = TextEditingController();
   final passwordController = TextEditingController();
   bool wantsUpdates = false;
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    emailController = TextEditingController(
+      text: widget.validEmail,
+    ); // Initialize here
+
+    print(emailController);
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +97,8 @@ class _RegisterStepTwoState extends State<RegisterStepTwo> {
                         const SizedBox(height: 16),
                         CustomTextField(
                           hintText: 'Email',
-                          controller: emailController,
+                          controller:
+                              emailController, // Ensure this is connected to the controller
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.isEmpty) {

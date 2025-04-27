@@ -1,7 +1,46 @@
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatelessWidget {
+import '../../../../playpadi_library.dart';
+import '../../../controllers/user_Profile_controller.dart';
+import '../../../models/user_profile_model.dart';
+
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final controller = UserProfileController();
+  UserProfile? _profile;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserProfile();
+  }
+
+  Future<void> loadUserProfile() async {
+    try {
+      final profile = await controller.fetchUserProfile();
+      setState(() {
+        _profile = profile;
+      });
+    } on ServerErrorException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('There was a server error. Please try again later.'),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to load profile. Please try again later.'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,24 +56,30 @@ class ProfileScreen extends StatelessWidget {
             // Profile Header
             Row(
               children: [
-                const CircleAvatar(
-                  radius: 30,
-                  backgroundImage: AssetImage('assets/images/user.jpg'),
-                ),
+                _profile?.displayPicture != null
+                    ? CircleAvatar(
+                      radius: 30,
+                      backgroundImage: NetworkImage(_profile!.displayPicture!),
+                    )
+                    : const CircleAvatar(
+                      radius: 30,
+                      backgroundImage: AssetImage('assets/images/user.png'),
+                    ),
                 const SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
-                      'Tunde Bakare',
-                      style: TextStyle(
+                      '${_profile?.firstName ?? ''} ${_profile?.lastName ?? ''}' ??
+                          'John Doe',
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
                     Text(
-                      'Standard account',
-                      style: TextStyle(color: Colors.grey),
+                      _profile?.accountType ?? 'Standard account',
+                      style: const TextStyle(color: Colors.grey),
                     ),
                   ],
                 ),
@@ -114,9 +159,11 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildAccountCard(List<Widget> children) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Card(
       elevation: 0,
-      color: Colors.grey[100],
+      color: colorScheme.secondary,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Column(children: children),
     );
@@ -124,7 +171,7 @@ class ProfileScreen extends StatelessWidget {
 
   static Widget _buildListTile(IconData icon, String title, String? subtitle) {
     return ListTile(
-      leading: Icon(icon, color: Colors.black87),
+      leading: Icon(icon),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
       subtitle:
           subtitle != null
