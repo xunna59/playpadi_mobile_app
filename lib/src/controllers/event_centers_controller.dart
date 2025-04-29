@@ -1,11 +1,5 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../playpadi_library.dart';
 import '../models/event_center_model.dart';
-
-final eventCentersProvider = FutureProvider<List<EventCenter>>((ref) {
-  return EventCentersController().fetchSportsCenters();
-});
 
 class EventCentersController {
   final APIClient client = APIClient();
@@ -13,6 +7,7 @@ class EventCentersController {
   Future<List<EventCenter>> fetchSportsCenters() async {
     try {
       final response = await client.fetchSportsCenters();
+      print(response);
 
       List<dynamic> rawList = [];
       if (response is Map<String, dynamic>) {

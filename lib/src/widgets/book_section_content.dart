@@ -139,28 +139,55 @@ class _BookSectionContentState extends State<BookSectionContent> {
                   runSpacing: 12,
                   children:
                       availableTimes.map((time) {
+                        // time.time is your label, time.status is a String like "Available" or something else
                         final isSelected = time.time == _selectedTime;
+                        final isAvailable = time.status == 'available';
+
                         return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedTime = time.time;
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              color:
-                                  isSelected
-                                      ? colorScheme.primary
-                                      : Colors.transparent,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              time.time,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                          // only respond to taps when status is "Available"
+                          onTap:
+                              isAvailable
+                                  ? () {
+                                    setState(() {
+                                      _selectedTime = time.time;
+                                    });
+                                  }
+                                  : null,
+                          behavior: HitTestBehavior.opaque,
+                          child: Opacity(
+                            // fade out when not available
+                            opacity: isAvailable ? 1.0 : 0.4,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color:
+                                    isSelected
+                                        ? colorScheme.primary
+                                        : Colors.transparent,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color:
+                                      isSelected
+                                          ? colorScheme.primary
+                                          : colorScheme.onSurface.withOpacity(
+                                            0.12,
+                                          ),
+                                ),
+                              ),
+                              child: Text(
+                                time.time,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  // strike through when not available
+                                  decoration:
+                                      isAvailable
+                                          ? TextDecoration.none
+                                          : TextDecoration.lineThrough,
+                                ),
+                              ),
                             ),
                           ),
                         );

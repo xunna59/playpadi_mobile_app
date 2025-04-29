@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../controllers/event_centers_controller.dart';
+
 import '../../../routes/app_routes.dart';
 import '../../../widgets/event_center_card.dart';
 import '../../../widgets/inkwell_modal.dart';
+import '../../../providers/eventCentersProvider.dart';
 
 class EventCentersScreen extends ConsumerWidget {
-  const EventCentersScreen({super.key});
+  const EventCentersScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch the state of event centers
     final centersAsync = ref.watch(eventCentersProvider);
-
-    // Function to refresh the data
-    Future<void> _reloadData(WidgetRef ref) async {
-      ref.refresh(eventCentersProvider);
-    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Sports Centers')),
@@ -39,34 +35,26 @@ class EventCentersScreen extends ConsumerWidget {
             // Filtering dropdowns (sport type, time, etc.)
             Row(
               children: [
-                // Filter icon
                 IconButton(
                   icon: const Icon(Icons.tune),
                   onPressed: () {
-                    // Show filter modal, etc.
+                    // Show filter modal
                   },
                 ),
-
-                // Spacing
                 const SizedBox(width: 8),
-
-                // Sport Chip
                 CustomFilterChip(
                   label: 'Padel',
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   onTap: () {
-                    // e.g., show the sport selection sheet
+                    // Sport selection
                   },
                 ),
-
                 const SizedBox(width: 8),
-
-                // Time Chip
                 CustomFilterChip(
                   label: 'Today 3pm - 8pm',
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   onTap: () {
-                    // e.g., show the time range selection
+                    // Time range selection
                   },
                 ),
               ],
@@ -74,14 +62,21 @@ class EventCentersScreen extends ConsumerWidget {
 
             const SizedBox(height: 16),
 
-            // Use RefreshIndicator for pull-to-refresh functionality
+            // Event centers list with pull-to-refresh
             Expanded(
               child: RefreshIndicator(
-                // 1) Return the Future that completes when the provider finishes fetching
                 onRefresh: () => ref.refresh(eventCentersProvider.future),
-                // 2) Always wrap each branch in a scrollable with AlwaysScrollableScrollPhysics
                 child: centersAsync.when(
                   data: (centers) {
+                    if (centers.isEmpty) {
+                      return ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: const [
+                          SizedBox(height: 200),
+                          Center(child: Text('No centers found')),
+                        ],
+                      );
+                    }
                     return ListView.builder(
                       physics: const AlwaysScrollableScrollPhysics(),
                       itemCount: centers.length,

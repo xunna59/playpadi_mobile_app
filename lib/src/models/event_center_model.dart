@@ -37,6 +37,16 @@ class EventCenter {
   });
 
   factory EventCenter.fromJson(Map<String, dynamic> json) {
+    // Safely pull out courts, default to empty list if missing or not a List
+    final courtsJson = json['courts'];
+    final courts =
+        (courtsJson is List)
+            ? courtsJson
+                .cast<Map<String, dynamic>>()
+                .map((c) => CourtModel.fromJson(c))
+                .toList()
+            : <CourtModel>[];
+
     return EventCenter(
       id: getInt(json, 'id'),
       name: getString(json, 'sports_center_name'),
@@ -48,16 +58,18 @@ class EventCenter {
       availableTimes:
           getStringList(json, 'available_times').isNotEmpty
               ? getStringList(json, 'available_times')
-              : ['07:30', '08:00', '08:30', '09:00'], // default if empty
-      description: getString(json, 'sports_center_description'),
+              : ['07:30', '08:00', '08:30', '09:00'],
+      // If description key is missing, default to empty string
+      description: getString(
+        json,
+        'sports_center_description',
+        defaultValue: '',
+      ),
       status: castOrNull<bool>(json['sports_center_status']),
       latitude: getDouble(json, 'latitude'),
       longitude: getDouble(json, 'longitude'),
       openingHours: getMap(json, 'openingHours'),
-      courts:
-          (json['courts'] as List)
-              .map((courtJson) => CourtModel.fromJson(courtJson))
-              .toList(),
+      courts: courts,
       bookingInfo: getMap(json, 'booking_info'),
     );
   }
