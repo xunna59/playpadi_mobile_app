@@ -97,17 +97,23 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const NotificationsScreen());
       case eventCenter:
         return MaterialPageRoute(builder: (_) => const EventCentersScreen());
-      case eventCenterDetails:
-        final eventCenter = settings.arguments as EventCenter?;
-        if (eventCenter == null) {
-          return MaterialPageRoute(
-            builder:
-                (_) => const Scaffold(
-                  body: Center(child: Text('No Event Center Data Provided')),
-                ),
-          );
-        }
+      // case eventCenterDetails:
+      //   final eventCenter = settings.arguments as EventCenter?;
+      //   if (eventCenter == null) {
+      //     return MaterialPageRoute(
+      //       builder:
+      //           (_) => const Scaffold(
+      //             body: Center(child: Text('No Event Center Data Provided')),
+      //           ),
+      //     );
+      //   }
 
+      //   return MaterialPageRoute(
+      //     builder: (_) => EventCenterDetailsScreen(eventCenter: eventCenter),
+      //   );
+
+      case eventCenterDetails:
+        final eventCenter = settings.arguments as EventCenter;
         return MaterialPageRoute(
           builder: (_) => EventCenterDetailsScreen(eventCenter: eventCenter),
         );

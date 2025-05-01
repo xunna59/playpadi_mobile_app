@@ -10,7 +10,6 @@ class BookingController {
 
     try {
       final response = await client.fetchSlots(data);
-
       // Check if the response is in the expected format
       if (response is Map<String, dynamic>) {
         if (response['slots'] is List<dynamic>) {

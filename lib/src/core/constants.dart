@@ -1,2 +1,2 @@
 const String imageBaseUrl =
-    "https://playpadi.xunnatech.com/upload/cover_photo/";
+    "https://app.playpadi.com/upload/cover_photo/";

@@ -7,8 +7,6 @@ class EventCentersController {
   Future<List<EventCenter>> fetchSportsCenters() async {
     try {
       final response = await client.fetchSportsCenters();
-      print(response);
-
       List<dynamic> rawList = [];
       if (response is Map<String, dynamic>) {
         // Case A: { data: { sportsCenters: [...] } }

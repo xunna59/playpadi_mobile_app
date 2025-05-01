@@ -29,8 +29,10 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
     final fetchedCenter = await EventCentersController().fetchCenterById(
       widget.eventCenter.id,
     );
+
     setState(() {
       eventCenter = fetchedCenter;
+      print(widget.eventCenter.games);
     });
   }
 
@@ -40,6 +42,10 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
     final colorScheme = theme.colorScheme;
     final screenWidth = MediaQuery.of(context).size.width;
     int totalCourts = widget.eventCenter.courts?.length ?? 0;
+
+    // if (eventCenter == null) {
+    //   return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    // }
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -313,6 +319,7 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
                         ),
                         // --- Book Tab: Booking UI as a Reusable Widget ---
                         BookSectionContent(bookingId: widget.eventCenter.id),
+
                         // --- Open Matches Tab ---
                         BookOpenMatch(bookingId: widget.eventCenter.id),
                         // --- Academy Tab ---

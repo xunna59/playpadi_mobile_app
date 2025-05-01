@@ -8,7 +8,7 @@ import './exceptions.dart';
 
 class APIClient {
   static final APIClient _instance = APIClient._privateConstructor();
-  final String baseUrl = 'https://playpadi.xunnatech.com';
+  final String baseUrl = 'https://app.playpadi.com';
   late HttpClient _client;
 
   String? id;
