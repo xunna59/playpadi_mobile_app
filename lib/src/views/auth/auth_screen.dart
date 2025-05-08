@@ -96,7 +96,8 @@ class _AuthScreenState extends State<AuthScreen> {
             AuthButton(
               imageUrl: 'assets/icons/google.png',
               text: 'Continue with Google',
-              onPressed: () => _handleGoogleSignIn(),
+              // onPressed: () => _handleGoogleSignIn(),
+              onPressed: () {},
             ),
             const SizedBox(height: 12),
             Row(

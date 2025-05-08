@@ -25,11 +25,11 @@ final lightTheme = ThemeData(
 final darkTheme = ThemeData(
   brightness: Brightness.dark,
   primarySwatch: Colors.indigo,
-  scaffoldBackgroundColor: Colors.black,
+  scaffoldBackgroundColor: Color.fromRGBO(10, 8, 18, 1),
   colorScheme: const ColorScheme.dark(
     primary: Color.fromRGBO(120, 66, 255, 1),
     onPrimary: Colors.white,
-    tertiary: Colors.black,
+    tertiary: Color.fromRGBO(10, 8, 18, 1),
 
     secondary: Colors.white12,
     onSecondary: Colors.black,

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../playpadi_library.dart';
 import '../controllers/event_centers_controller.dart';
 import '../models/booking_model.dart';
 import '../controllers/booking_controller.dart';
-import '../models/event_center_model.dart'; // Import the controller
+import '../models/event_center_model.dart';
 
 class BookSectionContent extends StatefulWidget {
   final int bookingId;
@@ -24,11 +23,9 @@ class _BookSectionContentState extends State<BookSectionContent> {
   @override
   void initState() {
     super.initState();
-
     _bookingInfoFuture = BookingController().fetchBookingInfoById(
       widget.bookingId,
     );
-
     _fetchedCenter = EventCentersController().fetchCenterById(widget.bookingId);
   }
 
@@ -53,7 +50,11 @@ class _BookSectionContentState extends State<BookSectionContent> {
 
         final bookingInfo = snapshot.data!;
         final dates = bookingInfo.dates;
-        final availableTimes = dates[_selectedDateIndex].availableTimes;
+        final allTimes = dates[_selectedDateIndex].availableTimes;
+        final filteredTimes =
+            _showAvailableSlotsOnly
+                ? allTimes.where((t) => t.status == 'available').toList()
+                : allTimes;
 
         return SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -73,7 +74,7 @@ class _BookSectionContentState extends State<BookSectionContent> {
                       onTap: () {
                         setState(() {
                           _selectedDateIndex = index;
-                          //  _selectedTime = dates[index].availableTimes.first;
+                          _selectedTime = null;
                         });
                       },
                       child: Container(
@@ -83,11 +84,14 @@ class _BookSectionContentState extends State<BookSectionContent> {
                           children: [
                             Text(
                               date.weekday,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
                             ),
                             const SizedBox(height: 10),
                             Container(
-                              padding: EdgeInsets.all(5),
+                              padding: const EdgeInsets.all(5),
                               decoration: BoxDecoration(
                                 color:
                                     isSelected
@@ -97,14 +101,17 @@ class _BookSectionContentState extends State<BookSectionContent> {
                               ),
                               child: Text(
                                 date.day,
-                                style: TextStyle(
-                                  fontSize: 18,
+                                style: const TextStyle(
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                             const SizedBox(height: 5),
-                            Text(date.month, style: TextStyle(fontSize: 12)),
+                            Text(
+                              date.month,
+                              style: const TextStyle(fontSize: 12),
+                            ),
                           ],
                         ),
                       ),
@@ -112,8 +119,8 @@ class _BookSectionContentState extends State<BookSectionContent> {
                   },
                 ),
               ),
-              const SizedBox(height: 12),
-              // "Show available slots only" Toggle.
+              const SizedBox(height: 20),
+
               Row(
                 children: [
                   const Text(
@@ -131,82 +138,82 @@ class _BookSectionContentState extends State<BookSectionContent> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              // Time Slots.
-              Center(
-                child: Wrap(
-                  spacing: 15,
-                  runSpacing: 12,
-                  children:
-                      availableTimes.map((time) {
-                        // time.time is your label, time.status is a String like "Available" or something else
-                        final isSelected = time.time == _selectedTime;
-                        final isAvailable = time.status == 'available';
 
-                        return GestureDetector(
-                          // only respond to taps when status is "Available"
-                          onTap:
-                              isAvailable
-                                  ? () {
-                                    setState(() {
-                                      _selectedTime = time.time;
-                                    });
-                                  }
-                                  : null,
-                          behavior: HitTestBehavior.opaque,
-                          child: Opacity(
-                            // fade out when not available
-                            opacity: isAvailable ? 1.0 : 0.4,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                color:
-                                    isSelected
-                                        ? colorScheme.primary
-                                        : Colors.transparent,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color:
-                                      isSelected
-                                          ? colorScheme.primary
-                                          : colorScheme.onSurface.withOpacity(
-                                            0.12,
-                                          ),
-                                ),
-                              ),
-                              child: Text(
-                                time.time,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  // strike through when not available
-                                  decoration:
-                                      isAvailable
-                                          ? TextDecoration.none
-                                          : TextDecoration.lineThrough,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
+              const SizedBox(height: 20),
+
+              GridView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.all(0),
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: filteredTimes.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 15,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 2.5,
                 ),
+                itemBuilder: (context, index) {
+                  final time = filteredTimes[index];
+                  final isSelected = time.time == _selectedTime;
+                  final isAvailable = time.status == 'available';
+
+                  return GestureDetector(
+                    onTap:
+                        isAvailable
+                            ? () {
+                              setState(() {
+                                _selectedTime = time.time;
+                              });
+                            }
+                            : null,
+                    child: Opacity(
+                      opacity: isAvailable ? 1.0 : 0.4,
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color:
+                              isSelected
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Colors.transparent,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color:
+                                isSelected
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface.withOpacity(0.12),
+                          ),
+                        ),
+                        child: Text(
+                          time.time,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            decoration:
+                                isAvailable ? null : TextDecoration.lineThrough,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
-              const SizedBox(height: 24),
-              // "Book a court" Section.
+
+              const SizedBox(height: 30),
+
               const Text(
                 'Book a court',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
               const Text(
                 'Create a private match where you can invite your friends',
+                style: TextStyle(fontSize: 12),
               ),
 
               const SizedBox(height: 12),
-              // Court Info Section.
+
               FutureBuilder<EventCenter?>(
                 future: _fetchedCenter,
                 builder: (context, snapshot) {
@@ -217,7 +224,6 @@ class _BookSectionContentState extends State<BookSectionContent> {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   }
 
-                  // Check if snapshot has data and it's not null.
                   if (!snapshot.hasData || snapshot.data == null) {
                     return const Center(child: Text('No courts available.'));
                   }
@@ -225,12 +231,10 @@ class _BookSectionContentState extends State<BookSectionContent> {
                   final center = snapshot.data!;
                   final courts = center.courts;
 
-                  // Check if the courts list is empty
                   if (courts == null || courts.isEmpty) {
                     return const Center(child: Text('No courts available.'));
                   }
 
-                  // Display all courts using a Column.
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children:
@@ -253,9 +257,7 @@ class _BookSectionContentState extends State<BookSectionContent> {
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
-                                  court.location,
-                                ), // Assuming you want to show court location
+                                Text(court.location),
                                 const SizedBox(height: 12),
                                 Text('${court.activity}'),
                                 const SizedBox(height: 8),
@@ -265,8 +267,10 @@ class _BookSectionContentState extends State<BookSectionContent> {
                                   children:
                                       court.bookingInfo['booked_slots']
                                           .map<Widget>(
-                                            (slot) =>
-                                                Text('Booked Slot: $slot'),
+                                            (slot) => _buildPriceOption(
+                                              slot['price'],
+                                              slot['duration'],
+                                            ),
                                           )
                                           .toList(),
                                 ),

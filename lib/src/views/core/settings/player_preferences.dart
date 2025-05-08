@@ -17,6 +17,8 @@ class _PlayerPreferenceScreenState extends State<PlayerPreferenceScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+
         title: const Text('Player preference'),
         centerTitle: true,
         leading: const BackButton(),

@@ -23,4 +23,19 @@ class UserProfileController {
       rethrow;
     }
   }
+
+  Future<UserProfile> updateUserProfile(Map<String, dynamic> updates) async {
+    try {
+      // print('Updating profile with: $updates');
+
+      await client.updateProfile(updates, () {
+        print('Profile updated on server');
+      });
+
+      final fresh = await fetchUserProfile();
+      return fresh;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

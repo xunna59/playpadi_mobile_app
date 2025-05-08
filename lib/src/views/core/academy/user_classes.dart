@@ -1,60 +1,110 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../../../controllers/academy_controller.dart';
 import '../../../models/class_model.dart';
 import '../../../models/coach_model.dart';
+import '../../../routes/app_routes.dart';
 import '../../../widgets/class_card.dart';
 
-class UserClassesTab extends StatelessWidget {
+class UserClassesTab extends StatefulWidget {
   const UserClassesTab({super.key});
 
-  static final List<ClassModel> classes = [
-    ClassModel(
-      dateGroup: 'Tomorrow',
-      time: 'Wednesday, February 05 • 6:00pm',
-      title: 'Beginners Social',
-      sport: 'Padel',
-      location: 'The Hook Club at Mottram Hall',
-      courses: 0,
-      mixed: true,
-      coach: const CoachModel(name: 'Sam Brown'),
-      spots: 6,
-      price: 24,
-      booked: false,
-    ),
-    ClassModel(
-      dateGroup: 'Friday, February 08',
-      time: 'Friday, February 07 • 6:00pm',
-      title: 'Beginners Social',
-      sport: 'Padel',
-      location: 'The Hook Club at Mottram Hall',
-      courses: 0,
-      mixed: true,
-      coach: const CoachModel(name: 'Sam Brown'),
-      spots: 6,
-      price: 24,
-      booked: true,
-    ),
-  ];
+  // static final List<ClassModel> classes = [];
+
+  @override
+  State<UserClassesTab> createState() => _UserClassesTabState();
+}
+
+class _UserClassesTabState extends State<UserClassesTab> {
+  final AcademyController _academyController = AcademyController();
+
+  List<ClassModel> _academyClass = [];
+
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchClasses();
+  }
+
+  Future<void> _fetchClasses() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final data = await _academyController.getAcademyClasses();
+      setState(() {
+        _academyClass = data;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final grouped = <String, List<ClassModel>>{};
-    for (final c in classes) {
-      grouped.putIfAbsent(c.dateGroup, () => []).add(c);
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
     }
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        for (final entry in grouped.entries) ...[
-          Text(
-            entry.key,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          for (final cls in entry.value) ClassCard(classData: cls),
-          const SizedBox(height: 16),
+    if (_error != null) {
+      return Center(child: Text('Error loading classes:\n$_error'));
+    }
+
+    if (_academyClass.isEmpty) {
+      return const Center(child: Text('No classes available.'));
+    }
+
+    final grouped = <String, List<ClassModel>>{};
+    for (final c in _academyClass) {
+      grouped.putIfAbsent(c.activityDate, () => []).add(c);
+    }
+
+    return RefreshIndicator(
+      onRefresh: _fetchClasses,
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          for (final entry in grouped.entries) ...[
+            Text(
+              _formatDate(entry.key),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            for (final cls in entry.value)
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.classDetailsScreen,
+                    arguments: cls,
+                  );
+                },
+                child: ClassCard(classData: cls),
+              ),
+            const SizedBox(height: 16),
+          ],
         ],
-      ],
+      ),
     );
+  }
+
+  String _formatDate(String rawDate) {
+    try {
+      final parsed = DateTime.parse(rawDate);
+      return DateFormat('EEEE, MMMM d, y').format(parsed);
+    } catch (_) {
+      return rawDate;
+    }
   }
 }

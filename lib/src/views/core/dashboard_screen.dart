@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../playpadi_library.dart';
@@ -31,17 +33,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Future<void> loadUserProfile() async {
     try {
       final profile = await controller.fetchUserProfile();
+      if (!mounted) return;
       setState(() {
-        _profile = profile; // Update the state with the profile
-        //   print(_profile?.displayPicture);
+        _profile = profile;
       });
     } on ServerErrorException catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('There was a server error. Please try again later.'),
         ),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to load profile. Please try again later.'),
@@ -69,6 +73,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       appBar:
           _selectedIndex == 0
               ? AppBar(
+                backgroundColor: Colors.transparent,
                 title: Text('Hi  ${_profile?.firstName} ✌️'),
                 leading: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -76,8 +81,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       _profile?.displayPicture != null
                           ? CircleAvatar(
                             radius: 30,
-                            backgroundImage: NetworkImage(
-                              _profile!.displayPicture!,
+                            backgroundImage: MemoryImage(
+                              base64Decode(
+                                _profile!.displayPicture!.split(',').last,
+                              ),
                             ),
                           )
                           : const CircleAvatar(
@@ -103,6 +110,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ],
               )
               : AppBar(
+                backgroundColor: Colors.transparent,
+
                 automaticallyImplyLeading: false,
                 title: const Text('Profile'),
                 actions: [
@@ -156,7 +165,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       ),
                     ),
                     backgroundColor: Colors.transparent,
-                    onTap: () => print('Booking tapped'),
+                    onTap: () {
+                      Navigator.pushNamed(context, AppRoutes.playOpenMatches);
+                    },
                   ),
                   SpeedDialChild(
                     labelWidget: Container(
@@ -178,7 +189,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       ),
                     ),
                     backgroundColor: Colors.transparent,
-                    onTap: () => print('Match tapped'),
+                    onTap: () {
+                      Navigator.pushNamed(context, AppRoutes.eventCenter);
+                    },
                   ),
                 ],
               )

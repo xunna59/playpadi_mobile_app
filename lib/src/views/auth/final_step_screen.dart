@@ -2,18 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/steps_controller.dart';
 import '../../widgets/question_form.dart';
-// import '../../screens/final_score_screen.dart'; // Import the FinalScoreScreen
 
 class FinalStepScreen extends ConsumerWidget {
-  const FinalStepScreen({super.key});
+  const FinalStepScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formState = ref.watch(formControllerProvider);
-    final formController = ref.read(formControllerProvider.notifier);
+    final controller = ref.read(formControllerProvider.notifier);
+    final stepData = controller.steps[formState.currentStep];
+    final primary = Theme.of(context).colorScheme.primary;
 
-    final currentStepData = formController.steps[formState.currentStep];
-    final colorScheme = Theme.of(context).colorScheme;
+    // Determine which value is selected for this step
+    String? selectedValue;
+    switch (formState.currentStep) {
+      case 0:
+        selectedValue = formState.selectedPadelExperience;
+        break;
+      case 1:
+        selectedValue = formState.selectedSnookerExperience;
+        break;
+      case 2:
+        selectedValue = formState.selectedDartsExperience;
+        break;
+      case 3:
+        selectedValue = formState.selectedOtherRacquetExperience;
+        break;
+    }
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -21,79 +36,67 @@ class FinalStepScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ), // ensure visibility
-          onPressed: () => formController.goToPreviousStep(),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            if (formState.currentStep == 0) {
+              Navigator.pop(context); // triggers autoDispose
+            } else {
+              controller.goToPreviousStep();
+            }
+          },
         ),
       ),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-              'assets/background/onboarding_background.png',
-            ), // your image
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // 1) Full-screen background image
+          Image.asset(
+            'assets/background/onboarding_background.png',
             fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(0.7),
-              BlendMode.darken,
-            ),
           ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Progress Bar
-                LinearProgressIndicator(
-                  value: (formState.currentStep + 1) / 4,
-                  backgroundColor: Colors.grey.withOpacity(0.3),
-                  color: colorScheme.primary,
-                ),
-                const SizedBox(height: 16),
 
-                // Question Form
-                QuestionForm(
-                  question: currentStepData['question'],
-                  options:
-                      currentStepData['options']!
-                          .map<String>((option) => option['option'] as String)
-                          .toList(),
-                  selectedValue:
-                      formState.currentStep == 0
-                          ? formState.selectedPadelExperience
-                          : formState.currentStep == 1
-                          ? formState.selectedLawnTennisExperience
-                          : null,
-                  onValueChanged: (value) {
-                    if (value != null) {
-                      formController.setSelectedOption(
+          // 2) Semi-transparent dark overlay
+          Container(color: Colors.black54),
+
+          // 3) Scrollable content
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Progress bar
+                  LinearProgressIndicator(
+                    value:
+                        (formState.currentStep + 1) / controller.steps.length,
+                    backgroundColor: Colors.grey.withOpacity(0.3),
+                    color: primary,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Question form for this step
+                  QuestionForm(
+                    question: stepData['question'] as String,
+                    options:
+                        (stepData['options'] as List)
+                            .map((o) => o['option'] as String)
+                            .toList(),
+                    selectedValue: selectedValue,
+                    onValueChanged: (value) {
+                      if (value == null) return;
+                      controller.setSelectedOption(
                         value,
                         formState.currentStep,
                       );
-                      formController.goToNextStep(
-                        value,
-                        context,
-                      ); // Pass context to trigger navigation
-                    }
-                  },
-                  onNextStep:
-                      () => formController.goToNextStep(
-                        formState.currentStep == 0
-                            ? formState.selectedPadelExperience
-                            : formState.selectedLawnTennisExperience,
-                        context, // Pass context to navigate
-                      ),
-                ),
-              ],
+                      controller.goToNextStep(value, context);
+                    },
+                    onNextStep: () {}, // unused here
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

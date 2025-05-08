@@ -1,42 +1,55 @@
 // lib/models/match_model.dart
 
 class MatchModel {
-  final String dateText;
-  final String timeText;
-  final String matchLevel;
-  final List<Player> players;
-  final String distanceText;
+  final String dateText; // from json['date']
+  final String timeText; // from json['slot']
+  final String matchLevel; // from json['game_type']
+  final List<Player> players; // from json['players']
+  final int totalPlayers; // from json['total_players']
+  final String availability; // from json['status']
+  final String bookingReference; // from json['booking_reference']
+  final double sessionPrice;
+  final String sessionDuration;
   final String courtName;
-  final double price;
-  final int duration;
-  final String availability;
+  final String sportsCenterName;
+  final String gender_allowed;
+  final String cover_image;
 
   MatchModel({
     required this.dateText,
     required this.timeText,
     required this.matchLevel,
     required this.players,
-    required this.distanceText,
-    required this.courtName,
-    required this.price,
-    required this.duration,
+    required this.totalPlayers,
     required this.availability,
+    required this.bookingReference,
+    required this.sessionPrice,
+    required this.sessionDuration,
+    required this.courtName,
+    required this.sportsCenterName,
+    required this.gender_allowed,
+    required this.cover_image,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
     return MatchModel(
-      dateText: json['dateText'] as String,
-      timeText: json['timeText'] as String,
-      matchLevel: json['matchLevel'] as String,
+      dateText: json['date']?.toString() ?? '',
+      timeText: json['slot']?.toString() ?? '',
+      matchLevel: json['game_type']?.toString() ?? '',
+      availability: json['status']?.toString() ?? '',
+      bookingReference: json['booking_reference']?.toString() ?? '',
+      totalPlayers: (json['total_players'] as num?)?.toInt() ?? 0,
+      sessionPrice: (json['sessionPrice'] as num?)?.toDouble() ?? 0.0,
+      sessionDuration: json['sessionDuration']?.toString() ?? '',
+      courtName: json['courtName']?.toString() ?? '',
+      sportsCenterName: json['sportsCenterName']?.toString() ?? '',
+      gender_allowed: json['gender_allowed']?.toString() ?? '',
+      cover_image: json['cover_image']?.toString() ?? '',
+
       players:
-          (json['players'] as List<dynamic>)
+          (json['players'] as List<dynamic>? ?? [])
               .map((e) => Player.fromJson(e as Map<String, dynamic>))
               .toList(),
-      distanceText: json['distanceText'] as String,
-      courtName: json['courtName'] as String,
-      price: (json['price'] as num).toDouble(),
-      duration: json['duration'] as int,
-      availability: json['availability'] as String,
     );
   }
 }
@@ -49,10 +62,16 @@ class Player {
   Player({required this.name, required this.rating, this.avatarUrl});
 
   factory Player.fromJson(Map<String, dynamic> json) {
+    final rawRating = json['rating'];
+    final rating =
+        rawRating is num
+            ? rawRating.toDouble()
+            : double.tryParse(rawRating?.toString() ?? '') ?? 0.0;
+
     return Player(
-      name: json['name'] as String,
-      rating: (json['rating'] as num).toDouble(),
-      avatarUrl: json['avatarUrl'] as String?,
+      name: json['name']?.toString() ?? '',
+      rating: rating,
+      avatarUrl: json['avatarUrl']?.toString(),
     );
   }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/class_model.dart';
 
-class ClassCard extends StatelessWidget {
+class ClassSection extends StatelessWidget {
   final ClassModel classData;
-  const ClassCard({required this.classData, super.key});
+  const ClassSection({required this.classData, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,10 +12,7 @@ class ClassCard extends StatelessWidget {
 
     return Card(
       color: colorScheme.secondary,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: colorScheme.primary),
-      ),
+
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -33,13 +30,13 @@ class ClassCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        c.academyType,
+                        c.activityDate,
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 12,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       Text(
                         c.title,
                         style: const TextStyle(
@@ -52,7 +49,7 @@ class ClassCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
 
             // Sport & Location
             Row(
@@ -66,39 +63,21 @@ class ClassCard extends StatelessWidget {
                 Expanded(child: Text(c.sportsCenter.address)),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
 
             // Courses & Mixed
             Row(
               children: [
                 const Icon(Icons.equalizer, size: 16),
                 const SizedBox(width: 4),
-                Text('Courses ${c.sessionActivity}'),
+                Text(' ${c.academyType}'),
                 const SizedBox(width: 16),
                 const Icon(Icons.wc, size: 16),
                 const SizedBox(width: 4),
                 Text(c.category),
               ],
             ),
-            const SizedBox(height: 8),
-
-            // Coach
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 12,
-                  backgroundImage:
-                      c.coach.displayPicture != null
-                          ? NetworkImage(c.coach.displayPicture!)
-                          : null,
-                  backgroundColor: Colors.grey,
-                ),
-                const SizedBox(width: 8),
-                Text(c.coach.firstName),
-                const SizedBox(width: 4),
-                const Text('Coach', style: TextStyle(color: Colors.grey)),
-              ],
-            ),
+            const SizedBox(height: 12),
 
             // Bottom action row
             const SizedBox(height: 12),
@@ -128,7 +107,7 @@ class ClassCard extends StatelessWidget {
                 //       backgroundColor: colorScheme.primary,
                 //     ),
                 //     child: Text(
-                //       'Join – \$${c.sessionPrice}',
+                //       'Join – \$${c.price}',
                 //       style: const TextStyle(color: Colors.white),
                 //     ),
                 //   )

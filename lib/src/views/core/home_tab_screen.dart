@@ -37,6 +37,7 @@ class HomeTab extends ConsumerWidget {
               ),
               subtitle: const Text(
                 'Best hand, court side, match type, Preferred time to play',
+                style: TextStyle(fontSize: 12),
               ),
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {

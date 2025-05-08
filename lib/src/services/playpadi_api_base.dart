@@ -88,6 +88,28 @@ class APIClient {
     }
   }
 
+  Future<dynamic> register(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/auth/register',
+      method: 'post',
+      headers: ['Content-Type: application/json'],
+      body: jsonEncode(data),
+    );
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+      print(response);
+      token = response.data['token'];
+      isAuthorized = true;
+
+      if (callback is Function) {
+        return callback();
+      }
+    });
+  }
+
   Future<dynamic> login(Map data, [dynamic callback]) async {
     Request payload = Request(
       '${baseUrl}/auth/login',
@@ -115,6 +137,28 @@ class APIClient {
       '${baseUrl}/auth/validate-email',
       method: 'post',
       headers: ['Content-Type: application/json'],
+      body: jsonEncode(data),
+    );
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+
+      if (callback is Function) {
+        return callback();
+      }
+    });
+  }
+
+  Future<dynamic> updateProfile(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/api/update-profile',
+      method: 'put',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
       body: jsonEncode(data),
     );
 
@@ -179,6 +223,29 @@ class APIClient {
     });
   }
 
+  Future<dynamic> youtubeTutorials([dynamic callback]) async {
+    if (!isAuthorized) {
+      throw UnauthorizedRequestException();
+    }
+
+    Request payload = Request(
+      '${baseUrl}/api/academy/fetch-youtube-tutorials',
+      method: 'get',
+      headers: ['Content-Type: application/json'],
+      body: null,
+    );
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
   Future<dynamic> fetchSportsCenterById(Map data, [dynamic callback]) async {
     Request payload = Request(
       '${baseUrl}/api/fetch-sports-center/${data['id']}',
@@ -203,6 +270,55 @@ class APIClient {
       '${baseUrl}/api/fetch-slots/${data['id']}',
       method: 'get',
       headers: ['Content-Type: application/json'],
+      body: null,
+    );
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
+  Future<dynamic> fetchAcademyClasses([dynamic callback]) async {
+    if (!isAuthorized) {
+      throw UnauthorizedRequestException();
+    }
+
+    Request payload = Request(
+      '${baseUrl}/api/academy/fetch-classes',
+      method: 'get',
+      headers: ['Content-Type: application/json'],
+      body: null,
+    );
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
+  Future<dynamic> fetchPublicBookings([dynamic callback]) async {
+    if (!isAuthorized) {
+      throw UnauthorizedRequestException();
+    }
+
+    Request payload = Request(
+      '${baseUrl}/api/fetch-bookings/public',
+      method: 'get',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
       body: null,
     );
     return await request(payload, (Response response) {

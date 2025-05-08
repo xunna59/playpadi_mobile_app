@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../controllers/event_centers_controller.dart';
 import '../../../core/constants.dart';
 import '../../../models/event_center_model.dart';
+import '../../../widgets/academy_section.dart';
 import '../../../widgets/book_open_match.dart';
 import '../../../widgets/clubAction_widget.dart';
 import '../../../widgets/book_section_content.dart';
@@ -119,7 +120,7 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
                           Text(
                             widget.eventCenter.name,
                             style: const TextStyle(
-                              fontSize: 22,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -148,23 +149,31 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
           // Tabs and Content
           Expanded(
             child: DefaultTabController(
-              length: 5, // We have 5 tabs now.
+              length: 4, // number of tabs
               child: Column(
                 children: [
                   TabBar(
                     isScrollable: true,
                     labelColor: colorScheme.primary,
                     indicatorColor: colorScheme.primary,
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-
-                    tabs: [
+                    labelStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                    unselectedLabelColor: Colors.grey,
+                    unselectedLabelStyle: TextStyle(fontSize: 12),
+                    labelPadding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    tabs: const [
                       Tab(text: 'Home'),
                       Tab(text: 'Book'),
                       Tab(text: 'Open Matches'),
                       Tab(text: 'Academy'),
-                      Tab(text: 'Memberships'),
                     ],
                   ),
+
                   Expanded(
                     child: TabBarView(
                       children: [
@@ -204,31 +213,38 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 20),
                               Text(
                                 '$totalCourts available courts',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                //      style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 18),
                               Center(
-                                child: Wrap(
-                                  alignment: WrapAlignment.center,
-                                  spacing: 15,
-                                  children:
-                                      widget.eventCenter.features
-                                          .map(
-                                            (feature) => Text(
-                                              feature,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children:
+                                        widget.eventCenter.features
+                                            .map(
+                                              (feature) => Padding(
+                                                padding: const EdgeInsets.only(
+                                                  right: 15.0,
+                                                ),
+                                                child: Text(
+                                                  feature,
+                                                  style: const TextStyle(
+                                                    //   fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          )
-                                          .toList(),
+                                            )
+                                            .toList(),
+                                  ),
                                 ),
                               ),
 
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 25),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
@@ -322,10 +338,12 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
 
                         // --- Open Matches Tab ---
                         BookOpenMatch(bookingId: widget.eventCenter.id),
+
                         // --- Academy Tab ---
-                        const Center(child: Text('Academy Section')),
+                        AcademySection(),
+                        // const Center(child: Text('Academy Section')),
                         // --- Memberships Tab ---
-                        const Center(child: Text('Membership Section')),
+                        // const Center(child: Text('Membership Section')),
                       ],
                     ),
                   ),

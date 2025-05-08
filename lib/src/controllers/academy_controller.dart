@@ -2,23 +2,23 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../../playpadi_library.dart';
-import '../models/youtube_tutorials_model.dart';
+import '../models/class_model.dart';
 
-class TutorialService {
+class AcademyController {
   /// Replace with your real endpoint
   final APIClient client = APIClient();
 
-  Future<List<TutorialModel>> fetchYoutubeTutorials() async {
+  Future<List<ClassModel>> getAcademyClasses() async {
     try {
-      final response = await client.youtubeTutorials();
-
+      final response = await client.fetchAcademyClasses();
+      print(response);
       List<dynamic> rawList = [];
       if (response is Map<String, dynamic>) {
         if (response['data'] is Map<String, dynamic> &&
-            response['data']['youtubeVideos'] is List) {
-          rawList = response['data']['youtubeVideos'];
-        } else if (response['youtubeVideos'] is List) {
-          rawList = response['youtubeVideos'];
+            response['data']['academies'] is List) {
+          rawList = response['data']['academies'];
+        } else if (response['academies'] is List) {
+          rawList = response['academies'];
         }
       } else if (response is List) {
         rawList = response;
@@ -26,10 +26,10 @@ class TutorialService {
 
       final parsed =
           rawList
-              .map((e) => TutorialModel.fromJson(e as Map<String, dynamic>))
+              .map((e) => ClassModel.fromJson(e as Map<String, dynamic>))
               .toList();
 
-      print("Parsed tutorials: ${parsed.length}");
+      print("Parsed classes: ${parsed.length}");
       return parsed;
     } catch (e, st) {
       print('Error fetching: $e');

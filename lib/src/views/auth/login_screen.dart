@@ -25,10 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
       'password': _passwordController.text,
     };
 
-    debugPrint('Login data: $data');
-
     LoadingOverlay.show(context);
-    debugPrint('Loading overlay shown');
 
     try {
       await client.login(data, () {
@@ -189,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
                     child: const Text(
                       'Forgot password?',
-                      style: TextStyle(color: Colors.red),
+                      style: TextStyle(color: Color.fromRGBO(199, 3, 125, 1)),
                     ),
                   ),
                 ),

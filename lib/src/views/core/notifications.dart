@@ -5,8 +5,12 @@ class NotificationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+
         title: const Text('Notifications'),
         centerTitle: true,
         leading: IconButton(
@@ -24,7 +28,7 @@ class NotificationsScreen extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: colorScheme.secondary,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
@@ -49,10 +53,10 @@ class NotificationsScreen extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        SizedBox(height: 6),
                         Text(
                           'Description of the notification',
-                          style: TextStyle(fontSize: 14, color: Colors.black54),
+                          style: TextStyle(fontSize: 12),
                         ),
                       ],
                     ),

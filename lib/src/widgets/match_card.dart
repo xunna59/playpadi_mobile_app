@@ -30,7 +30,7 @@ class MatchCard extends StatelessWidget {
           children: [
             // Top half with image
             ClipRRect(
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
               ),
@@ -41,8 +41,9 @@ class MatchCard extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-            // Bottom half with icon, title, subtitle, and button
-            Container(
+
+            // Bottom half with icon, title, subtitle...
+            Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 16.0,
                 vertical: 16.0,
@@ -50,40 +51,44 @@ class MatchCard extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Search Icon
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary,
-                          borderRadius: BorderRadius.circular(
-                            12,
-                          ), // Rounded corners
-                        ),
-                        child: Icon(icon, color: Colors.white),
-                      ),
+                  // Icon container
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(icon, color: Colors.white),
+                  ),
 
-                      const SizedBox(height: 8),
-                      // Title and Subtitle
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
-                          fontSize: 18,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: TextStyle(color: colorScheme.onSurface),
-                      ),
-                      const SizedBox(height: 12),
+                  const SizedBox(width: 12),
 
-                      // Action Button
-                    ],
+                  // Text column, takes remaining space
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Title
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface,
+                            fontSize: 18,
+                          ),
+                        ),
+
+                        const SizedBox(height: 4),
+
+                        // Subtitle with ellipsis
+                        Text(
+                          subtitle,
+                          style: TextStyle(color: colorScheme.onSurface),
+                          maxLines: 6,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

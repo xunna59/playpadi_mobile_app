@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import '../core/constants.dart';
 import '../models/youtube_tutorials_model.dart';
 
 class TutorialCard extends StatelessWidget {
@@ -26,7 +27,10 @@ class TutorialCard extends StatelessWidget {
             children: [
               AspectRatio(
                 aspectRatio: 16 / 9,
-                child: Image.network(tutorial.thumbnailUrl, fit: BoxFit.cover),
+                child: Image.network(
+                  '$youtubeCoverUrl/${tutorial.coverImage}',
+                  fit: BoxFit.cover,
+                ),
               ),
               Positioned(
                 right: 8,
@@ -41,7 +45,7 @@ class TutorialCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    tutorial.duration,
+                    tutorial.videoDuration,
                     style: const TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ),
@@ -56,7 +60,7 @@ class TutorialCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  tutorial.title,
+                  tutorial.videoTitle,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -64,7 +68,7 @@ class TutorialCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  timeago.format(tutorial.publishedAt),
+                  tutorial.uploadDate,
                   style: TextStyle(
                     fontSize: 12,
                     color: cs.onSurface.withOpacity(0.6),

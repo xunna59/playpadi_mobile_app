@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 // import '../controllers/event_centers_controller.dart';
 import '../core/constants.dart';
 import '../models/event_center_model.dart'; // Import the controller
@@ -6,11 +8,19 @@ import '../models/event_center_model.dart'; // Import the controller
 class EventCenterCard extends StatelessWidget {
   final EventCenter eventCenter;
 
-  const EventCenterCard({required this.eventCenter, super.key});
+  EventCenterCard({required this.eventCenter, super.key});
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final rawPrice = eventCenter.sessionPrice;
+    final price = double.parse(rawPrice);
+
+    final formatted = NumberFormat.currency(
+      locale: 'en_NG',
+      symbol: '₦',
+      decimalDigits: 0,
+    ).format(price);
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -22,7 +32,7 @@ class EventCenterCard extends StatelessWidget {
         children: [
           // Top image section remains unchanged.
           Container(
-            height: 180,
+            height: 150,
             width: double.infinity,
             child: ClipRRect(
               borderRadius: const BorderRadius.only(
@@ -55,7 +65,13 @@ class EventCenterCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Text('₦${eventCenter.sessionPrice}/hr'),
+                      Text(
+                        '${formatted}/hr',
+                        style: GoogleFonts.roboto(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ],
                   ),
                 ),

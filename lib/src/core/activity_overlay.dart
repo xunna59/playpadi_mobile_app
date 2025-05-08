@@ -12,7 +12,9 @@ class LoadingOverlay {
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
               child: const Center(
-                child: CircularProgressIndicator(color: Colors.black),
+                child: CircularProgressIndicator(
+                  color: Color.fromRGBO(120, 66, 255, 1),
+                ),
               ),
             ),
           ),

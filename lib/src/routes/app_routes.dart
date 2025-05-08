@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:playpadi/src/models/event_center_model.dart';
 import 'package:playpadi/src/views/core/academy/academy_screen.dart';
+import '../models/class_model.dart';
+import '../models/match_model.dart';
 import '../views/auth/completed_screen.dart';
 import '../views/auth/final_step_screen.dart';
 import '../views/auth/login_screen.dart';
+import '../views/core/academy/class_details/class_details_screen.dart';
 import '../views/core/bookings/available_matches_screen.dart';
 import '../views/core/bookings/center_details_screen.dart';
 import '../views/core/bookings/event_centers_screen.dart';
+import '../views/core/bookings/match_details_screen.dart';
 import '../views/core/notifications.dart';
 import '../views/core/settings/player_preferences.dart';
 import '../views/core/settings/profile_screen.dart';
@@ -36,6 +40,8 @@ class AppRoutes {
   static const String playerPrefernces = '/playerPrefernces';
   static const String profileScreen = '/profile_screen';
   static const String academyScreen = '/academy_screen';
+  static const String matchDetailsScreen = 'matchDetailsScreen';
+  static const String classDetailsScreen = 'classDetailsScreen';
 
   static Route<dynamic>? generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -97,25 +103,23 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const NotificationsScreen());
       case eventCenter:
         return MaterialPageRoute(builder: (_) => const EventCentersScreen());
-      // case eventCenterDetails:
-      //   final eventCenter = settings.arguments as EventCenter?;
-      //   if (eventCenter == null) {
-      //     return MaterialPageRoute(
-      //       builder:
-      //           (_) => const Scaffold(
-      //             body: Center(child: Text('No Event Center Data Provided')),
-      //           ),
-      //     );
-      //   }
-
-      //   return MaterialPageRoute(
-      //     builder: (_) => EventCenterDetailsScreen(eventCenter: eventCenter),
-      //   );
 
       case eventCenterDetails:
         final eventCenter = settings.arguments as EventCenter;
         return MaterialPageRoute(
           builder: (_) => EventCenterDetailsScreen(eventCenter: eventCenter),
+        );
+
+      case matchDetailsScreen:
+        final match = settings.arguments as MatchModel;
+        return MaterialPageRoute(
+          builder: (_) => MatchDetailsScreen(match: match),
+        );
+
+      case classDetailsScreen:
+        final classData = settings.arguments as ClassModel;
+        return MaterialPageRoute(
+          builder: (_) => ClassDetailsScreen(classData: classData),
         );
 
       default:

@@ -43,6 +43,8 @@ class _AcademyScreenState extends State<AcademyScreen>
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+
         leading: BackButton(),
         //   backgroundColor: Colors.white,
         elevation: 0,

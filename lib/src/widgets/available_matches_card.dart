@@ -1,10 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:playpadi/src/core/constants.dart';
 import '../models/match_model.dart';
+import 'dart:convert';
 
-class AvailableMatchCard extends StatelessWidget {
+class AvailableMatchCard extends StatefulWidget {
   final MatchModel match;
 
   const AvailableMatchCard({super.key, required this.match});
+
+  @override
+  State<AvailableMatchCard> createState() => _AvailableMatchCardState();
+}
+
+class _AvailableMatchCardState extends State<AvailableMatchCard> {
+  String formattedDate = '';
+
+  @override
+  void initState() {
+    super.initState();
+    final date = DateTime.parse(widget.match.dateText);
+    formattedDate = DateFormat('EEEE, MMMM d, y').format(date);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +43,7 @@ class AvailableMatchCard extends StatelessWidget {
           children: [
             // Date & Time
             Text(
-              '${match.dateText} – ${match.timeText}',
+              '${formattedDate} – ${widget.match.timeText}',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 4),
@@ -35,19 +53,25 @@ class AvailableMatchCard extends StatelessWidget {
               children: [
                 const Icon(Icons.sports_tennis, size: 16),
                 const SizedBox(width: 4),
-                Text(match.matchLevel, style: const TextStyle(fontSize: 12)),
+                Text(
+                  widget.match.matchLevel,
+                  style: const TextStyle(fontSize: 12),
+                ),
                 const SizedBox(width: 16),
-                const Icon(Icons.info_outline, size: 16),
+                const Icon(Icons.wc, size: 16),
                 const SizedBox(width: 4),
-                Text(match.availability, style: const TextStyle(fontSize: 12)),
+                Text(
+                  widget.match.gender_allowed,
+                  style: const TextStyle(fontSize: 12),
+                ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 18),
 
             // Players
             Row(
               children:
-                  match.players.map((player) {
+                  widget.match.players.map((player) {
                     return Expanded(
                       child: Column(
                         children: [
@@ -66,7 +90,11 @@ class AvailableMatchCard extends StatelessWidget {
                               backgroundColor: Colors.transparent,
                               backgroundImage:
                                   player.avatarUrl != null
-                                      ? NetworkImage(player.avatarUrl!)
+                                      ? MemoryImage(
+                                        base64Decode(
+                                          player.avatarUrl!.split(',').last,
+                                        ),
+                                      )
                                       : null,
                               child:
                                   player.avatarUrl == null
@@ -95,39 +123,55 @@ class AvailableMatchCard extends StatelessWidget {
                     );
                   }).toList(),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 18),
 
             // Club & Price
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.black,
-                  backgroundImage: AssetImage(
-                    'assets/images/default_avatar.png',
+                /// LEFT SECTION
+                Expanded(
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.transparent,
+                        backgroundImage: NetworkImage(
+                          '${imageBaseUrl}${widget.match.cover_image}',
+                        ),
+                        //  child: const Icon(Icons.add, color: Colors.blue),
+                      ),
+                      SizedBox(width: 6),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.match.sportsCenterName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis, //
+                            ),
+                            Text(
+                              widget.match.courtName,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  child: const Icon(
-                    Icons.add,
-                    color: Colors.black,
-                  ), // will show on top
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      match.courtName,
-                      style: const TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                    Text(
-                      match.distanceText,
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
+
+                /// RIGHT SECTION
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
+                    horizontal: 6,
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
@@ -135,8 +179,12 @@ class AvailableMatchCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    '\$${match.price} – ${match.duration}mins',
-                    style: const TextStyle(color: Colors.white),
+                    '\₦${NumberFormat('#,##0', 'en_NG').format(widget.match.sessionPrice)} – ${widget.match.sessionDuration}mins',
+                    style: GoogleFonts.roboto(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ],

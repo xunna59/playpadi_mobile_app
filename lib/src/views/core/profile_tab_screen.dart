@@ -8,7 +8,7 @@ class ProfileTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Center(
       child: Text(
-        'This is the profile tab',
+        'profile tab',
         style: Theme.of(context).textTheme.headlineMedium,
       ),
     );

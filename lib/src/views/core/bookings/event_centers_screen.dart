@@ -5,24 +5,35 @@ import '../../../routes/app_routes.dart';
 import '../../../widgets/event_center_card.dart';
 import '../../../widgets/inkwell_modal.dart';
 import '../../../providers/eventCentersProvider.dart';
+import '../../../widgets/show_filter_modal.dart';
+import '../../../widgets/sport_modal_widget.dart';
 
-class EventCentersScreen extends ConsumerWidget {
+class EventCentersScreen extends ConsumerStatefulWidget {
   const EventCentersScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the state of event centers
+  ConsumerState<EventCentersScreen> createState() => _EventCentersScreenState();
+}
+
+class _EventCentersScreenState extends ConsumerState<EventCentersScreen> {
+  String selectedSport = 'Padel';
+  String selectedTime = 'Today 3pm - 8pm';
+
+  @override
+  Widget build(BuildContext context) {
     final centersAsync = ref.watch(eventCentersProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Sports Centers')),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: const Text('Sports Centers'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Search bar
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
+              padding: EdgeInsets.symmetric(vertical: 12),
               child: TextField(
                 decoration: InputDecoration(
                   labelText: 'Search',
@@ -32,29 +43,29 @@ class EventCentersScreen extends ConsumerWidget {
               ),
             ),
 
-            // Filtering dropdowns (sport type, time, etc.)
             Row(
               children: [
                 IconButton(
                   icon: const Icon(Icons.tune),
                   onPressed: () {
-                    // Show filter modal
+                    showFilterModal(context);
                   },
                 ),
                 const SizedBox(width: 8),
                 CustomFilterChip(
-                  label: 'Padel',
+                  label: selectedSport,
                   backgroundColor: Theme.of(context).colorScheme.primary,
-                  onTap: () {
-                    // Sport selection
+                  onTap: () async {
+                    // You could modify showSelectSportModal to return the selected sport
+                    showSelectSportModal(context); // or await and update state
                   },
                 ),
                 const SizedBox(width: 8),
                 CustomFilterChip(
-                  label: 'Today 3pm - 8pm',
+                  label: selectedTime,
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   onTap: () {
-                    // Time range selection
+                    // You can implement a time selector
                   },
                 ),
               ],
@@ -62,7 +73,6 @@ class EventCentersScreen extends ConsumerWidget {
 
             const SizedBox(height: 16),
 
-            // Event centers list with pull-to-refresh
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () => ref.refresh(eventCentersProvider.future),
@@ -83,35 +93,34 @@ class EventCentersScreen extends ConsumerWidget {
                       itemBuilder: (context, index) {
                         final center = centers[index];
                         return GestureDetector(
-                          onTap:
-                              () => Navigator.pushNamed(
-                                context,
-                                AppRoutes.eventCenterDetails,
-                                arguments: center,
-                              ),
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.eventCenterDetails,
+                              arguments: center,
+                            );
+                          },
                           child: EventCenterCard(eventCenter: center),
                         );
                       },
                     );
                   },
-                  loading: () {
-                    return ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: const [
-                        SizedBox(height: 200),
-                        Center(child: CircularProgressIndicator()),
-                      ],
-                    );
-                  },
-                  error: (e, _) {
-                    return ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: [
-                        const SizedBox(height: 200),
-                        Center(child: Text('Error: $e')),
-                      ],
-                    );
-                  },
+                  loading:
+                      () => ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: const [
+                          SizedBox(height: 200),
+                          Center(child: CircularProgressIndicator()),
+                        ],
+                      ),
+                  error:
+                      (e, _) => ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          const SizedBox(height: 200),
+                          Center(child: Text('Error: $e')),
+                        ],
+                      ),
                 ),
               ),
             ),

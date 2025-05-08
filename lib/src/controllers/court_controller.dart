@@ -13,7 +13,6 @@ class CourtController {
     try {
       final response = await client.fetchSportsCenterById(data);
 
-      print(response);
       if (response is Map<String, dynamic>) {
         if (response['data'] is Map<String, dynamic> &&
             response['data']['sportsCenter'] is Map<String, dynamic>) {

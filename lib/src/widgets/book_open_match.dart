@@ -53,7 +53,11 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
 
         final bookingInfo = snapshot.data!;
         final dates = bookingInfo.dates;
-        final availableTimes = dates[_selectedDateIndex].availableTimes;
+        final allTimes = dates[_selectedDateIndex].availableTimes;
+        final filteredTimes =
+            _showAvailableSlotsOnly
+                ? allTimes.where((t) => t.status == 'available').toList()
+                : allTimes;
 
         return SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -73,7 +77,7 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
                       onTap: () {
                         setState(() {
                           _selectedDateIndex = index;
-                          //  _selectedTime = dates[index].availableTimes.first;
+                          _selectedTime = null;
                         });
                       },
                       child: Container(
@@ -83,11 +87,14 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
                           children: [
                             Text(
                               date.weekday,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
                             ),
                             const SizedBox(height: 10),
                             Container(
-                              padding: EdgeInsets.all(5),
+                              padding: const EdgeInsets.all(5),
                               decoration: BoxDecoration(
                                 color:
                                     isSelected
@@ -97,14 +104,17 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
                               ),
                               child: Text(
                                 date.day,
-                                style: TextStyle(
-                                  fontSize: 18,
+                                style: const TextStyle(
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                             const SizedBox(height: 5),
-                            Text(date.month, style: TextStyle(fontSize: 12)),
+                            Text(
+                              date.month,
+                              style: const TextStyle(fontSize: 12),
+                            ),
                           ],
                         ),
                       ),
@@ -112,8 +122,8 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
                   },
                 ),
               ),
-              const SizedBox(height: 12),
-              // "Show available slots only" Toggle.
+              const SizedBox(height: 20),
+
               Row(
                 children: [
                   const Text(
@@ -131,78 +141,77 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              // Time Slots.
-              Center(
-                child: Wrap(
-                  spacing: 15,
-                  runSpacing: 12,
-                  children:
-                      availableTimes.map((time) {
-                        // time.time is your label, time.status is a String like "Available" or something else
-                        final isSelected = time.time == _selectedTime;
-                        final isAvailable = time.status == 'available';
 
-                        return GestureDetector(
-                          // only respond to taps when status is "Available"
-                          onTap:
-                              isAvailable
-                                  ? () {
-                                    setState(() {
-                                      _selectedTime = time.time;
-                                    });
-                                  }
-                                  : null,
-                          behavior: HitTestBehavior.opaque,
-                          child: Opacity(
-                            // fade out when not available
-                            opacity: isAvailable ? 1.0 : 0.4,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                color:
-                                    isSelected
-                                        ? colorScheme.primary
-                                        : Colors.transparent,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color:
-                                      isSelected
-                                          ? colorScheme.primary
-                                          : colorScheme.onSurface.withOpacity(
-                                            0.12,
-                                          ),
-                                ),
-                              ),
-                              child: Text(
-                                time.time,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  // strike through when not available
-                                  decoration:
-                                      isAvailable
-                                          ? TextDecoration.none
-                                          : TextDecoration.lineThrough,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
+              const SizedBox(height: 20),
+
+              GridView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.all(0),
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: filteredTimes.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 15,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 2.5,
                 ),
+                itemBuilder: (context, index) {
+                  final time = filteredTimes[index];
+                  final isSelected = time.time == _selectedTime;
+                  final isAvailable = time.status == 'available';
+
+                  return GestureDetector(
+                    onTap:
+                        isAvailable
+                            ? () {
+                              setState(() {
+                                _selectedTime = time.time;
+                              });
+                            }
+                            : null,
+                    child: Opacity(
+                      opacity: isAvailable ? 1.0 : 0.4,
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color:
+                              isSelected
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Colors.transparent,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color:
+                                isSelected
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface.withOpacity(0.12),
+                          ),
+                        ),
+                        child: Text(
+                          time.time,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            decoration:
+                                isAvailable ? null : TextDecoration.lineThrough,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 30),
               // "Book a court" Section.
               const Text(
                 'Book a court',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
               const Text(
                 'Create a private match where you can invite your friends',
+                style: TextStyle(fontSize: 12),
               ),
 
               const SizedBox(height: 12),

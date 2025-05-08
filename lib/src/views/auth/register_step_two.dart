@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../playpadi_library.dart';
+import '../../core/activity_overlay.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/custom_text_field.dart'; // Make sure CustomTextField is implemented correctly
 import '../../widgets/primary_button.dart';
@@ -13,7 +15,10 @@ class RegisterStepTwo extends StatefulWidget {
 }
 
 class _RegisterStepTwoState extends State<RegisterStepTwo> {
-  final nameController = TextEditingController();
+  final client = APIClient();
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+
   late final TextEditingController
   emailController; // Declare but initialize in initState
   final phoneController = TextEditingController();
@@ -27,17 +32,78 @@ class _RegisterStepTwoState extends State<RegisterStepTwo> {
     emailController = TextEditingController(
       text: widget.validEmail,
     ); // Initialize here
-
-    print(emailController);
   }
 
   @override
   void dispose() {
-    nameController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
+
     emailController.dispose();
     phoneController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  void _createAccount() async {
+    Map<String, String> data = {
+      'first_name': firstNameController.text,
+      'last_name': lastNameController.text,
+      'email': emailController.text,
+      'phone': phoneController.text,
+      'password': passwordController.text,
+    };
+    LoadingOverlay.show(context);
+    debugPrint('Loading overlay shown');
+
+    try {
+      await client.register(data, () {
+        debugPrint('Account Created successfully');
+
+        if (!mounted) return;
+        // Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
+
+        Navigator.pushNamed(context, AppRoutes.finalSteps);
+      });
+    } on NetworkErrorException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.message,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } on InvalidResponseException {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'An Error Occured, Try Again',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } on ServerErrorException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.message,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      LoadingOverlay.hide();
+    }
   }
 
   @override
@@ -85,11 +151,22 @@ class _RegisterStepTwoState extends State<RegisterStepTwo> {
                         ),
                         const SizedBox(height: 28),
                         CustomTextField(
-                          hintText: 'Full name',
-                          controller: nameController,
+                          hintText: 'First name',
+                          controller: firstNameController,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your full name';
+                              return 'Please enter your first name';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          hintText: 'Last name',
+                          controller: lastNameController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your last name';
                             }
                             return null;
                           },
@@ -165,10 +242,7 @@ class _RegisterStepTwoState extends State<RegisterStepTwo> {
                           onPressed: () {
                             if (_formKey.currentState?.validate() ?? false) {
                               // If the form is valid, proceed to the next step
-                              Navigator.pushNamed(
-                                context,
-                                AppRoutes.finalSteps,
-                              );
+                              _createAccount();
                             }
                           },
                         ),

@@ -85,6 +85,14 @@ class QuestionForm extends StatelessWidget {
                       onValueChanged(value);
                       onNextStep();
                     },
+                    fillColor: MaterialStateProperty.resolveWith<Color>((
+                      states,
+                    ) {
+                      if (states.contains(MaterialState.selected)) {
+                        return Theme.of(context).colorScheme.primary;
+                      }
+                      return Colors.grey; // <-- unselected color
+                    }),
                   ),
               ],
             ),

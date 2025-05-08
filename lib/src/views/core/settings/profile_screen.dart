@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import '../../../../playpadi_library.dart';
@@ -47,7 +49,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(leading: const BackButton()),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        leading: const BackButton(),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -59,7 +64,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _profile?.displayPicture != null
                     ? CircleAvatar(
                       radius: 30,
-                      backgroundImage: NetworkImage(_profile!.displayPicture!),
+                      backgroundImage: MemoryImage(
+                        base64Decode(_profile!.displayPicture!.split(',').last),
+                      ),
                     )
                     : const CircleAvatar(
                       radius: 30,
