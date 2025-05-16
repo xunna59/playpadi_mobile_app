@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../../../playpadi_library.dart';
 import '../../routes/app_routes.dart';
@@ -20,9 +21,9 @@ class _AuthScreenState extends State<AuthScreen> {
       if (!mounted) return;
 
       // Should only get here if token was found
-      debugPrint(
-        '✅ signInWithGoogle succeeded; isAuthorized=${client.isAuthorized}, token=${client.token}',
-      );
+      // debugPrint(
+      //   '✅ signInWithGoogle succeeded; isAuthorized=${client.isAuthorized}, token=${client.token}',
+      // );
 
       Navigator.pushReplacementNamed(context, AppRoutes.home);
     } catch (e, stack) {
@@ -78,14 +79,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
-            TextButton(
-              onPressed: () {},
-              child: const Text(
-                'Log in or create an account',
-                style: TextStyle(color: Colors.white70),
-              ),
-            ),
+
             const SizedBox(height: 32),
             AuthButton(
               imageUrl: 'assets/icons/apple.png',
@@ -118,6 +112,29 @@ class _AuthScreenState extends State<AuthScreen> {
                 Navigator.pushNamed(context, AppRoutes.registerStepOne);
               },
             ),
+            const SizedBox(height: 20),
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                style: const TextStyle(color: Colors.white70),
+                children: [
+                  TextSpan(
+                    text: 'Log in',
+                    style: const TextStyle(
+                      color: Color.fromRGBO(199, 3, 125, 1),
+                      decoration: TextDecoration.none,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    recognizer:
+                        TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.pushNamed(context, AppRoutes.login);
+                          },
+                  ),
+                  const TextSpan(text: ' or create an account'),
+                ],
+              ),
+            ),
             const Spacer(),
             Text.rich(
               TextSpan(
@@ -127,15 +144,33 @@ class _AuthScreenState extends State<AuthScreen> {
                   TextSpan(
                     text: 'terms of use',
                     style: const TextStyle(
-                      decoration: TextDecoration.underline,
+                      decoration: TextDecoration.none,
+                      color: Color.fromRGBO(199, 3, 125, 1),
                     ),
+                    recognizer:
+                        TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.termsOfUseScreen,
+                            );
+                          },
                   ),
                   const TextSpan(text: ' and '),
                   TextSpan(
                     text: 'privacy policy',
                     style: const TextStyle(
-                      decoration: TextDecoration.underline,
+                      decoration: TextDecoration.none,
+                      color: Color.fromRGBO(199, 3, 125, 1),
                     ),
+                    recognizer:
+                        TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.privacyPolicyScreen,
+                            );
+                          },
                   ),
                 ],
               ),

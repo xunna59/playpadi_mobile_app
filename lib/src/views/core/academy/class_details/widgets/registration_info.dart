@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:playpadi/src/models/class_model.dart';
+
+import '../../../../../models/class_model.dart';
 
 class RegistrationInfo extends StatelessWidget {
   final ClassModel classData;

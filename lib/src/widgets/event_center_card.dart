@@ -26,7 +26,7 @@ class EventCenterCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8),
       color: colorScheme.secondary,
 
-      elevation: 0.2,
+      elevation: 0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -60,7 +60,7 @@ class EventCenterCard extends StatelessWidget {
                         child: Text(
                           eventCenter.name,
                           style: const TextStyle(
-                            fontSize: 22,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -68,7 +68,7 @@ class EventCenterCard extends StatelessWidget {
                       Text(
                         '${formatted}/hr',
                         style: GoogleFonts.roboto(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -78,7 +78,10 @@ class EventCenterCard extends StatelessWidget {
                 // Location section
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(eventCenter.address),
+                  child: Text(
+                    eventCenter.address,
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
                 // Available times as chips row
                 Padding(

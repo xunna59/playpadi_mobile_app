@@ -9,11 +9,12 @@ class MatchModel {
   final String availability; // from json['status']
   final String bookingReference; // from json['booking_reference']
   final double sessionPrice;
-  final String sessionDuration;
+  final int sessionDuration;
   final String courtName;
   final String sportsCenterName;
   final String gender_allowed;
   final String cover_image;
+  final bool joinedStatus;
 
   MatchModel({
     required this.dateText,
@@ -29,6 +30,7 @@ class MatchModel {
     required this.sportsCenterName,
     required this.gender_allowed,
     required this.cover_image,
+    required this.joinedStatus,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -39,8 +41,15 @@ class MatchModel {
       availability: json['status']?.toString() ?? '',
       bookingReference: json['booking_reference']?.toString() ?? '',
       totalPlayers: (json['total_players'] as num?)?.toInt() ?? 0,
-      sessionPrice: (json['sessionPrice'] as num?)?.toDouble() ?? 0.0,
-      sessionDuration: json['sessionDuration']?.toString() ?? '',
+      sessionPrice:
+          json['session_price'] is String
+              ? double.tryParse(json['session_price'])
+              : json['session_price']?.toDouble(),
+
+      sessionDuration:
+          json['session_duration'] is String
+              ? int.tryParse(json['session_duration']) ?? 0
+              : (json['session_duration'] as num?)?.toInt() ?? 0,
       courtName: json['courtName']?.toString() ?? '',
       sportsCenterName: json['sportsCenterName']?.toString() ?? '',
       gender_allowed: json['gender_allowed']?.toString() ?? '',
@@ -50,6 +59,7 @@ class MatchModel {
           (json['players'] as List<dynamic>? ?? [])
               .map((e) => Player.fromJson(e as Map<String, dynamic>))
               .toList(),
+      joinedStatus: json['joinedStatus'] as bool? ?? false,
     );
   }
 }

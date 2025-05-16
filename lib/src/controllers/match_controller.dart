@@ -22,7 +22,6 @@ class MatchController {
   Future<List<MatchModel>> getPublicBookings() async {
     try {
       final response = await client.fetchPublicBookings();
-      print(response);
       List<dynamic> rawList = [];
       if (response is Map<String, dynamic>) {
         if (response['data'] is Map<String, dynamic> &&
@@ -40,11 +39,41 @@ class MatchController {
               .map((e) => MatchModel.fromJson(e as Map<String, dynamic>))
               .toList();
 
-      print("Parsed classes: ${parsed.length}");
+      //    print("Parsed classes: ${parsed.length}");
       return parsed;
-    } catch (e, st) {
+    } catch (e) {
       print('Error fetching: $e');
       return [];
+    }
+  }
+
+  Future<List<MatchModel>> createBooking(Map<String, dynamic> payload) async {
+    try {
+      final response = await client.addBooking(payload);
+
+      List<dynamic> rawList;
+
+      // 1️⃣ If the API returns a single booking under `booking`
+      if (response is Map<String, dynamic> && response['booking'] != null) {
+        rawList = [response['booking']];
+      }
+      // 2️⃣ Else if it returns a list directly
+      else if (response is List) {
+        rawList = response;
+      }
+      // 3️⃣ Or if it returns { data: [...] }
+      else if (response is Map<String, dynamic> && response['data'] is List) {
+        rawList = response['data'] as List;
+      } else {
+        throw FormatException('Unexpected response format: $response');
+      }
+
+      // Map each entry to your model
+      return rawList
+          .map((item) => MatchModel.fromJson(item as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      rethrow;
     }
   }
 }

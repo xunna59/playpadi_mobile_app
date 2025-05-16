@@ -1,7 +1,4 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import '../../playpadi_library.dart';
-import '../models/court_model.dart';
 import '../models/event_center_model.dart';
 
 class CourtController {
@@ -22,10 +19,11 @@ class CourtController {
           final rawCenter = response['sportsCenter'];
           return EventCenter.fromJson(rawCenter);
         }
+
         return EventCenter.fromJson(response);
       }
       return null;
-    } catch (e, st) {
+    } catch (e) {
       print('Error: $e');
       return null;
     }

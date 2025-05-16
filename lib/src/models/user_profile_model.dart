@@ -10,6 +10,7 @@ class UserProfile {
   final String accountType;
   final bool subscriptionStatus;
   final Map<String, dynamic> preferences;
+  final Map<String, dynamic> interests;
   final String? displayPicture;
 
   UserProfile({
@@ -24,10 +25,10 @@ class UserProfile {
     required this.accountType,
     required this.subscriptionStatus,
     required this.preferences,
+    required this.interests,
     this.displayPicture,
   });
 
-  // Factory method to create a UserProfile from JSON
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
       firstName: json['first_name'] ?? 'John',
@@ -35,20 +36,23 @@ class UserProfile {
       email: json['email'] ?? '',
       phone: json['phone'],
       gender: json['gender'],
-      dob: json['dob'] != null ? DateTime.parse(json['dob']) : null,
+      dob: json['dob'] != null ? DateTime.tryParse(json['dob']) : null,
       bio: json['bio'],
-      points: json['points'] ?? '0.00',
+      points: json['points']?.toString() ?? '0.00',
       accountType: json['account_type'] ?? '',
       subscriptionStatus: json['subscription_status'] ?? false,
       preferences:
           json['preferences'] != null
               ? Map<String, dynamic>.from(json['preferences'])
               : {},
+      interests:
+          json['interests'] != null
+              ? Map<String, dynamic>.from(json['interests'])
+              : {},
       displayPicture: json['display_picture'],
     );
   }
 
-  // Convert UserProfile to JSON
   Map<String, dynamic> toJson() {
     return {
       'first_name': firstName,
@@ -62,6 +66,7 @@ class UserProfile {
       'account_type': accountType,
       'subscription_status': subscriptionStatus,
       'preferences': preferences,
+      'interests': interests,
       'display_picture': displayPicture,
     };
   }

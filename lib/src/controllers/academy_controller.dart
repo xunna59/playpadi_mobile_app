@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-
 import '../../playpadi_library.dart';
 import '../models/class_model.dart';
 
@@ -11,7 +8,6 @@ class AcademyController {
   Future<List<ClassModel>> getAcademyClasses() async {
     try {
       final response = await client.fetchAcademyClasses();
-      print(response);
       List<dynamic> rawList = [];
       if (response is Map<String, dynamic>) {
         if (response['data'] is Map<String, dynamic> &&
@@ -31,7 +27,7 @@ class AcademyController {
 
       print("Parsed classes: ${parsed.length}");
       return parsed;
-    } catch (e, st) {
+    } catch (e) {
       print('Error fetching: $e');
       return [];
     }

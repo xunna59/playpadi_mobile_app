@@ -104,21 +104,20 @@ class _PlayerPreferenceScreenState extends State<PlayerPreferenceScreen> {
                 selectedColor,
               ),
 
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Set by days'),
-                Switch(
-                  value: preference.setByDays,
-                  onChanged:
-                      (val) => setState(
-                        () => preference = preference.copyWith(setByDays: val),
-                      ),
-                ),
-              ],
-            ),
-
+            // const SizedBox(height: 16),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     const Text('Set by days'),
+            //     Switch(
+            //       value: preference.setByDays,
+            //       onChanged:
+            //           (val) => setState(
+            //             () => preference = preference.copyWith(setByDays: val),
+            //           ),
+            //     ),
+            //   ],
+            // ),
             const SizedBox(height: 30),
             SizedBox(
               width: double.infinity,

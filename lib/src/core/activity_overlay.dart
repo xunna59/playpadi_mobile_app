@@ -22,7 +22,7 @@ class LoadingOverlay {
   );
 
   static void show(BuildContext context) {
-    Overlay.of(context)?.insert(overlayEntry);
+    Overlay.of(context).insert(overlayEntry);
   }
 
   static void hide() {

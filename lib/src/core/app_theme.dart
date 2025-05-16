@@ -12,6 +12,7 @@ final lightTheme = ThemeData(
     onSecondary: Colors.black,
     surface: Colors.grey,
     onSurface: Colors.black,
+    primaryContainer: Colors.white,
   ),
   appBarTheme: const AppBarTheme(
     backgroundColor: Colors.white,
@@ -20,18 +21,21 @@ final lightTheme = ThemeData(
   ),
   textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.black)),
   snackBarTheme: SnackBarThemeData(backgroundColor: Colors.redAccent),
+  cardColor: Colors.white,
 );
 
 final darkTheme = ThemeData(
   brightness: Brightness.dark,
   primarySwatch: Colors.indigo,
-  scaffoldBackgroundColor: Color.fromRGBO(10, 8, 18, 1),
+  scaffoldBackgroundColor: Colors.black45,
   colorScheme: const ColorScheme.dark(
     primary: Color.fromRGBO(120, 66, 255, 1),
     onPrimary: Colors.white,
-    tertiary: Color.fromRGBO(10, 8, 18, 1),
+    tertiary: Colors.black45,
+    primaryContainer: Colors.black,
 
-    secondary: Colors.white12,
+    secondary: Color.fromRGBO(10, 8, 18, 1),
+    // secondary: Color.fromARGB(31, 15, 11, 11),
     onSecondary: Colors.black,
     surface: Colors.grey,
     onSurface: Colors.white,
@@ -43,4 +47,5 @@ final darkTheme = ThemeData(
   ),
   textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.white)),
   snackBarTheme: SnackBarThemeData(backgroundColor: Colors.redAccent),
+  cardColor: Colors.white12,
 );

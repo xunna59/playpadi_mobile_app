@@ -33,7 +33,6 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
 
     setState(() {
       eventCenter = fetchedCenter;
-      print(widget.eventCenter.games);
     });
   }
 
@@ -105,8 +104,9 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
                     horizontal: 16,
                     vertical: 12,
                   ),
+
                   decoration: BoxDecoration(
-                    color: colorScheme.tertiary,
+                    color: colorScheme.primaryContainer,
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(16),
                     ),

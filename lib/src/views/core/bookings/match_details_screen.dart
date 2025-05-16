@@ -318,10 +318,14 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
   }
 
   Widget _playerColumn(String name, String? avatarUrl, double rating) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       children: [
         CircleAvatar(
           radius: 30,
+          backgroundColor:
+              avatarUrl != null ? Colors.transparent : colorScheme.primary,
           backgroundImage:
               avatarUrl != null
                   ? MemoryImage(base64Decode(avatarUrl.split(',').last))

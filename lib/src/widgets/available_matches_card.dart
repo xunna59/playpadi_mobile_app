@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:playpadi/src/core/constants.dart';
+import '../core/constants.dart';
 import '../models/match_model.dart';
 import 'dart:convert';
 
@@ -78,13 +78,23 @@ class _AvailableMatchCardState extends State<AvailableMatchCard> {
                           Container(
                             width: 44, // radius * 2 + padding
                             height: 44,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: colorScheme.primary,
-                                width: 2,
-                              ),
-                            ),
+
+                            decoration:
+                                player.avatarUrl != null
+                                    ? BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.transparent,
+                                        width: 2,
+                                      ),
+                                    )
+                                    : BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: colorScheme.primary,
+                                        width: 1,
+                                      ),
+                                    ),
                             child: CircleAvatar(
                               radius: 20,
                               backgroundColor: Colors.transparent,
@@ -175,17 +185,41 @@ class _AvailableMatchCardState extends State<AvailableMatchCard> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: colorScheme.primary,
+                    color:
+                        widget.match.joinedStatus == true
+                            ? Colors.transparent
+                            : colorScheme.primary,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(
-                    '\₦${NumberFormat('#,##0', 'en_NG').format(widget.match.sessionPrice)} – ${widget.match.sessionDuration}mins',
-                    style: GoogleFonts.roboto(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child:
+                      widget.match.joinedStatus == true
+                          ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Joined',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                            ],
+                          )
+                          : Text(
+                            '₦${NumberFormat('#,##0', 'en_NG').format(widget.match.sessionPrice)} – ${widget.match.sessionDuration}mins',
+                            style: GoogleFonts.roboto(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white,
+                            ),
+                          ),
                 ),
               ],
             ),

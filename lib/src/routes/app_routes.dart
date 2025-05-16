@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:playpadi/src/models/event_center_model.dart';
-import 'package:playpadi/src/views/core/academy/academy_screen.dart';
+
 import '../models/class_model.dart';
+import '../models/event_center_model.dart';
 import '../models/match_model.dart';
 import '../views/auth/completed_screen.dart';
 import '../views/auth/final_step_screen.dart';
 import '../views/auth/login_screen.dart';
+import '../views/core/academy/academy_screen.dart';
 import '../views/core/academy/class_details/class_details_screen.dart';
 import '../views/core/bookings/available_matches_screen.dart';
 import '../views/core/bookings/center_details_screen.dart';
+import '../views/core/bookings/confirm_booking_screen.dart';
 import '../views/core/bookings/event_centers_screen.dart';
 import '../views/core/bookings/match_details_screen.dart';
 import '../views/core/notifications.dart';
+import '../views/core/settings/help/help_screen.dart';
+import '../views/core/settings/legal/privacy_policy_screen.dart';
+import '../views/core/settings/legal/terms_screen.dart';
 import '../views/core/settings/player_preferences.dart';
+import '../views/core/settings/profile/edit_profile_screen.dart';
 import '../views/core/settings/profile_screen.dart';
 import '../views/home_screen.dart';
 import '../views/splash_screen.dart';
@@ -42,6 +48,12 @@ class AppRoutes {
   static const String academyScreen = '/academy_screen';
   static const String matchDetailsScreen = 'matchDetailsScreen';
   static const String classDetailsScreen = 'classDetailsScreen';
+  static const String confirmBookingScreen = 'confirmBookingScreen';
+  static const String helpScreen = 'helpScreen';
+  static const String termsOfUseScreen = 'termsOfUseScreen';
+  static const String privacyPolicyScreen = 'privacyPolicyScreen';
+
+  static const String editProfileScreen = 'editProfileScreen';
 
   static Route<dynamic>? generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -74,6 +86,9 @@ class AppRoutes {
           builder: (_) => const PlayerPreferenceScreen(),
         );
 
+      case confirmBookingScreen:
+        return MaterialPageRoute(builder: (_) => const ConfirmBookingScreen());
+
       case profileScreen:
         return PageRouteBuilder(
           pageBuilder: (_, __, ___) => const ProfileScreen(),
@@ -94,13 +109,24 @@ class AppRoutes {
           },
           transitionDuration: const Duration(milliseconds: 300),
         );
-
+      case editProfileScreen:
+        return MaterialPageRoute(builder: (_) => const EditProfileScreen());
       case playOpenMatches:
         return MaterialPageRoute(
           builder: (_) => const AvailableMatchesScreen(),
         );
       case notifications:
         return MaterialPageRoute(builder: (_) => const NotificationsScreen());
+
+      case helpScreen:
+        return MaterialPageRoute(builder: (_) => const HelpScreen());
+
+      case termsOfUseScreen:
+        return MaterialPageRoute(builder: (_) => const TermsOfUseScreen());
+
+      case privacyPolicyScreen:
+        return MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen());
+
       case eventCenter:
         return MaterialPageRoute(builder: (_) => const EventCentersScreen());
 

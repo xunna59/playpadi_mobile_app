@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:playpadi/src/widgets/primary_button.dart';
+
+import 'primary_button.dart';
 
 Future<String?> showSelectSportModal(BuildContext context) async {
   final colorScheme = Theme.of(context).colorScheme;

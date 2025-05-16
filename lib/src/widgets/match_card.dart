@@ -23,10 +23,11 @@ class MatchCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        elevation: 1,
+        elevation: 0,
         color: colorScheme.secondary,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Top half with image
             ClipRRect(
@@ -48,7 +49,7 @@ class MatchCard extends StatelessWidget {
                 horizontal: 16.0,
                 vertical: 16.0,
               ),
-              child: Row(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Icon container
@@ -60,11 +61,10 @@ class MatchCard extends StatelessWidget {
                     ),
                     child: Icon(icon, color: Colors.white),
                   ),
-
-                  const SizedBox(width: 12),
+                  const SizedBox(height: 6),
 
                   // Text column, takes remaining space
-                  Expanded(
+                  Container(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

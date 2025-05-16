@@ -1,5 +1,5 @@
-name: playpadi
-description: "A new Flutter project."
+name: PlayPadi
+description: "A sports booking project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -45,6 +45,12 @@ dependencies:
   flutter_launcher_icons: ^0.14.3
   intl: ^0.20.2
   google_fonts: ^6.2.1
+  fl_chart: ^1.0.0
+  image_picker: ^1.1.2
+  font_awesome_flutter: ^10.8.0
+
+
+
 
 
 
@@ -62,7 +68,7 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: 'assets/logo/Icon - Main.png'
+  image_path: 'assets/logo/palypadi-icon.jpg'
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

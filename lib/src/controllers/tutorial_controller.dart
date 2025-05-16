@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-
 import '../../playpadi_library.dart';
 import '../models/youtube_tutorials_model.dart';
 
@@ -31,7 +28,7 @@ class TutorialService {
 
       print("Parsed tutorials: ${parsed.length}");
       return parsed;
-    } catch (e, st) {
+    } catch (e) {
       print('Error fetching: $e');
       return [];
     }

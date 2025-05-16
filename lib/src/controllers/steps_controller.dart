@@ -66,30 +66,30 @@ class FormController extends StateNotifier<FormState> {
       'options': [
         {'option': 'Excellent', 'points': 2.0},
         {'option': 'Minimal', 'points': 1.0},
-        {'option': 'None', 'points': 0.0},
+        {'option': 'None', 'points': 0.1},
       ],
     },
     {
       'question': 'What is your previous experience of Snooker?',
       'options': [
         {'option': 'Excellent', 'points': 1.0},
-        {'option': 'Minimal', 'points': 0.5},
-        {'option': 'None', 'points': 0.0},
+        {'option': 'Minimal', 'points': 0.4},
+        {'option': 'None', 'points': 0.1},
       ],
     },
     {
       'question': 'What is your previous experience of Darts?',
       'options': [
         {'option': 'Excellent', 'points': 1.0},
-        {'option': 'Minimal', 'points': 0.5},
-        {'option': 'None', 'points': 0.0},
+        {'option': 'Minimal', 'points': 0.4},
+        {'option': 'None', 'points': 0.1},
       ],
     },
     {
       'question': 'Have you played any other racquet sports?',
       'options': [
         {'option': 'Yes', 'points': 1.0},
-        {'option': 'No', 'points': 0.0},
+        {'option': 'No', 'points': 0.1},
       ],
     },
   ];

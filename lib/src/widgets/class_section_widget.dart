@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../models/class_model.dart';
 
 class ClassSection extends StatelessWidget {
@@ -30,7 +31,7 @@ class ClassSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        c.activityDate,
+                        _formatDate(c.activityDate),
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 12,
@@ -131,5 +132,14 @@ class ClassSection extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatDate(String rawDate) {
+    try {
+      final parsed = DateTime.parse(rawDate);
+      return DateFormat('EEEE, MMMM d, y').format(parsed);
+    } catch (_) {
+      return rawDate;
+    }
   }
 }

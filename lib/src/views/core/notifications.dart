@@ -22,21 +22,14 @@ class NotificationsScreen extends StatelessWidget {
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: 3, // You can update this count based on your data
+        itemCount: 8, // You can update this count based on your data
         itemBuilder:
             (context, index) => Container(
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: colorScheme.secondary,
+                color: colorScheme.tertiary,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
               ),
               child: Row(
                 children: [

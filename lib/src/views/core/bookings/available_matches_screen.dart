@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:playpadi/src/routes/app_routes.dart';
 import '../../../controllers/match_controller.dart';
 import '../../../models/match_model.dart';
+import '../../../routes/app_routes.dart';
 import '../../../widgets/available_matches_card.dart';
 
 class AvailableMatchesScreen extends StatefulWidget {
@@ -73,14 +73,15 @@ class _AvailableMatchesScreenState extends State<AvailableMatchesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: const Text('Available'),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none),
-            onPressed: () {},
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.notifications_none),
+        //     onPressed: () {},
+        //   ),
+        // ],
       ),
       body: Column(
         children: [

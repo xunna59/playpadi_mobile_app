@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 //import '../core/constants.dart';
 import './request.dart';
 import './response.dart';
@@ -8,6 +9,7 @@ import './exceptions.dart';
 
 class APIClient {
   static final APIClient _instance = APIClient._privateConstructor();
+  static APIClient get instance => _instance;
   final String baseUrl = 'https://app.playpadi.com';
   late HttpClient _client;
 
@@ -19,7 +21,9 @@ class APIClient {
   APIClient._privateConstructor() {
     _client = HttpClient();
     _client.connectionTimeout = const Duration(seconds: 60);
+    _loadToken();
   }
+  Future<void> loadToken() => _loadToken();
 
   factory APIClient() => _instance;
 
@@ -76,6 +80,7 @@ class APIClient {
 
       if (token != null) {
         isAuthorized = true;
+        await _saveToken(token!);
       } else {
         throw TokenNotFoundException();
       }
@@ -100,9 +105,10 @@ class APIClient {
       if (response.status != Response.SUCCESS) {
         throw ServerErrorException(response.code, response.message);
       }
-      print(response);
+      //    print(response);
       token = response.data['token'];
       isAuthorized = true;
+      _saveToken(token!);
 
       if (callback is Function) {
         return callback();
@@ -125,6 +131,7 @@ class APIClient {
 
       token = response.data['token'];
       isAuthorized = true;
+      _saveToken(token!);
 
       if (callback is Function) {
         return callback();
@@ -333,14 +340,55 @@ class APIClient {
     });
   }
 
+  Future<dynamic> addBooking(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/api/create-booking/${data['sports_center_id']}/${data['court_id']}',
+      method: 'post',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
+      body: jsonEncode(data),
+    );
+    //  print('This is body sent: ${payload.body}');
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
   void _resetToken() {
-    id = '';
-    token = '';
-    expiry = '';
     isAuthorized = false;
+    token = null;
   }
 
   Future<void> logout() async {
     _resetToken();
+    await _deleteToken(); // Remove token from storage
+  }
+
+  // --- SharedPreferences token persistence ---
+  Future<void> _saveToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('auth_token', token);
+  }
+
+  Future<void> _loadToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    token = prefs.getString('auth_token');
+    isAuthorized = token != null;
+  }
+
+  Future<void> _deleteToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
   }
 }

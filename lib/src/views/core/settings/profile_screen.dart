@@ -1,44 +1,54 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../playpadi_library.dart';
+import '../../../controllers/theme_controller.dart';
 import '../../../controllers/user_Profile_controller.dart';
 import '../../../models/user_profile_model.dart';
+import '../../../routes/app_routes.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final controller = UserProfileController();
   UserProfile? _profile;
+  final APIClient client = APIClient();
 
   @override
   void initState() {
     super.initState();
-    loadUserProfile();
+    _loadUserProfile();
   }
 
-  Future<void> loadUserProfile() async {
+  Future<void> _loadUserProfile() async {
     try {
       final profile = await controller.fetchUserProfile();
-      setState(() {
-        _profile = profile;
-      });
-    } on ServerErrorException catch (e) {
+      if (!mounted) return;
+      setState(() => _profile = profile);
+    } on ServerErrorException {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('There was a server error. Please try again later.'),
+        const SnackBar(
+          content: Text(
+            'There was a server error. Please try again later.',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       );
-    } catch (e) {
+    } catch (_) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to load profile. Please try again later.'),
+        const SnackBar(
+          content: Text(
+            'Failed to load profile. Please try again later.',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       );
     }
@@ -48,118 +58,203 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
+    // watch theme provider
+    final themeMode = ref.watch(themeControllerProvider);
+    final themeNotifier = ref.read(themeControllerProvider.notifier);
+
+    final isDark =
+        themeMode == ThemeMode.dark ||
+        (themeMode == ThemeMode.system &&
+            MediaQuery.of(context).platformBrightness == Brightness.dark);
+
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: const BackButton(),
+        actions: [
+          IconButton(
+            icon: Icon(
+              themeMode == ThemeMode.dark
+                  ? Icons.wb_sunny
+                  : Icons.nightlight_round,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+            onPressed: () => themeNotifier.toggleTheme(),
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Profile Header
-            Row(
-              children: [
-                _profile?.displayPicture != null
-                    ? CircleAvatar(
-                      radius: 30,
-                      backgroundImage: MemoryImage(
-                        base64Decode(_profile!.displayPicture!.split(',').last),
+      body: RefreshIndicator(
+        onRefresh: _loadUserProfile,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Profile Header
+              Row(
+                children: [
+                  _profile?.displayPicture != null
+                      ? CircleAvatar(
+                        radius: 30,
+                        backgroundColor: colorScheme.tertiary,
+                        backgroundImage: MemoryImage(
+                          base64Decode(
+                            _profile!.displayPicture!.split(',').last,
+                          ),
+                        ),
+                      )
+                      : const CircleAvatar(
+                        radius: 30,
+                        backgroundImage: AssetImage('assets/images/user.png'),
                       ),
-                    )
-                    : const CircleAvatar(
-                      radius: 30,
-                      backgroundImage: AssetImage('assets/images/user.png'),
-                    ),
-                const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${_profile?.firstName ?? ''} ${_profile?.lastName ?? ''}' ??
-                          'John Doe',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${_profile?.firstName ?? ''} ${_profile?.lastName ?? ''}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                    Text(
-                      _profile?.accountType ?? 'Standard account',
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                  ],
+                      Text(
+                        _profile?.accountType ?? 'Standard account',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Share Profile Button
+              OutlinedButton.icon(
+                onPressed: () {
+                  // TODO: Add share logic
+                },
+                icon: const Icon(Icons.ios_share_outlined),
+                label: const Text('Share profile'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: colorScheme.primary,
+                  side: BorderSide(color: colorScheme.primary),
                 ),
-              ],
-            ),
-            const SizedBox(height: 12),
+              ),
 
-            // Share Profile Button
-            OutlinedButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.ios_share_outlined),
-              label: const Text('Share profile'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: colorScheme.primary,
-                side: BorderSide(color: colorScheme.primary),
+              const SizedBox(height: 24),
+              const Text(
+                'Your account',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-            ),
+              const SizedBox(height: 8),
+              _buildAccountCard([
+                _buildListTile(
+                  Icons.person_outline,
+                  'Edit profile',
+                  'Name, email, phone, location, gender, ...',
+                  onTap:
+                      () => Navigator.pushNamed(
+                        context,
+                        AppRoutes.editProfileScreen,
+                      ),
+                ),
+                _buildListTile(
+                  Icons.sports_tennis,
+                  'Your activity',
+                  'Matches, classes, competitions, group, ...',
+                  onTap:
+                      () => Navigator.pushNamed(
+                        context,
+                        'AppRoutes.activityScreen',
+                      ),
+                ),
+                _buildListTile(
+                  Icons.credit_card,
+                  'Your payments',
+                  'Payment methods, transactions, club, ...',
+                  onTap:
+                      () => Navigator.pushNamed(
+                        context,
+                        'AppRoutes.paymentsScreen',
+                      ),
+                ),
+              ]),
 
-            const SizedBox(height: 24),
-            const Text(
-              'Your account',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+              const SizedBox(height: 24),
+              const Text(
+                'Support',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              _buildAccountCard([
+                _buildListTile(
+                  Icons.help_outline,
+                  'Help',
+                  null,
+                  onTap:
+                      () => Navigator.pushNamed(context, AppRoutes.helpScreen),
+                ),
+                _buildListTile(
+                  Icons.question_mark_outlined,
+                  'How PlayPadi works',
+                  null,
+                  onTap:
+                      () => Navigator.pushNamed(
+                        context,
+                        'AppRoutes.howItWorksScreen',
+                      ),
+                ),
+              ]),
 
-            const SizedBox(height: 8),
-            _buildAccountCard([
-              _buildListTile(
-                Icons.person_outline,
-                'Edit profile',
-                'Name, email, phone, location, gender, ...',
+              const SizedBox(height: 24),
+              const Text(
+                'Legal information',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              _buildListTile(
-                Icons.sports_tennis,
-                'Your activity',
-                'Matches, classes, competitions, group, ...',
+              const SizedBox(height: 8),
+              _buildAccountCard([
+                _buildListTile(
+                  Icons.article_outlined,
+                  'Terms of use',
+                  null,
+                  onTap:
+                      () => Navigator.pushNamed(
+                        context,
+                        AppRoutes.termsOfUseScreen,
+                      ),
+                ),
+                _buildListTile(
+                  Icons.privacy_tip_outlined,
+                  'Privacy Policy',
+                  null,
+                  onTap:
+                      () => Navigator.pushNamed(
+                        context,
+                        AppRoutes.privacyPolicyScreen,
+                      ),
+                ),
+              ]),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    client.logout(); // Call logout from ApiClient
+                    Navigator.pushReplacementNamed(context, AppRoutes.auth);
+                  },
+                  icon: const Icon(Icons.logout),
+                  label: const Text('Logout'),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(48), // Full-width button
+                    side: const BorderSide(color: Colors.red),
+                    foregroundColor: Colors.red,
+                  ),
+                ),
               ),
-              _buildListTile(
-                Icons.credit_card,
-                'Your payments',
-                'Payment methods, transactions, club, ...',
-              ),
-              _buildListTile(
-                Icons.settings,
-                'Settings',
-                'Configure privacy, notifications, security, ...',
-              ),
-            ]),
-
-            const SizedBox(height: 24),
-            const Text(
-              'Support',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            _buildAccountCard([
-              _buildListTile(Icons.help_outline, 'Help', null),
-              _buildListTile(
-                Icons.question_mark_outlined,
-                'How PlayPadi works',
-                null,
-              ),
-            ]),
-
-            const SizedBox(height: 24),
-            const Text(
-              'Legal information',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            _buildAccountCard([
-              _buildListTile(Icons.article_outlined, 'Terms of use', null),
-            ]),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -170,13 +265,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Card(
       elevation: 0,
-      color: colorScheme.secondary,
+      color: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Column(children: children),
     );
   }
 
-  static Widget _buildListTile(IconData icon, String title, String? subtitle) {
+  static Widget _buildListTile(
+    IconData icon,
+    String title,
+    String? subtitle, {
+    VoidCallback? onTap,
+  }) {
     return ListTile(
       leading: Icon(icon),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
@@ -185,7 +285,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ? Text(subtitle, style: const TextStyle(fontSize: 12))
               : null,
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: () {},
+      onTap: onTap,
     );
   }
 }

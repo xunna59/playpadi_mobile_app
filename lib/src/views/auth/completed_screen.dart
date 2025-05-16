@@ -16,7 +16,7 @@ class CompletedScreen extends ConsumerWidget {
     const double totalPossiblePoints = 5.0;
     final progress = (totalPoints / totalPossiblePoints).clamp(0.0, 1.0);
 
-    final colorScheme = Theme.of(context).colorScheme;
+    // final colorScheme = Theme.of(context).colorScheme;
 
     final controller = UserProfileController();
 
@@ -42,13 +42,13 @@ class CompletedScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.notifications, color: Colors.black),
+            child: Icon(Icons.notifications),
           ),
         ],
       ),
@@ -112,7 +112,7 @@ class CompletedScreen extends ConsumerWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.black.withOpacity(0.6),
+                  //   color: Colors.black.withOpacity(0.6),
                 ),
               ),
             ),

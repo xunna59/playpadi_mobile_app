@@ -75,7 +75,7 @@ class _RegisterStepOneState extends ConsumerState<RegisterStepOne> {
             MediaQuery.of(context).platformBrightness == Brightness.dark);
 
     return Scaffold(
-      backgroundColor: isDark ? Color.fromRGBO(10, 8, 18, 1) : Colors.white,
+      backgroundColor: isDark ? Colors.black45 : Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

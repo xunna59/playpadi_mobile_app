@@ -22,27 +22,31 @@ class HomeTab extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           Card(
-            elevation: 2,
-            color: colorScheme.secondary,
-            child: ListTile(
-              leading: Image.asset(
-                'assets/icons/paddle_bat.png',
-                width: 25,
-                height: 25,
-                fit: BoxFit.contain,
-              ),
-              title: const Text(
-                'Edit your player preferences',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: const Text(
-                'Best hand, court side, match type, Preferred time to play',
-                style: TextStyle(fontSize: 12),
-              ),
-              trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.playerPrefernces);
-              },
+            elevation: 0,
+            color: Colors.transparent,
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Image.asset(
+                    'assets/icons/paddle_bat.png',
+                    width: 25,
+                    height: 25,
+                    fit: BoxFit.contain,
+                  ),
+                  title: const Text(
+                    'Edit your player preferences',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: const Text(
+                    'Best hand, court side, match type, Preferred time to play',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.playerPrefernces);
+                  },
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),
@@ -74,12 +78,26 @@ class HomeTab extends ConsumerWidget {
                 },
               ),
               const SizedBox(height: 16),
-              IconButton(
-                icon: const Icon(Icons.school),
-                iconSize: 30.0,
-                onPressed: () {
-                  Navigator.pushNamed(context, AppRoutes.academyScreen);
-                },
+              Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(
+                        12,
+                      ), // Adjust the radius as needed
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.school, color: Colors.white),
+                      iconSize: 30.0,
+                      onPressed: () {
+                        Navigator.pushNamed(context, AppRoutes.academyScreen);
+                      },
+                    ),
+                  ),
+
+                  Text('Classes'),
+                ],
               ),
             ],
           ),

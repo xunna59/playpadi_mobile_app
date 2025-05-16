@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import '../../playpadi_library.dart';
 import '../models/booking_model.dart';
 
@@ -13,8 +12,7 @@ class BookingController {
       // Check if the response is in the expected format
       if (response is Map<String, dynamic>) {
         if (response['slots'] is List<dynamic>) {
-          final rawBookingInfo =
-              response['slots']; // Accessing 'slots' instead of 'bookingInfo'
+          final rawBookingInfo = response['slots']; // Accessing 'slots'
           List<BookingDate> bookingDates = [];
 
           // Iterate over each booking slot
@@ -46,7 +44,7 @@ class BookingController {
       }
 
       return null; // Return null if the data structure doesn't match the expected format
-    } catch (e, st) {
+    } catch (e) {
       return null; // Return null in case of any error
     }
   }

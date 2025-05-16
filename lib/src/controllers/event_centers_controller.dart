@@ -26,7 +26,7 @@ class EventCentersController {
       return rawList
           .map((e) => EventCenter.fromJson(e as Map<String, dynamic>))
           .toList();
-    } catch (e, st) {
+    } catch (e) {
       // Log and return empty to keep UI responsive
       return [];
     }
@@ -37,19 +37,26 @@ class EventCentersController {
 
     try {
       final response = await client.fetchSportsCenterById(data);
+
       if (response is Map<String, dynamic>) {
         if (response['data'] is Map<String, dynamic> &&
             response['data']['sportsCenter'] is Map<String, dynamic>) {
           final rawCenter = response['data']['sportsCenter'];
+          print('Fetched sportsCenter: $rawCenter'); // Log the raw center data
           return EventCenter.fromJson(rawCenter);
         } else if (response['sportsCenter'] is Map<String, dynamic>) {
           final rawCenter = response['sportsCenter'];
+          print('Fetched sportsCenter: $rawCenter'); // Log the raw center data
           return EventCenter.fromJson(rawCenter);
         }
+
         return EventCenter.fromJson(response);
       }
+
       return null;
     } catch (e, st) {
+      print('Error fetching center: $e');
+      print('Stacktrace: $st');
       return null;
     }
   }

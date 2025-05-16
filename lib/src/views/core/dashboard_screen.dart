@@ -36,6 +36,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       if (!mounted) return;
       setState(() {
         _profile = profile;
+
+        if (_profile!.points == '0.00') {
+          Navigator.pushNamed(context, AppRoutes.finalSteps);
+        }
       });
     } on ServerErrorException catch (e) {
       if (!mounted) return;
@@ -55,6 +59,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   void _onItemTapped(int index) {
+    if (!mounted) return;
+
     setState(() {
       _selectedIndex = index;
     });
@@ -81,14 +87,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       _profile?.displayPicture != null
                           ? CircleAvatar(
                             radius: 30,
+                            backgroundColor: colorScheme.tertiary,
                             backgroundImage: MemoryImage(
                               base64Decode(
                                 _profile!.displayPicture!.split(',').last,
                               ),
                             ),
                           )
-                          : const CircleAvatar(
+                          : CircleAvatar(
                             radius: 30,
+                            backgroundColor: colorScheme.tertiary,
                             backgroundImage: AssetImage(
                               'assets/images/user.png',
                             ),
@@ -197,6 +205,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               )
               : null,
       bottomNavigationBar: BottomNavigationBar(
+        elevation: 0,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         selectedItemColor: colorScheme.primary,

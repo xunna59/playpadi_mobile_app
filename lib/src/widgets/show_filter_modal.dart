@@ -8,12 +8,14 @@ void showFilterModal(BuildContext context) {
   String selectedSort = 'Relevance';
   String selectedDuration = '60 mins';
   String selectedType = 'Indoor';
+  // String selectedFeatures = 'Wall';
+
   Set<String> selectedFeatures = {'Wall'};
 
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    backgroundColor: Colors.white,
+    backgroundColor: colorScheme.tertiary,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
@@ -117,7 +119,7 @@ void showFilterModal(BuildContext context) {
                 Align(alignment: Alignment.centerLeft, child: Text("Sort by")),
                 const SizedBox(height: 8),
                 buildFilterChips(
-                  ['Relevance', 'Distance', 'Price'],
+                  ['Relevance', 'Price'],
                   selectedSort,
                   (val) => selectedSort = val,
                 ),
@@ -143,18 +145,23 @@ void showFilterModal(BuildContext context) {
                 const SizedBox(height: 16),
                 Align(alignment: Alignment.centerLeft, child: Text("Features")),
                 const SizedBox(height: 8),
-                buildMultiSelectChips(
+                buildFilterChips(
                   ['Wall', 'Crystal', 'Panoramic'],
-                  selectedFeatures,
-                  (feature) {
-                    if (selectedFeatures.contains(feature)) {
-                      selectedFeatures.remove(feature);
-                    } else {
-                      selectedFeatures.add(feature);
-                    }
-                  },
+                  selectedType,
+                  (val) => selectedType = val,
                 ),
 
+                // buildMultiSelectChips(
+                //   ['Wall', 'Crystal', 'Panoramic'],
+                //   selectedFeatures,
+                //   (feature) {
+                //     if (selectedFeatures.contains(feature)) {
+                //       selectedFeatures.remove(feature);
+                //     } else {
+                //       selectedFeatures.add(feature);
+                //     }
+                //   },
+                // ),
                 const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,

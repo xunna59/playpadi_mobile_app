@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../controllers/event_centers_controller.dart';
 import '../models/booking_model.dart';
 import '../controllers/booking_controller.dart';
+import '../models/court_model.dart';
 import '../models/event_center_model.dart';
+import '../routes/app_routes.dart';
+import 'confirm_booking_modal.dart';
 
 class BookSectionContent extends StatefulWidget {
   final int bookingId;
@@ -258,21 +263,77 @@ class _BookSectionContentState extends State<BookSectionContent> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(court.location),
-                                const SizedBox(height: 12),
-                                Text('${court.activity}'),
+
                                 const SizedBox(height: 8),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children:
-                                      court.bookingInfo['booked_slots']
-                                          .map<Widget>(
-                                            (slot) => _buildPriceOption(
-                                              slot['price'],
-                                              slot['duration'],
+                                SingleChildScrollView(
+                                  scrollDirection:
+                                      Axis.horizontal, // Makes it scroll horizontally
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .start, // Align items to the start of the row
+                                    children:
+                                        court.courtData.map<Widget>((
+                                          courtData,
+                                        ) {
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                              right: 16.0,
+                                            ), // Add spacing between items
+                                            child: GestureDetector(
+                                              // Inside your GestureDetector onTap:
+                                              onTap: () {
+                                                if (_selectedTime == null)
+                                                  return; // don’t open unless a time is chosen
+
+                                                final dateObj =
+                                                    dates[_selectedDateIndex];
+
+                                                final selectedDateObj =
+                                                    dates[_selectedDateIndex];
+
+                                                final dateString =
+                                                    selectedDateObj.date;
+
+                                                final timeString =
+                                                    _selectedTime!;
+
+                                                final selectedCourt = court;
+
+                                                showConfirmBookingModal(
+                                                  context,
+                                                  sport:
+                                                      center
+                                                          .games
+                                                          .first, // or whatever gameType you use
+                                                  date:
+                                                      dateString, // e.g. "2025-05-03"
+                                                  time:
+                                                      timeString, // e.g. "10:00 AM"
+                                                  gender: 'mixed',
+                                                  level: 2.2.toString(),
+                                                  sessionPrice:
+                                                      courtData.price
+                                                          .toString(),
+                                                  sessionDuration:
+                                                      courtData.duration
+                                                          .toString(),
+                                                  court: selectedCourt.name,
+                                                  sportsCenter: center.name,
+                                                  sports_center_id: center.id,
+                                                  court_id: selectedCourt.id,
+                                                  bookingType: 'private',
+                                                  address: center.address,
+                                                );
+                                              },
+
+                                              child: _buildPriceOption(
+                                                courtData,
+                                              ),
                                             ),
-                                          )
-                                          .toList(),
+                                          );
+                                        }).toList(),
+                                  ),
                                 ),
                               ],
                             ),
@@ -288,7 +349,7 @@ class _BookSectionContentState extends State<BookSectionContent> {
     );
   }
 
-  Widget _buildPriceOption(String price, String duration) {
+  Widget _buildPriceOption(CourtData courtData) {
     final cs = Theme.of(context).colorScheme;
     return Column(
       children: [
@@ -301,16 +362,17 @@ class _BookSectionContentState extends State<BookSectionContent> {
           child: Column(
             children: [
               Text(
-                price,
-                style: const TextStyle(
-                  color: Colors.white,
+                //   courtData.price.toString(),
+                '\₦${NumberFormat('#,##0', 'en_NG').format(courtData.price)}',
+                style: GoogleFonts.roboto(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                duration,
+                courtData.duration.toString() + " min",
                 style: const TextStyle(fontSize: 14, color: Colors.white),
               ),
             ],

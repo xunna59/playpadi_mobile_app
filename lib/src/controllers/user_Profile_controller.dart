@@ -12,6 +12,7 @@ class UserProfileController {
     try {
       final responseData = await client.fetchProfile();
 
+      //   print(responseData);
       var userData = responseData['user'];
 
       UserProfile profile = UserProfile.fromJson(userData);

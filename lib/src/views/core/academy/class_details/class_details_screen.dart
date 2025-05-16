@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:playpadi/src/widgets/primary_button.dart';
 import '../../../../models/class_model.dart';
+import '../../../../widgets/primary_button.dart';
 import 'widgets/date_card.dart';
 import 'widgets/player_list.dart';
 import 'widgets/registration_info.dart';
