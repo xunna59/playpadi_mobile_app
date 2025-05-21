@@ -38,6 +38,21 @@ class _ProfileTabState extends State<ProfileTab> {
     }
   }
 
+  String maskEmail(String email) {
+    final parts = email.split('@');
+    if (parts.length != 2) return email;
+
+    final username = parts[0];
+    final domain = parts[1];
+
+    final visibleChars = username.length >= 2 ? 2 : 1;
+    final maskedUsername =
+        username.substring(0, visibleChars) +
+        '*' * (username.length - visibleChars);
+
+    return '$maskedUsername@$domain';
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -70,6 +85,20 @@ class _ProfileTabState extends State<ProfileTab> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
+            // SizedBox(
+            //   width: double.infinity,
+            //   child: OutlinedButton.icon(
+            //     onPressed: () {},
+            //     icon: const Icon(Icons.refresh),
+            //     label: const Text('Resend Verification Email'),
+            //     style: OutlinedButton.styleFrom(
+            //       side: const BorderSide(color: Color.fromRGBO(199, 3, 125, 1)),
+            //       foregroundColor: const Color.fromRGBO(199, 3, 125, 1),
+            //       padding: const EdgeInsets.symmetric(vertical: 16),
+            //       textStyle: const TextStyle(fontSize: 16),
+            //     ),
+            //   ),
+            // ),
             Row(
               children: [
                 CircleAvatar(
@@ -107,9 +136,19 @@ class _ProfileTabState extends State<ProfileTab> {
                           minimumSize: const Size(0, 0),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        child: Text(
-                          'Add my location',
-                          style: TextStyle(color: colorScheme.primary),
+                        child: Row(
+                          children: [
+                            Text(
+                              maskEmail(profile.email),
+                              style: TextStyle(color: colorScheme.primary),
+                            ),
+                            const SizedBox(width: 6),
+                            const Icon(
+                              Icons.verified,
+                              color: Colors.lightGreen,
+                              size: 18,
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -121,7 +160,9 @@ class _ProfileTabState extends State<ProfileTab> {
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [_buildStat('Total Matches', 25.toString())],
+              children: [
+                _buildStat('Total Matches', profile.total_matches_played),
+              ],
             ),
 
             const SizedBox(height: 16),

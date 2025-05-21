@@ -1,24 +1,71 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../controllers/user_Profile_controller.dart';
+import '../../../core/activity_overlay.dart';
 import '../../../models/player_preferences_model.dart';
+import '../../../providers/player_preference_provider.dart';
 
-class PlayerPreferenceScreen extends StatefulWidget {
+class PlayerPreferenceScreen extends ConsumerWidget {
   const PlayerPreferenceScreen({super.key});
 
   @override
-  State<PlayerPreferenceScreen> createState() => _PlayerPreferenceScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 1) watch the current UserProfile
+    final userProfile = ref.watch(userProfileProvider);
+    // 2) grab the notifier to mutate it
+    final profileNotifier = ref.read(userProfileProvider.notifier);
+    // 3) derive a typed PlayerPreference
+    final preference = profileNotifier.playerPreference;
 
-class _PlayerPreferenceScreenState extends State<PlayerPreferenceScreen> {
-  PlayerPreference preference = PlayerPreference.initial();
-
-  @override
-  Widget build(BuildContext context) {
     final selectedColor = Theme.of(context).colorScheme.primary;
+
+    final controller = UserProfileController();
+
+    void _save() async {
+      final userProfile = ref.read(userProfileProvider);
+      final playerPref = playerPreferenceFromMap(userProfile.preferences);
+
+      // Convert to map
+      final prefMap = playerPreferenceToMap(playerPref);
+
+      // Remove 'set_by_time_frame' from the map
+      prefMap.remove('set_by_time_frame');
+
+      final updates = {"preferences": prefMap};
+
+      print(updates);
+
+      LoadingOverlay.show(context);
+      try {
+        final updatedProfile = await controller.updateUserProfile(updates);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Profile updated successfully',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Failed to update profile: ${e.toString()}',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        LoadingOverlay.hide();
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-
         title: const Text('Player preference'),
         centerTitle: true,
         leading: const BackButton(),
@@ -37,87 +84,77 @@ class _PlayerPreferenceScreenState extends State<PlayerPreferenceScreen> {
             const Divider(),
             const SizedBox(height: 16),
 
+            // Best hand
             _buildSectionTitle('Best hand'),
             _buildToggleChips(
               ['Right-handed', 'Left-handed', 'Both hands'],
               preference.bestHand,
-              (val) => setState(
-                () => preference = preference.copyWith(bestHand: val),
-              ),
+              (val) {
+                final updated = preference.copyWith(bestHand: val);
+                profileNotifier.updatePlayerPreference(updated);
+              },
               selectedColor,
             ),
 
             const SizedBox(height: 16),
+            // Court side
             _buildSectionTitle('Court side'),
             _buildToggleChips(
               ['Backhand', 'Forehand', 'Both side'],
               preference.courtSide,
-              (val) => setState(
-                () => preference = preference.copyWith(courtSide: val),
-              ),
+              (val) {
+                final updated = preference.copyWith(courtSide: val);
+                profileNotifier.updatePlayerPreference(updated);
+              },
               selectedColor,
             ),
 
             const SizedBox(height: 16),
+            // Match type
             _buildSectionTitle(
               'Match type',
               sub:
-                  'The result of the match will count for your level progress if you make it competitive',
+                  'The result will count for your level progress if competitive',
             ),
             _buildToggleChips(
               ['Competitive', 'Friendly', 'Both'],
               preference.matchType,
-              (val) => setState(
-                () => preference = preference.copyWith(matchType: val),
-              ),
+              (val) {
+                final updated = preference.copyWith(matchType: val);
+                profileNotifier.updatePlayerPreference(updated);
+              },
               selectedColor,
             ),
 
             const SizedBox(height: 16),
+            // Preferred time
             _buildSectionTitle('Your preferred time to play'),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Set by time frame'),
+                Text('Set by time frame'),
                 Switch(
                   value: preference.setByTimeFrame,
-                  onChanged:
-                      (val) => setState(
-                        () =>
-                            preference = preference.copyWith(
-                              setByTimeFrame: val,
-                            ),
-                      ),
+                  onChanged: (val) {
+                    final updated = preference.copyWith(setByTimeFrame: val);
+                    profileNotifier.updatePlayerPreference(updated);
+                  },
                 ),
               ],
             ),
 
-            if (preference.setByTimeFrame)
+            if (preference.setByTimeFrame) ...[
               _buildToggleChips(
                 ['Morning', 'Afternoon', 'Evening', 'All day'],
-                preference.preferredTimeFrame,
-                (val) => setState(
-                  () =>
-                      preference = preference.copyWith(preferredTimeFrame: val),
-                ),
+                preference.play_time,
+                (val) {
+                  final updated = preference.copyWith(play_time: val);
+                  profileNotifier.updatePlayerPreference(updated);
+                },
                 selectedColor,
               ),
+            ],
 
-            // const SizedBox(height: 16),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     const Text('Set by days'),
-            //     Switch(
-            //       value: preference.setByDays,
-            //       onChanged:
-            //           (val) => setState(
-            //             () => preference = preference.copyWith(setByDays: val),
-            //           ),
-            //     ),
-            //   ],
-            // ),
             const SizedBox(height: 30),
             SizedBox(
               width: double.infinity,
@@ -129,9 +166,8 @@ class _PlayerPreferenceScreenState extends State<PlayerPreferenceScreen> {
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                onPressed: () {
-                  // Save preference logic (maybe to SharedPreferences, DB, or API)
-                },
+                onPressed: _save,
+
                 child: const Text(
                   'Save',
                   style: TextStyle(fontSize: 16, color: Colors.white),
@@ -144,44 +180,38 @@ class _PlayerPreferenceScreenState extends State<PlayerPreferenceScreen> {
     );
   }
 
-  Widget _buildSectionTitle(String title, {String? sub}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        if (sub != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 4.0),
-            child: Text(sub, style: const TextStyle(fontSize: 12)),
-          ),
-      ],
-    );
-  }
+  Widget _buildSectionTitle(String title, {String? sub}) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+      if (sub != null)
+        Padding(
+          padding: const EdgeInsets.only(top: 4.0),
+          child: Text(sub, style: const TextStyle(fontSize: 12)),
+        ),
+    ],
+  );
 
   Widget _buildToggleChips(
     List<String> options,
-    String selected,
+    String selectedValue,
     void Function(String) onSelected,
     Color selectedColor,
-  ) {
-    return Wrap(
-      spacing: 8,
-      children:
-          options.map((option) {
-            final isSelected = selected == option;
-            return ChoiceChip(
-              side: BorderSide.none,
-              showCheckmark: false,
-              label: Text(option),
-              selected: isSelected,
-              onSelected: (_) => onSelected(option),
-              selectedColor: selectedColor,
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.white : Colors.black,
-              ),
-              backgroundColor: Colors.grey[200],
-            );
-          }).toList(),
-    );
-  }
+  ) => Wrap(
+    spacing: 8,
+    children:
+        options.map((option) {
+          final isSelected = selectedValue == option;
+          return ChoiceChip(
+            label: Text(option),
+            selected: isSelected,
+            onSelected: (_) => onSelected(option),
+            selectedColor: selectedColor,
+            labelStyle: TextStyle(
+              color: isSelected ? Colors.white : Colors.black,
+            ),
+            backgroundColor: Colors.grey[200],
+          );
+        }).toList(),
+  );
 }

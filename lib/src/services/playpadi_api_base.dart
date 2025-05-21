@@ -365,6 +365,29 @@ class APIClient {
     });
   }
 
+  Future<dynamic> fetchFaqs([dynamic callback]) async {
+    if (!isAuthorized) {
+      throw UnauthorizedRequestException();
+    }
+
+    Request payload = Request(
+      '${baseUrl}/api/get-all-faqs',
+      method: 'get',
+      headers: ['Content-Type: application/json'],
+      body: null,
+    );
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
   void _resetToken() {
     isAuthorized = false;
     token = null;

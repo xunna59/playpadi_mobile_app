@@ -17,6 +17,9 @@ class EventCenter {
   final Map<String, dynamic>? openingHours; // NEW
   final List<CourtModel>? courts;
   final Map<String, dynamic>? bookingInfo; // NEW
+  final int? total_courts;
+  final String? website;
+  final String? phone;
 
   EventCenter({
     required this.id,
@@ -34,6 +37,9 @@ class EventCenter {
     this.openingHours,
     required this.courts,
     this.bookingInfo,
+    this.total_courts,
+    this.website,
+    this.phone,
   });
 
   factory EventCenter.fromJson(Map<String, dynamic> json) {
@@ -71,6 +77,9 @@ class EventCenter {
       openingHours: getMap(json, 'openingHours'),
       courts: courts,
       bookingInfo: getMap(json, 'booking_info'),
+      total_courts: getInt(json, 'total_courts'),
+      website: getString(json, 'website'),
+      phone: getString(json, 'phone'),
     );
   }
 }

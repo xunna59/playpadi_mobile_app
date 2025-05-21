@@ -12,6 +12,7 @@ class UserProfile {
   final Map<String, dynamic> preferences;
   final Map<String, dynamic> interests;
   final String? displayPicture;
+  final String total_matches_played;
 
   UserProfile({
     required this.firstName,
@@ -27,6 +28,7 @@ class UserProfile {
     required this.preferences,
     required this.interests,
     this.displayPicture,
+    required this.total_matches_played,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -50,6 +52,7 @@ class UserProfile {
               ? Map<String, dynamic>.from(json['interests'])
               : {},
       displayPicture: json['display_picture'],
+      total_matches_played: json['total_matches_played'].toString(),
     );
   }
 
@@ -68,6 +71,7 @@ class UserProfile {
       'preferences': preferences,
       'interests': interests,
       'display_picture': displayPicture,
+      'total_matches_played': total_matches_played,
     };
   }
 }

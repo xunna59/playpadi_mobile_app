@@ -201,10 +201,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   'How PlayPadi works',
                   null,
                   onTap:
-                      () => Navigator.pushNamed(
-                        context,
-                        'AppRoutes.howItWorksScreen',
-                      ),
+                      () => Navigator.pushNamed(context, AppRoutes.faqScreen),
                 ),
               ]),
 

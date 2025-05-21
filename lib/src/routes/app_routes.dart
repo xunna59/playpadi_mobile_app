@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/class_model.dart';
 import '../models/event_center_model.dart';
 import '../models/match_model.dart';
+import '../models/user_profile_model.dart';
 import '../views/auth/completed_screen.dart';
 import '../views/auth/final_step_screen.dart';
 import '../views/auth/login_screen.dart';
@@ -14,6 +15,7 @@ import '../views/core/bookings/confirm_booking_screen.dart';
 import '../views/core/bookings/event_centers_screen.dart';
 import '../views/core/bookings/match_details_screen.dart';
 import '../views/core/notifications.dart';
+import '../views/core/settings/help/faq_screen.dart';
 import '../views/core/settings/help/help_screen.dart';
 import '../views/core/settings/legal/privacy_policy_screen.dart';
 import '../views/core/settings/legal/terms_screen.dart';
@@ -52,6 +54,7 @@ class AppRoutes {
   static const String helpScreen = 'helpScreen';
   static const String termsOfUseScreen = 'termsOfUseScreen';
   static const String privacyPolicyScreen = 'privacyPolicyScreen';
+  static const String faqScreen = 'faqScreen';
 
   static const String editProfileScreen = 'editProfileScreen';
 
@@ -80,11 +83,6 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const DashboardScreen());
       case academyScreen:
         return MaterialPageRoute(builder: (_) => const AcademyScreen());
-
-      case playerPrefernces:
-        return MaterialPageRoute(
-          builder: (_) => const PlayerPreferenceScreen(),
-        );
 
       case confirmBookingScreen:
         return MaterialPageRoute(builder: (_) => const ConfirmBookingScreen());
@@ -121,6 +119,9 @@ class AppRoutes {
       case helpScreen:
         return MaterialPageRoute(builder: (_) => const HelpScreen());
 
+      case faqScreen:
+        return MaterialPageRoute(builder: (_) => FaqScreen());
+
       case termsOfUseScreen:
         return MaterialPageRoute(builder: (_) => const TermsOfUseScreen());
 
@@ -135,6 +136,10 @@ class AppRoutes {
         return MaterialPageRoute(
           builder: (_) => EventCenterDetailsScreen(eventCenter: eventCenter),
         );
+
+      case playerPrefernces:
+        // final user = settings.arguments as UserProfile;
+        return MaterialPageRoute(builder: (_) => PlayerPreferenceScreen());
 
       case matchDetailsScreen:
         final match = settings.arguments as MatchModel;

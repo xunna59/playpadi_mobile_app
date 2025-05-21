@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../providers/match_provider.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/match_card.dart';
 
@@ -43,7 +41,11 @@ class HomeTab extends ConsumerWidget {
                   ),
                   trailing: const Icon(Icons.arrow_forward_ios),
                   onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.playerPrefernces);
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.playerPrefernces,
+                      //   arguments: UserProfile,
+                    );
                   },
                 ),
               ],
@@ -74,7 +76,7 @@ class HomeTab extends ConsumerWidget {
                 imageUrl: 'assets/background/open_match.png',
                 onTap: () {
                   Navigator.pushNamed(context, AppRoutes.playOpenMatches);
-                  ref.invalidate(matchesFutureProvider);
+                  //  ref.invalidate(matchesFutureProvider);
                 },
               ),
               const SizedBox(height: 16),

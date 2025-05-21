@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../../playpadi_library.dart';
 import '../../../controllers/event_centers_controller.dart';
 import '../../../core/constants.dart';
 import '../../../models/event_center_model.dart';
@@ -27,13 +29,31 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
   }
 
   Future<void> _loadCenter() async {
-    final fetchedCenter = await EventCentersController().fetchCenterById(
-      widget.eventCenter.id,
-    );
+    try {
+      final fetchedCenter = await EventCentersController().fetchCenterById(
+        widget.eventCenter.id,
+      );
 
-    setState(() {
-      eventCenter = fetchedCenter;
-    });
+      setState(() {
+        eventCenter = fetchedCenter;
+      });
+    } on NetworkErrorException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message), backgroundColor: Colors.orange),
+        );
+      }
+    } catch (e) {
+      debugPrint('Unexpected error: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Something went wrong. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -41,7 +61,7 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final screenWidth = MediaQuery.of(context).size.width;
-    int totalCourts = widget.eventCenter.courts?.length ?? 0;
+    //  int totalCourts = widget.eventCenter.courts?.length ?? 0;
 
     // if (eventCenter == null) {
     //   return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -214,34 +234,81 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
                                 ],
                               ),
                               const SizedBox(height: 20),
-                              Text(
-                                '$totalCourts available courts',
-                                //      style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 18),
-                              Center(
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children:
-                                        widget.eventCenter.features
-                                            .map(
-                                              (feature) => Padding(
-                                                padding: const EdgeInsets.only(
-                                                  right: 15.0,
-                                                ),
-                                                child: Text(
-                                                  feature,
-                                                  style: const TextStyle(
-                                                    //   fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                            .toList(),
-                                  ),
+                              if (eventCenter?.total_courts != null)
+                                Text(
+                                  '${eventCenter!.total_courts} available courts',
                                 ),
+
+                              const SizedBox(height: 18),
+
+                              // AS CAROUSEL
+                              // Center(
+                              //   child: SingleChildScrollView(
+                              //     scrollDirection: Axis.horizontal,
+                              //     child: Row(
+                              //       mainAxisAlignment: MainAxisAlignment.center,
+                              //       children:
+                              //           widget.eventCenter.features
+                              //               .map(
+                              //                 (feature) => Padding(
+                              //                   padding: const EdgeInsets.only(
+                              //                     right: 15.0,
+                              //                   ),
+                              //                   child: Text(
+                              //                     feature,
+                              //                     style: const TextStyle(
+                              //                       //   fontWeight: FontWeight.bold,
+                              //                     ),
+                              //                   ),
+                              //                 ),
+                              //               )
+                              //               .toList(),
+                              //     ),
+                              //   ),
+                              // ),
+                              // AS WRAPPED
+                              // Wrap(
+                              //   alignment:
+                              //       WrapAlignment
+                              //           .start, // aligns children to the left
+                              //   spacing: 15.0,
+                              //   runSpacing: 10.0,
+                              //   children:
+                              //       widget.eventCenter.features
+                              //           .map(
+                              //             (feature) => Text(
+                              //               feature,
+                              //               style: const TextStyle(
+                              //                 // fontWeight: FontWeight.bold,
+                              //               ),
+                              //             ),
+                              //           )
+                              //           .toList(),
+                              // ),
+                              // AS GRID PATTERN
+                              GridView.count(
+                                shrinkWrap: true,
+                                padding: EdgeInsets.zero,
+                                physics: const NeverScrollableScrollPhysics(),
+                                crossAxisCount:
+                                    4, // Adjust to your layout needs
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 15,
+                                childAspectRatio: 4, // Wider cells
+                                children:
+                                    widget.eventCenter.features
+                                        .map(
+                                          (feature) => Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              feature,
+                                              style: const TextStyle(
+                                                // fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
                               ),
 
                               const SizedBox(height: 25),
@@ -253,19 +320,61 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
                                     icon: Icons.directions,
                                     label: 'DIRECTIONS',
                                     color: colorScheme.primary,
+                                    onTap: () async {
+                                      final googleMapsUrl = Uri.parse(
+                                        'https://www.google.com/maps/search/?api=1&query=${eventCenter?.latitude},${eventCenter?.longitude}', // Example: Googleplex
+                                      );
+                                      if (await canLaunchUrl(googleMapsUrl)) {
+                                        await launchUrl(googleMapsUrl);
+                                      } else {
+                                        print('Could not open the map.');
+                                      }
+                                    },
                                   ),
                                   ClubAction(
                                     icon: Icons.language,
                                     label: 'WEB',
                                     color: colorScheme.primary,
+                                    onTap: () async {
+                                      final url = Uri.parse(
+                                        eventCenter?.website ??
+                                            'https://thepadelbay.com',
+                                      );
+
+                                      if (await canLaunchUrl(url)) {
+                                        await launchUrl(
+                                          url,
+                                          mode: LaunchMode.externalApplication,
+                                        );
+                                      } else {
+                                        print('Could not open the website.');
+                                      }
+                                    },
                                   ),
                                   ClubAction(
                                     icon: Icons.phone,
                                     label: 'CALL',
                                     color: colorScheme.primary,
+                                    onTap: () async {
+                                      final phoneUri = Uri(
+                                        scheme: 'tel',
+                                        path:
+                                            eventCenter?.phone ?? '1234567890',
+                                      );
+
+                                      if (await canLaunchUrl(phoneUri)) {
+                                        await launchUrl(
+                                          phoneUri,
+                                          mode: LaunchMode.externalApplication,
+                                        );
+                                      } else {
+                                        print('Could not launch phone dialer.');
+                                      }
+                                    },
                                   ),
                                 ],
                               ),
+
                               const SizedBox(height: 20),
                               // Map Container (covers full width)
                               Align(

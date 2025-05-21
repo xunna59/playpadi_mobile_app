@@ -41,17 +41,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           Navigator.pushNamed(context, AppRoutes.finalSteps);
         }
       });
-    } on ServerErrorException catch (e) {
+
+      print(_profile!.preferences);
+    } on ServerErrorException catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('There was a server error. Please try again later.'),
         ),
       );
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Failed to load profile. Please try again later.'),
         ),
       );
@@ -60,7 +62,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   void _onItemTapped(int index) {
     if (!mounted) return;
-
     setState(() {
       _selectedIndex = index;
     });
@@ -69,18 +70,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final tabs = <Widget>[const HomeTab(), const ProfileTab()];
-    // if (_profile == null) {
-    //   return Center(
-    //     child: CircularProgressIndicator(),
-    //   );
-    // }
+
+    final tabs = <Widget>[
+      RefreshIndicator(onRefresh: loadUserProfile, child: const HomeTab()),
+      RefreshIndicator(onRefresh: loadUserProfile, child: const ProfileTab()),
+    ];
+
     return Scaffold(
       appBar:
           _selectedIndex == 0
               ? AppBar(
                 backgroundColor: Colors.transparent,
-                title: Text('Hi  ${_profile?.firstName} ✌️'),
+                title: Text('Hi ${_profile?.firstName ?? ''} ✌️'),
                 leading: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child:
@@ -97,7 +98,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           : CircleAvatar(
                             radius: 30,
                             backgroundColor: colorScheme.tertiary,
-                            backgroundImage: AssetImage(
+                            backgroundImage: const AssetImage(
                               'assets/images/user.png',
                             ),
                           ),
@@ -115,11 +116,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       Navigator.pushNamed(context, AppRoutes.profileScreen);
                     },
                   ),
+                  // IconButton(
+                  //   icon: const Icon(Icons.refresh),
+                  //   tooltip: 'Reload Profile',
+                  //   onPressed: loadUserProfile,
+                  // ),
                 ],
               )
               : AppBar(
                 backgroundColor: Colors.transparent,
-
                 automaticallyImplyLeading: false,
                 title: const Text('Profile'),
                 actions: [
@@ -135,6 +140,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       Navigator.pushNamed(context, AppRoutes.profileScreen);
                     },
                   ),
+                  // IconButton(
+                  //   icon: const Icon(Icons.refresh),
+                  //   tooltip: 'Reload Profile',
+                  //   onPressed: loadUserProfile,
+                  // ),
                 ],
               ),
       body: IndexedStack(index: _selectedIndex, children: tabs),

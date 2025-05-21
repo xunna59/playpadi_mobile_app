@@ -10,7 +10,7 @@ class HelpScreen extends StatelessWidget {
   final String _emailAddress = 'help@example.com';
   final String _whatsAppNumber = '+1234567890';
   final String _instagramHandle = 'your_instagram';
-  final String _twitterHandle = 'your_twitter';
+  final String _twitterHandle = 'twitter';
 
   Future<void> _launchUrl(String url) async {
     final uri = Uri.parse(url);

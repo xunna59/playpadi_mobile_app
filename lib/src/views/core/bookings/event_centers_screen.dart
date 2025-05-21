@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../models/event_center_model.dart';
 import '../../../routes/app_routes.dart';
 import '../../../widgets/event_center_card.dart';
 import '../../../widgets/inkwell_modal.dart';
@@ -19,6 +20,35 @@ class _EventCentersScreenState extends ConsumerState<EventCentersScreen> {
   String selectedSport = 'Padel';
   String selectedTime = 'Today 3pm - 8pm';
 
+  final TextEditingController _searchController = TextEditingController();
+  List<EventCenter> _allCenters = [];
+  List<EventCenter> _filteredCenters = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredCenters =
+          _allCenters.where((center) {
+            return center.name.toLowerCase().contains(query) ||
+                center.address.toLowerCase().contains(
+                  query,
+                ); // customize fields
+          }).toList();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final centersAsync = ref.watch(eventCentersProvider);
@@ -32,53 +62,52 @@ class _EventCentersScreenState extends ConsumerState<EventCentersScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
               child: TextField(
-                decoration: InputDecoration(
+                controller: _searchController,
+                decoration: const InputDecoration(
                   labelText: 'Search',
                   prefixIcon: Icon(Icons.search),
                   border: OutlineInputBorder(),
                 ),
               ),
             ),
-
             Row(
               children: [
                 IconButton(
                   icon: const Icon(Icons.tune),
-                  onPressed: () {
-                    showFilterModal(context);
-                  },
+                  onPressed: () => showFilterModal(context),
                 ),
                 const SizedBox(width: 8),
                 CustomFilterChip(
                   label: selectedSport,
                   backgroundColor: Theme.of(context).colorScheme.primary,
-                  onTap: () async {
-                    // You could modify showSelectSportModal to return the selected sport
-                    showSelectSportModal(context); // or await and update state
-                  },
+                  onTap: () => showSelectSportModal(context),
                 ),
                 const SizedBox(width: 8),
                 CustomFilterChip(
                   label: selectedTime,
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   onTap: () {
-                    // You can implement a time selector
+                    // Implement time selector
                   },
                 ),
               ],
             ),
-
             const SizedBox(height: 16),
-
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () => ref.refresh(eventCentersProvider.future),
                 child: centersAsync.when(
                   data: (centers) {
-                    if (centers.isEmpty) {
+                    _allCenters = centers;
+                    _filteredCenters =
+                        _searchController.text.isEmpty
+                            ? centers
+                            : _filteredCenters;
+
+                    if (_filteredCenters.isEmpty) {
                       return ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         children: const [
@@ -87,11 +116,12 @@ class _EventCentersScreenState extends ConsumerState<EventCentersScreen> {
                         ],
                       );
                     }
+
                     return ListView.builder(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: centers.length,
+                      itemCount: _filteredCenters.length,
                       itemBuilder: (context, index) {
-                        final center = centers[index];
+                        final center = _filteredCenters[index];
                         return GestureDetector(
                           onTap: () {
                             Navigator.pushNamed(
