@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/constants.dart';
 import '../../../../models/class_model.dart';
 import '../../../../widgets/primary_button.dart';
 import 'widgets/date_card.dart';
@@ -33,8 +34,10 @@ class ClassDetailsScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                const CircleAvatar(
-                  backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
+                CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    '${imageBaseUrl}${classData.coverImage}',
+                  ),
                   maxRadius: 35,
                   minRadius: 35,
                 ),
@@ -79,7 +82,7 @@ class ClassDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
             CoachInfo(classData: classData),
             const SizedBox(height: 16),
-            const PlayersList(),
+            PlayersList(classData: classData),
             const SizedBox(height: 32),
             const Text(
               "Payment methods",

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../playpadi_library.dart';
 import '../../../controllers/theme_controller.dart';
 import '../../../controllers/user_Profile_controller.dart';
+import '../../../core/constants.dart';
 import '../../../models/user_profile_model.dart';
 import '../../../routes/app_routes.dart';
 
@@ -99,10 +100,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ? CircleAvatar(
                         radius: 30,
                         backgroundColor: colorScheme.tertiary,
-                        backgroundImage: MemoryImage(
-                          base64Decode(
-                            _profile!.displayPicture!.split(',').last,
-                          ),
+                        backgroundImage: NetworkImage(
+                          '${display_picture}${_profile!.displayPicture!}',
                         ),
                       )
                       : const CircleAvatar(
@@ -164,21 +163,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   Icons.sports_tennis,
                   'Your activity',
                   'Matches, classes, competitions, group, ...',
-                  onTap:
-                      () => Navigator.pushNamed(
-                        context,
-                        'AppRoutes.activityScreen',
-                      ),
+                  onTap: () {},
+                  // () => Navigator.pushNamed(
+                  //   context,
+                  //   'AppRoutes.activityScreen',
+                  // ),
                 ),
                 _buildListTile(
                   Icons.credit_card,
                   'Your payments',
                   'Payment methods, transactions, club, ...',
-                  onTap:
-                      () => Navigator.pushNamed(
-                        context,
-                        'AppRoutes.paymentsScreen',
-                      ),
+                  onTap: () {},
+                  // () => Navigator.pushNamed(
+                  //   context,
+                  //   'AppRoutes.paymentsScreen',
+                  // ),
                 ),
               ]),
 

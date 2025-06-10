@@ -1,5 +1,6 @@
 import 'coach_model.dart';
 import 'event_center_model.dart';
+import 'academy_students_model.dart';
 
 class ClassModel {
   final int id;
@@ -16,6 +17,7 @@ class ClassModel {
   final String endRegistrationDate;
   final CoachModel coach; // Nested CoachModel
   final EventCenter sportsCenter; // Nested SportsCenterModel
+  final AcademyStudents academy_students;
 
   ClassModel({
     required this.id,
@@ -32,6 +34,7 @@ class ClassModel {
     required this.endRegistrationDate,
     required this.coach, // Nested
     required this.sportsCenter, // Nested
+    required this.academy_students,
   });
 
   factory ClassModel.fromJson(Map<String, dynamic> json) {
@@ -61,6 +64,7 @@ class ClassModel {
       sportsCenter: EventCenter.fromJson(
         (json['sportsCenter'] as Map<String, dynamic>?) ?? {},
       ),
+      academy_students: AcademyStudents.fromJson(json['academy_students']),
     );
   }
 }

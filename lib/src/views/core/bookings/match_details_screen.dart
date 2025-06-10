@@ -1,12 +1,12 @@
-import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../controllers/match_controller.dart';
+import '../../../core/activity_overlay.dart';
 import '../../../core/constants.dart';
 import '../../../models/match_model.dart';
 import 'package:intl/intl.dart';
-
-import '../../../widgets/primary_button.dart';
 
 class MatchDetailsScreen extends StatefulWidget {
   final MatchModel match;
@@ -17,15 +17,53 @@ class MatchDetailsScreen extends StatefulWidget {
 }
 
 class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
+  final MatchController matchController = MatchController();
+
   String _formatPrice(double p) =>
       '₦${NumberFormat("#,##0", "en_NG").format(p)}';
   String formattedDate = '';
+  late final int bookingId;
 
   @override
   void initState() {
     super.initState();
     final date = DateTime.parse(widget.match.dateText);
     formattedDate = DateFormat('EEEE, MMMM d, y').format(date);
+    bookingId = widget.match.id;
+  }
+
+  Future<void> _onJoinBooking() async {
+    // Build up your payload
+    final payload = {'bookind_id': bookingId};
+
+    LoadingOverlay.show(context);
+    try {
+      final matches = await matchController.joinPublicMatch(payload);
+
+      Navigator.pop(context, true);
+      // Navigate or show success
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Martch Joined Successfully!",
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.green, // ← here
+        ),
+      );
+    } catch (e) {
+      // Handle errors (network, format, server, etc.)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Booking failed: $e',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+    } finally {
+      LoadingOverlay.hide();
+    }
   }
 
   @override
@@ -108,7 +146,10 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                             Expanded(
                               child: _infoColumn(
                                 'Price',
-                                _formatPrice(widget.match.sessionPrice),
+                                _formatPrice(
+                                  widget.match.sessionPrice /
+                                      widget.match.totalPlayers,
+                                ),
                               ),
                             ),
                           ],
@@ -274,22 +315,37 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: cs.primary,
+                      backgroundColor:
+                          widget.match.joinedStatus == true
+                              ? Colors.redAccent
+                              : cs.primary,
                       foregroundColor: cs.onPrimary,
                       padding: const EdgeInsets.symmetric(vertical: 18),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    onPressed: () {},
-                    child: Text(
-                      'Book Place - ${_formatPrice(widget.match.sessionPrice)}',
-                      style: GoogleFonts.roboto(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
+                    onPressed: () {
+                      _onJoinBooking();
+                    },
+                    child:
+                        widget.match.joinedStatus == true
+                            ? Text(
+                              'Cancel Booking',
+                              style: GoogleFonts.roboto(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            )
+                            : Text(
+                              'Book Place - ${_formatPrice(widget.match.sessionPrice / widget.match.totalPlayers)}',
+                              style: GoogleFonts.roboto(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
                   ),
                 ),
 
@@ -328,7 +384,8 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
               avatarUrl != null ? Colors.transparent : colorScheme.primary,
           backgroundImage:
               avatarUrl != null
-                  ? MemoryImage(base64Decode(avatarUrl.split(',').last))
+                  // ? MemoryImage(base64Decode(avatarUrl.split(',').last))
+                  ? NetworkImage('${display_picture}${avatarUrl}')
                   : null,
           child:
               avatarUrl == null

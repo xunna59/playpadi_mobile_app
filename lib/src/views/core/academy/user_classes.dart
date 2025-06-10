@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../controllers/academy_controller.dart';
 import '../../../models/class_model.dart';
-import '../../../models/coach_model.dart';
 import '../../../routes/app_routes.dart';
 import '../../../widgets/class_card.dart';
 

@@ -66,7 +66,7 @@ class _AvailableMatchCardState extends State<AvailableMatchCard> {
                 ),
               ],
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 10),
 
             // Players
             Row(
@@ -100,10 +100,8 @@ class _AvailableMatchCardState extends State<AvailableMatchCard> {
                               backgroundColor: Colors.transparent,
                               backgroundImage:
                                   player.avatarUrl != null
-                                      ? MemoryImage(
-                                        base64Decode(
-                                          player.avatarUrl!.split(',').last,
-                                        ),
+                                      ? NetworkImage(
+                                        '${display_picture}${player!.avatarUrl!}',
                                       )
                                       : null,
                               child:
@@ -213,7 +211,7 @@ class _AvailableMatchCardState extends State<AvailableMatchCard> {
                             ],
                           )
                           : Text(
-                            '₦${NumberFormat('#,##0', 'en_NG').format(widget.match.sessionPrice)} – ${widget.match.sessionDuration}mins',
+                            '₦${NumberFormat('#,##0', 'en_NG').format(widget.match.sessionPrice / widget.match.totalPlayers)} – ${widget.match.sessionDuration}mins',
                             style: GoogleFonts.roboto(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,

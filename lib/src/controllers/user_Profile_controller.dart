@@ -1,5 +1,6 @@
 import '../../playpadi_library.dart';
 import '../models/user_profile_model.dart';
+import 'dart:io';
 
 /// Simple controller for fetching the user profile using APIClient.
 class UserProfileController {
@@ -32,6 +33,32 @@ class UserProfileController {
       await client.updateProfile(updates, () {
         print('Profile updated on server');
       });
+
+      final fresh = await fetchUserProfile();
+      return fresh;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<UserProfile> updateFCMToken(Map<String, dynamic> updates) async {
+    try {
+      print('Updating fcm token with: $updates');
+
+      await client.updateFCMToken(updates, () {
+        print('Token updated on server');
+      });
+
+      final fresh = await fetchUserProfile();
+      return fresh;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<UserProfile> updateDisplayPicture(File imageFile) async {
+    try {
+      await client.updateDisplayPicture(imageFile);
 
       final fresh = await fetchUserProfile();
       return fresh;

@@ -24,6 +24,7 @@ class RegistrationInfo extends StatelessWidget {
               // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("Category"),
                     SizedBox(height: 5),
@@ -32,6 +33,8 @@ class RegistrationInfo extends StatelessWidget {
                 ),
                 Spacer(),
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+
                   children: [
                     Text("Restrictive level"),
                     SizedBox(height: 5),

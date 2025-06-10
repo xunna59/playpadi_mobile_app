@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/constants.dart';
 import '../models/class_model.dart';
 
 class ClassCard extends StatelessWidget {
@@ -26,7 +27,14 @@ class ClassCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(radius: 20, backgroundColor: Colors.grey[800]),
+                CircleAvatar(
+                  radius: 20,
+                  backgroundImage:
+                      c.coach.displayPicture != null
+                          ? NetworkImage('${imageBaseUrl}${c.coverImage!}')
+                          : null,
+                  backgroundColor: Colors.grey[800],
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -73,7 +81,7 @@ class ClassCard extends StatelessWidget {
               children: [
                 const Icon(Icons.equalizer, size: 16),
                 const SizedBox(width: 4),
-                Text('Courses ${c.sessionActivity}'),
+                Text('5 Joined'),
                 const SizedBox(width: 16),
                 const Icon(Icons.wc, size: 16),
                 const SizedBox(width: 4),
@@ -82,21 +90,34 @@ class ClassCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // Coach
+            //  Coach
             Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 CircleAvatar(
                   radius: 12,
                   backgroundImage:
                       c.coach.displayPicture != null
-                          ? NetworkImage(c.coach.displayPicture!)
+                          ? NetworkImage(
+                            '${display_picture}${c.coach.displayPicture!}',
+                          )
                           : null,
                   backgroundColor: Colors.grey,
                 ),
-                const SizedBox(width: 8),
-                Text(c.coach.firstName),
-                const SizedBox(width: 4),
-                const Text('Coach', style: TextStyle(color: Colors.grey)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(c.coach.firstName),
+
+                      const Text(
+                        'Coach',
+                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
 

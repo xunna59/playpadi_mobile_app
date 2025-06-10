@@ -66,10 +66,13 @@ class _EventCentersScreenState extends ConsumerState<EventCentersScreen> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: TextField(
                 controller: _searchController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Search',
                   prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),

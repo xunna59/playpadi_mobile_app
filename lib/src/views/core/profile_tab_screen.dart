@@ -1,6 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../../core/constants.dart';
 import '../../models/user_profile_model.dart';
 import '../../controllers/user_Profile_controller.dart';
 import '../../routes/app_routes.dart';
@@ -106,10 +106,8 @@ class _ProfileTabState extends State<ProfileTab> {
                   backgroundColor: colorScheme.tertiary,
                   backgroundImage:
                       profile.displayPicture != null
-                          ? MemoryImage(
-                            base64Decode(
-                              profile.displayPicture!.split(',').last,
-                            ),
+                          ? NetworkImage(
+                            '${display_picture}${_profile!.displayPicture!}',
                           )
                           : const AssetImage('assets/images/user.png')
                               as ImageProvider,

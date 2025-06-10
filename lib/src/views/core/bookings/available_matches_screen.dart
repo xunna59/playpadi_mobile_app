@@ -16,23 +16,55 @@ class _AvailableMatchesScreenState extends State<AvailableMatchesScreen> {
   List<MatchModel> _matches = [];
   bool _isLoading = true;
   String? _error;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     _loadMatches();
   }
 
-  Future<void> _loadMatches() async {
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadMatches(loadMore: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  int _page = 1;
+  bool _hasMore = true;
+  bool _isLoadingMore = false;
+
+  Future<void> _loadMatches({bool loadMore = false}) async {
+    if (_isLoadingMore || (!_hasMore && loadMore)) return;
+
     setState(() {
-      _isLoading = true;
+      if (!loadMore) {
+        _isLoading = true;
+        _page = 1; // reset page for refresh
+        _hasMore = true; // reset hasMore on refresh
+      }
+      _isLoadingMore = loadMore;
+      if (!loadMore) _matches = []; // clear current matches on refresh
       _error = null;
     });
 
     try {
-      final data = await _controller.getPublicBookings();
+      final newMatches = await _controller.getPublicBookings(page: _page);
       setState(() {
-        _matches = data;
+        if (newMatches.isEmpty) {
+          _hasMore = false;
+        } else {
+          _page++;
+          _matches.addAll(newMatches);
+        }
       });
     } catch (e) {
       setState(() {
@@ -41,9 +73,40 @@ class _AvailableMatchesScreenState extends State<AvailableMatchesScreen> {
     } finally {
       setState(() {
         _isLoading = false;
+        _isLoadingMore = false;
       });
     }
   }
+
+  // Future<void> _loadMatches({bool loadMore = false}) async {
+  //   if (_isLoadingMore || (!_hasMore && loadMore)) return;
+  //   setState(() {
+  //     if (!loadMore) _isLoading = true;
+  //     _isLoadingMore = loadMore;
+  //     _error = null;
+  //   });
+
+  //   try {
+  //     final newMatches = await _controller.getPublicBookings(page: _page);
+  //     setState(() {
+  //       if (newMatches.isEmpty) {
+  //         _hasMore = false;
+  //       } else {
+  //         _page++;
+  //         _matches.addAll(newMatches);
+  //       }
+  //     });
+  //   } catch (e) {
+  //     setState(() {
+  //       _error = e.toString();
+  //     });
+  //   } finally {
+  //     setState(() {
+  //       _isLoading = false;
+  //       _isLoadingMore = false;
+  //     });
+  //   }
+  // }
 
   Widget _buildFilterChip({
     required String label,
@@ -119,13 +182,18 @@ class _AvailableMatchesScreenState extends State<AvailableMatchesScreen> {
                       ? Center(child: Text('Error: $_error'))
                       : _matches.isEmpty
                       ? const Center(child: Text('No matches found.'))
-                      : SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.only(bottom: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Padding(
+                      : ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.only(bottom: 80),
+                        itemCount:
+                            _matches.length +
+                            1 +
+                            (_hasMore && _isLoadingMore ? 1 : 0),
+
+                        itemBuilder: (context, i) {
+                          if (i == 0) {
+                            // Header
+                            return const Padding(
                               padding: EdgeInsets.symmetric(
                                 horizontal: 16,
                                 vertical: 12,
@@ -137,75 +205,51 @@ class _AvailableMatchesScreenState extends State<AvailableMatchesScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ),
-                            ListView.builder(
-                              itemCount: _matches.length,
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
+                            );
+                          }
+
+                          if (i == _matches.length + 1 &&
+                              _hasMore &&
+                              _isLoadingMore) {
+                            // Show spinner only when loading more data
+                            return const Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          }
+
+                          if (i > 0 && i <= _matches.length) {
+                            final match = _matches[i - 1];
+                            return Padding(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
+                                // vertical: 4.0,
+                                horizontal: 10.0,
                               ),
-                              itemBuilder:
-                                  (context, i) => GestureDetector(
-                                    onTap: () {
-                                      Navigator.pushNamed(
-                                        context,
-                                        AppRoutes.matchDetailsScreen,
-                                        arguments: _matches[i],
-                                      );
-                                    },
-                                    child: AvailableMatchCard(
-                                      match: _matches[i],
-                                    ),
-                                  ),
-                            ),
-                            const SizedBox(height: 24),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
+                              child: GestureDetector(
+                                onTap: () async {
+                                  // Navigator.pushNamed(
+                                  //   context,
+                                  //   AppRoutes.matchDetailsScreen,
+                                  //   arguments: match,
+                                  // );
+
+                                  final didJoin = await Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.matchDetailsScreen,
+                                    arguments: match,
+                                  );
+
+                                  if (didJoin == true) {
+                                    _loadMatches();
+                                  }
+                                },
+                                child: AvailableMatchCard(match: match),
                               ),
-                              child: Text(
-                                'Request Your Place',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              child: Row(
-                                children:
-                                    _matches.map((match) {
-                                      return Padding(
-                                        padding: const EdgeInsets.only(
-                                          right: 12,
-                                        ),
-                                        child: SizedBox(
-                                          width: 380,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              Navigator.pushNamed(
-                                                context,
-                                                AppRoutes.matchDetailsScreen,
-                                                arguments: match,
-                                              );
-                                            },
-                                            child: AvailableMatchCard(
-                                              match: match,
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }).toList(),
-                              ),
-                            ),
-                          ],
-                        ),
+                            );
+                          }
+
+                          return const SizedBox.shrink();
+                        },
                       ),
             ),
           ),
@@ -214,3 +258,52 @@ class _AvailableMatchesScreenState extends State<AvailableMatchesScreen> {
     );
   }
 }
+
+
+
+
+ // const SizedBox(height: 24),
+                            // const Padding(
+                            //   padding: EdgeInsets.symmetric(
+                            //     horizontal: 16,
+                            //     vertical: 8,
+                            //   ),
+                            //   child: Text(
+                            //     'Request Your Place',
+                            //     style: TextStyle(
+                            //       fontSize: 16,
+                            //       fontWeight: FontWeight.bold,
+                            //     ),
+                            //   ),
+                            // ),
+                            // SingleChildScrollView(
+                            //   scrollDirection: Axis.horizontal,
+                            //   padding: const EdgeInsets.symmetric(
+                            //     horizontal: 16,
+                            //   ),
+                            //   child: Row(
+                            //     children:
+                            //         _matches.map((match) {
+                            //           return Padding(
+                            //             padding: const EdgeInsets.only(
+                            //               right: 12,
+                            //             ),
+                            //             child: SizedBox(
+                            //               width: 380,
+                            //               child: GestureDetector(
+                            //                 onTap: () {
+                            //                   Navigator.pushNamed(
+                            //                     context,
+                            //                     AppRoutes.matchDetailsScreen,
+                            //                     arguments: match,
+                            //                   );
+                            //                 },
+                            //                 child: AvailableMatchCard(
+                            //                   match: match,
+                            //                 ),
+                            //               ),
+                            //             ),
+                            //           );
+                            //         }).toList(),
+                            //   ),
+                            // ),

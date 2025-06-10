@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+// import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 //import '../core/constants.dart';
 import './request.dart';
 import './response.dart';
 import './exceptions.dart';
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class APIClient {
   static final APIClient _instance = APIClient._privateConstructor();
@@ -26,6 +30,12 @@ class APIClient {
   Future<void> loadToken() => _loadToken();
 
   factory APIClient() => _instance;
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+    // clientId:
+    //     '512656274553-68brrrinihdoh61emr0oqkkuj2jv4i7d.apps.googleusercontent.com',
+  );
 
   Future<dynamic> request(
     Request payload, [
@@ -68,28 +78,91 @@ class APIClient {
   }
 
   /// Google Sign-In Integration
+  // Future<void> signInWithGoogle() async {
+  //   try {
+  //     final result = await FlutterWebAuth2.authenticate(
+  //       url: 'https://playpadi.xunnatech.com/auth/google',
+  //       callbackUrlScheme: 'playpadi',
+  //     );
+  //     print('🔁 Redirect result: $result');
+  //     final uri = Uri.parse(result);
+  //     token = uri.queryParameters['token'];
+
+  //     if (token != null) {
+  //       isAuthorized = true;
+  //       await _saveToken(token!);
+  //     } else {
+  //       throw TokenNotFoundException();
+  //     }
+  //   } catch (e) {
+  //     if (e is WebAuthException) {
+  //       throw UserCanceledSignInException();
+  //     } else {
+  //       rethrow;
+  //     }
+  //   }
+  // }
+
   Future<void> signInWithGoogle() async {
     try {
-      final result = await FlutterWebAuth2.authenticate(
-        url: 'https://playpadi.xunnatech.com/auth/google',
-        callbackUrlScheme: 'playpadi',
-      );
-      print('🔁 Redirect result: $result');
-      final uri = Uri.parse(result);
-      token = uri.queryParameters['token'];
+      await _googleSignIn.signOut();
 
-      if (token != null) {
-        isAuthorized = true;
-        await _saveToken(token!);
-      } else {
+      final googleUser = await _googleSignIn.signIn();
+
+      if (googleUser == null) {
+        throw UserCanceledSignInException();
+      }
+
+      final googleAuth = await googleUser.authentication;
+      final idToken = googleAuth.idToken;
+
+      print('Google idToken: $idToken');
+
+      if (idToken == null) {
         throw TokenNotFoundException();
       }
-    } catch (e) {
-      if (e is WebAuthException) {
-        throw UserCanceledSignInException();
-      } else {
+
+      final appToken = await _exchangeIdTokenWithBackend(idToken);
+
+      print('Backend app token: $appToken');
+
+      if (appToken == null) {
+        throw TokenNotFoundException();
+      }
+
+      token = appToken;
+      isAuthorized = true;
+      await _saveToken(appToken);
+    } catch (e, stack) {
+      print('Sign-in error: $e\n$stack');
+      if (e is UserCanceledSignInException || e is TokenNotFoundException) {
         rethrow;
       }
+      throw Exception('Unhandled sign-in error: $e');
+    }
+  }
+
+  Future<String?> _exchangeIdTokenWithBackend(String idToken) async {
+    final url = Uri.parse('https://playpadi.xunnatech.com/auth/google');
+    print('Sending idToken to backend...');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'id_token': idToken}),
+    );
+
+    print('Backend response status: ${response.statusCode}');
+    print('Backend response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      final backendToken = body['token'];
+      print('Received app token: $backendToken');
+      return backendToken;
+    } else {
+      print('Failed to get app token from backend.');
+      return null;
     }
   }
 
@@ -178,6 +251,54 @@ class APIClient {
         return callback();
       }
     });
+  }
+
+  Future<dynamic> updateFCMToken(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/api/update-fcm-token',
+      method: 'put',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
+      body: jsonEncode(data),
+    );
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+
+      if (callback is Function) {
+        return callback();
+      }
+    });
+  }
+
+  Future<void> updateDisplayPicture(File imageFile) async {
+    final uri = Uri.parse('$baseUrl/api/update-dp');
+
+    final mimeType =
+        lookupMimeType(imageFile.path) ?? 'application/octet-stream';
+    final request =
+        http.MultipartRequest('PUT', uri)
+          ..headers['Authorization'] = 'Bearer $token'
+          ..files.add(
+            await http.MultipartFile.fromPath(
+              'display_picture',
+              imageFile.path,
+              contentType: MediaType.parse(mimeType),
+            ),
+          );
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw ServerErrorException(response.statusCode, response.body);
+    }
+
+    print('Profile picture updated on server');
   }
 
   Future<dynamic> fetchProfile([dynamic callback]) async {
@@ -299,29 +420,6 @@ class APIClient {
     Request payload = Request(
       '${baseUrl}/api/academy/fetch-classes',
       method: 'get',
-      headers: ['Content-Type: application/json'],
-      body: null,
-    );
-    return await request(payload, (Response response) {
-      if (response.status != Response.SUCCESS) {
-        throw ServerErrorException(response.code, response.message);
-      }
-      if (callback is Function) {
-        return callback(response.data);
-      } else {
-        return response.data;
-      }
-    });
-  }
-
-  Future<dynamic> fetchPublicBookings([dynamic callback]) async {
-    if (!isAuthorized) {
-      throw UnauthorizedRequestException();
-    }
-
-    Request payload = Request(
-      '${baseUrl}/api/fetch-bookings/public',
-      method: 'get',
       headers: [
         'Content-Type: application/json',
         'Authorization: Bearer $token',
@@ -340,9 +438,65 @@ class APIClient {
     });
   }
 
+  Future<dynamic> fetchPublicBookings({
+    int page = 1,
+    int limit = 20,
+    dynamic callback,
+  }) async {
+    if (!isAuthorized) {
+      throw UnauthorizedRequestException();
+    }
+
+    final url = Uri.parse(
+      '$baseUrl/api/fetch-bookings/public?page=$page&limit=$limit',
+    );
+
+    Request payload = Request(
+      url.toString(),
+      method: 'get',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
+      body: null,
+    );
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+      return callback is Function ? callback(response.data) : response.data;
+    });
+  }
+
   Future<dynamic> addBooking(Map data, [dynamic callback]) async {
     Request payload = Request(
       '${baseUrl}/api/create-booking/${data['sports_center_id']}/${data['court_id']}',
+      method: 'post',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
+      body: jsonEncode(data),
+    );
+    //  print('This is body sent: ${payload.body}');
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
+  Future<dynamic> joinOpenMatch(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/api/join/open-match/${data['bookind_id']}',
       method: 'post',
       headers: [
         'Content-Type: application/json',

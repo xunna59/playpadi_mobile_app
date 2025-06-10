@@ -1,9 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../../playpadi_library.dart';
 import '../../controllers/user_Profile_controller.dart';
+import '../../core/constants.dart';
 import '../../models/user_profile_model.dart';
 import '../../routes/app_routes.dart';
 
@@ -27,11 +30,29 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    requestNotificationPermission();
     loadUserProfile();
+  }
+
+  Future<void> requestNotificationPermission() async {
+    final status = await Permission.notification.request();
+
+    if (status.isGranted) {
+      print("✅ Notification permission granted.");
+    } else if (status.isDenied) {
+      print("❌ Notification permission denied.");
+    } else if (status.isPermanentlyDenied) {
+      print("⚠️ Notification permanently denied. Opening app settings...");
+      await openAppSettings();
+    }
   }
 
   Future<void> loadUserProfile() async {
     try {
+      if (APIClient.instance.isAuthorized != true) {
+        Navigator.pushReplacementNamed(context, '/auth');
+      }
+
       final profile = await controller.fetchUserProfile();
       if (!mounted) return;
       setState(() {
@@ -69,6 +90,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // SystemChrome.setSystemUIOverlayStyle(
+    //   const SystemUiOverlayStyle(
+    //     systemNavigationBarColor: Color.fromRGBO(10, 8, 18, 1),
+    //     systemNavigationBarIconBrightness: Brightness.light,
+    //     statusBarColor: Color.fromRGBO(10, 8, 18, 1),
+    //     statusBarIconBrightness: Brightness.dark,
+    //   ),
+    // );
     final colorScheme = Theme.of(context).colorScheme;
 
     final tabs = <Widget>[
@@ -89,10 +118,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           ? CircleAvatar(
                             radius: 30,
                             backgroundColor: colorScheme.tertiary,
-                            backgroundImage: MemoryImage(
-                              base64Decode(
-                                _profile!.displayPicture!.split(',').last,
-                              ),
+                            backgroundImage: NetworkImage(
+                              '${display_picture}${_profile!.displayPicture!}',
                             ),
                           )
                           : CircleAvatar(

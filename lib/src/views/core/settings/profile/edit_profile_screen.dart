@@ -6,8 +6,10 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../controllers/user_Profile_controller.dart';
 import '../../../../core/activity_overlay.dart';
+import '../../../../core/constants.dart';
 import '../../../../models/user_profile_model.dart';
 import '../../../../routes/app_routes.dart';
+import 'package:mime/mime.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -116,27 +118,55 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (date != null) setState(() => _dob = date);
   }
 
+  // Future<void> _pickImage() async {
+  //   final img = await _picker.pickImage(source: ImageSource.gallery);
+  //   if (img != null) {
+  //     setState(() => _pickedImage = img);
+
+  //     try {
+  //       // Read and convert image to base64
+  //       final bytes = await File(img.path).readAsBytes();
+
+  //       final extension = img.path.split('.').last.toLowerCase();
+  //       final mimeType =
+  //           extension == 'png'
+  //               ? 'image/png'
+  //               : extension == 'jpg' || extension == 'jpeg'
+  //               ? 'image/jpeg'
+  //               : 'application/octet-stream';
+
+  //       final base64Image = 'data:$mimeType;base64,' + base64Encode(bytes);
+
+  //       // Upload image immediately
+  //       await controller.updateDisplayPicture({'display_picture': base64Image});
+
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(
+  //           content: Text('Profile picture updated successfully'),
+  //           backgroundColor: Colors.green,
+  //         ),
+  //       );
+  //     } catch (e, stacktrace) {
+  //       print(stacktrace);
+
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('Failed to update image: ${stacktrace.toString()}'),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+  //   }
+  // }
+
   Future<void> _pickImage() async {
     final img = await _picker.pickImage(source: ImageSource.gallery);
     if (img != null) {
       setState(() => _pickedImage = img);
 
       try {
-        // Read and convert image to base64
-        final bytes = await File(img.path).readAsBytes();
-
-        final extension = img.path.split('.').last.toLowerCase();
-        final mimeType =
-            extension == 'png'
-                ? 'image/png'
-                : extension == 'jpg' || extension == 'jpeg'
-                ? 'image/jpeg'
-                : 'application/octet-stream';
-
-        final base64Image = 'data:$mimeType;base64,' + base64Encode(bytes);
-
-        // Upload image immediately
-        await controller.updateUserProfile({'display_picture': base64Image});
+        final file = File(img.path);
+        await controller.updateDisplayPicture(file);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -149,7 +179,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to update image: ${stacktrace.toString()}'),
+            content: Text('Failed to update image: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -234,12 +264,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 _pickedImage != null
                                     ? FileImage(File(_pickedImage!.path))
                                     : (_profile?.displayPicture != null
-                                        ? MemoryImage(
-                                          base64Decode(
-                                            _profile!.displayPicture!
-                                                .split(',')
-                                                .last,
-                                          ),
+                                        ? NetworkImage(
+                                          '${display_picture}${_profile!.displayPicture!}',
                                         )
                                         : const AssetImage(
                                               'assets/images/default_avatar.png',

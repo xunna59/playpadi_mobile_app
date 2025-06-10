@@ -36,7 +36,7 @@ class HomeTab extends ConsumerWidget {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: const Text(
-                    'Best hand, court side, match type, Preferred time to play',
+                    'Best hand, court side, match type, preferred time to play',
                     style: TextStyle(fontSize: 12),
                   ),
                   trailing: const Icon(Icons.arrow_forward_ios),
@@ -61,8 +61,9 @@ class HomeTab extends ConsumerWidget {
             children: [
               MatchCard(
                 icon: Icons.search,
-                title: 'Book a court',
-                subtitle: 'If you already know who you are playing with',
+                title: 'Book a Court',
+                subtitle:
+                    'Perfect when you already have your playing partner(s)',
                 imageUrl: 'assets/background/book_court.png',
                 onTap: () {
                   Navigator.pushNamed(context, AppRoutes.eventCenter);
@@ -71,8 +72,8 @@ class HomeTab extends ConsumerWidget {
               const SizedBox(height: 16),
               MatchCard(
                 icon: Icons.group,
-                title: 'Play an open match',
-                subtitle: 'If you are looking for players at your level',
+                title: 'Play an Open Match',
+                subtitle: 'Find and play with others at your skill level',
                 imageUrl: 'assets/background/open_match.png',
                 onTap: () {
                   Navigator.pushNamed(context, AppRoutes.playOpenMatches);

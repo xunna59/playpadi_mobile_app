@@ -12,6 +12,40 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  // void _handleGoogleSignIn() async {
+  //   final client = APIClient();
+
+  //   try {
+  //     await client.signInWithGoogle();
+
+  //     if (!mounted) return;
+
+  //     // Should only get here if token was found
+  //     // debugPrint(
+  //     //   '✅ signInWithGoogle succeeded; isAuthorized=${client.isAuthorized}, token=${client.token}',
+  //     // );
+
+  //     Navigator.pushReplacementNamed(context, AppRoutes.home);
+  //   } catch (e, stack) {
+  //     debugPrint('❌ _handleGoogleSignIn caught → $e\n$stack');
+  //     if (!mounted) return;
+
+  //     String errorMessage;
+
+  //     if (e is UserCanceledSignInException) {
+  //       errorMessage = 'Sign-in was canceled. Please try again.';
+  //     } else if (e is TokenNotFoundException) {
+  //       errorMessage = 'Token not found in the authentication response.';
+  //     } else {
+  //       errorMessage = 'An unexpected error occurred. Please try again.';
+  //     }
+
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text(errorMessage)));
+  //   }
+  // }
+
   void _handleGoogleSignIn() async {
     final client = APIClient();
 
@@ -20,29 +54,17 @@ class _AuthScreenState extends State<AuthScreen> {
 
       if (!mounted) return;
 
-      // Should only get here if token was found
-      // debugPrint(
-      //   '✅ signInWithGoogle succeeded; isAuthorized=${client.isAuthorized}, token=${client.token}',
-      // );
-
       Navigator.pushReplacementNamed(context, AppRoutes.home);
-    } catch (e, stack) {
-      debugPrint('❌ _handleGoogleSignIn caught → $e\n$stack');
-      if (!mounted) return;
-
-      String errorMessage;
-
-      if (e is UserCanceledSignInException) {
-        errorMessage = 'Sign-in was canceled. Please try again.';
-      } else if (e is TokenNotFoundException) {
-        errorMessage = 'Token not found in the authentication response.';
-      } else {
-        errorMessage = 'An unexpected error occurred. Please try again.';
-      }
+    } catch (e) {
+      String message = switch (e) {
+        UserCanceledSignInException => 'Sign-in was canceled.',
+        TokenNotFoundException => 'App token not received. Please try again.',
+        _ => 'Unexpected error: $e',
+      };
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(errorMessage)));
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
@@ -90,8 +112,8 @@ class _AuthScreenState extends State<AuthScreen> {
             AuthButton(
               imageUrl: 'assets/icons/google.png',
               text: 'Continue with Google',
-              // onPressed: () => _handleGoogleSignIn(),
-              onPressed: () {},
+              onPressed: () => _handleGoogleSignIn(),
+              //   onPressed: () {},
             ),
             const SizedBox(height: 12),
             Row(

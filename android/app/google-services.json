@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "512656274553",
+    "project_id": "playpadi-2aded",
+    "storage_bucket": "playpadi-2aded.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:512656274553:android:c4a732cddf2f9f19df10a8",
+        "android_client_info": {
+          "package_name": "com.example.playpadi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "512656274553-68brrrinihdoh61emr0oqkkuj2jv4i7d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.playpadi",
+            "certificate_hash": "d2ce232e6df5653adc3e77321f00cf8ba0293aab"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDx-xBTd_A7fgM5R0OumOfjiwCKggu5hSo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

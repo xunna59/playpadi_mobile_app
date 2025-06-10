@@ -17,10 +17,17 @@ class MatchController {
   //   }
   // }
 
-  Future<List<MatchModel>> getPublicBookings() async {
+  Future<List<MatchModel>> getPublicBookings({
+    int page = 1,
+    int limit = 20,
+  }) async {
     try {
-      final response = await client.fetchPublicBookings();
+      final response = await client.fetchPublicBookings(
+        page: page,
+        limit: limit,
+      );
       List<dynamic> rawList = [];
+
       if (response is Map<String, dynamic>) {
         if (response['data'] is Map<String, dynamic> &&
             response['data']['formattedBookings'] is List) {
@@ -32,13 +39,7 @@ class MatchController {
         rawList = response;
       }
 
-      final parsed =
-          rawList
-              .map((e) => MatchModel.fromJson(e as Map<String, dynamic>))
-              .toList();
-
-      //    print("Parsed classes: ${parsed.length}");
-      return parsed;
+      return rawList.map((e) => MatchModel.fromJson(e)).toList();
     } catch (e) {
       print('Error fetching: $e');
       return [];
@@ -54,6 +55,36 @@ class MatchController {
       // 1️⃣ If the API returns a single booking under `booking`
       if (response is Map<String, dynamic> && response['booking'] != null) {
         rawList = [response['booking']];
+      }
+      // 2️⃣ Else if it returns a list directly
+      else if (response is List) {
+        rawList = response;
+      }
+      // 3️⃣ Or if it returns { data: [...] }
+      else if (response is Map<String, dynamic> && response['data'] is List) {
+        rawList = response['data'] as List;
+      } else {
+        throw FormatException('Unexpected response format: $response');
+      }
+
+      // Map each entry to your model
+      return rawList
+          .map((item) => MatchModel.fromJson(item as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<MatchModel>> joinPublicMatch(Map<String, dynamic> payload) async {
+    try {
+      final response = await client.joinOpenMatch(payload);
+
+      List<dynamic> rawList;
+
+      // 1️⃣ If the API returns a single booking under `booking`
+      if (response is Map<String, dynamic> && response['player'] != null) {
+        rawList = [response['player']];
       }
       // 2️⃣ Else if it returns a list directly
       else if (response is List) {

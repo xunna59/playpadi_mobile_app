@@ -15,6 +15,7 @@ class MatchModel {
   final String gender_allowed;
   final String cover_image;
   final bool joinedStatus;
+  final int id;
 
   MatchModel({
     required this.dateText,
@@ -31,6 +32,7 @@ class MatchModel {
     required this.gender_allowed,
     required this.cover_image,
     required this.joinedStatus,
+    required this.id,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -43,8 +45,8 @@ class MatchModel {
       totalPlayers: (json['total_players'] as num?)?.toInt() ?? 0,
       sessionPrice:
           json['session_price'] is String
-              ? double.tryParse(json['session_price'])
-              : json['session_price']?.toDouble(),
+              ? double.tryParse(json['session_price']) ?? 0.0
+              : json['session_price']?.toDouble() ?? 0.0,
 
       sessionDuration:
           json['session_duration'] is String
@@ -60,6 +62,10 @@ class MatchModel {
               .map((e) => Player.fromJson(e as Map<String, dynamic>))
               .toList(),
       joinedStatus: json['joinedStatus'] as bool? ?? false,
+      id:
+          json['id'] is String
+              ? int.tryParse(json['id']) ?? 0
+              : (json['id'] as num?)?.toInt() ?? 0,
     );
   }
 }

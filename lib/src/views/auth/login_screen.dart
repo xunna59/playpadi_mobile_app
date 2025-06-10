@@ -1,5 +1,7 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import '../../../playpadi_library.dart';
+import '../../controllers/user_Profile_controller.dart';
 import '../../core/activity_overlay.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/primary_button.dart';
@@ -18,6 +20,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool isPasswordVisible = false;
+  final controller = UserProfileController();
+
+  void _updateFCMToken(updates) async {
+    final updatedProfile = await controller.updateFCMToken(updates);
+  }
 
   void _processLogin() async {
     Map<String, String> data = {
@@ -28,10 +35,21 @@ class _LoginScreenState extends State<LoginScreen> {
     LoadingOverlay.show(context);
 
     try {
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+
+      final updates = {'fcm_token': fcmToken};
+
       await client.login(data, () {
         debugPrint('Login successful');
 
         if (!mounted) return; // <- Important
+
+        if (fcmToken != null) {
+          print('FCM Token: ${fcmToken}');
+          print('for server: $updates');
+          _updateFCMToken(updates);
+        }
+
         Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
       });
     } on NetworkErrorException catch (e) {
