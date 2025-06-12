@@ -110,7 +110,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           _selectedIndex == 0
               ? AppBar(
                 backgroundColor: Colors.transparent,
-                title: Text('Hi ${_profile?.firstName ?? ''} ✌️'),
+                title: Text(
+                  'Hi ${_profile?.firstName ?? ''} ✌️',
+                  style: TextStyle(fontSize: 19),
+                ),
                 leading: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child:

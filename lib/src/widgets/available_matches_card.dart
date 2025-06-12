@@ -202,9 +202,9 @@ class _AvailableMatchCardState extends State<AvailableMatchCard> {
                               const SizedBox(width: 4),
                               Text(
                                 'Joined',
-                                style: GoogleFonts.roboto(
+                                style: GoogleFonts.inter(
                                   fontSize: 16,
-                                  fontWeight: FontWeight.w400,
+                                  fontWeight: FontWeight.w500,
                                   color: colorScheme.primary,
                                 ),
                               ),
@@ -212,9 +212,9 @@ class _AvailableMatchCardState extends State<AvailableMatchCard> {
                           )
                           : Text(
                             '₦${NumberFormat('#,##0', 'en_NG').format(widget.match.sessionPrice / widget.match.totalPlayers)} – ${widget.match.sessionDuration}mins',
-                            style: GoogleFonts.roboto(
+                            style: GoogleFonts.inter(
                               fontSize: 16,
-                              fontWeight: FontWeight.w400,
+                              fontWeight: FontWeight.w600,
                               color: Colors.white,
                             ),
                           ),

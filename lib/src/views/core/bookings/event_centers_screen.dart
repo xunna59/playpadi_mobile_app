@@ -17,29 +17,16 @@ class EventCentersScreen extends ConsumerStatefulWidget {
 }
 
 class _EventCentersScreenState extends ConsumerState<EventCentersScreen> {
-  String selectedSport = 'Padel';
+  String? selectedSport;
   String selectedTime = 'Today 3pm - 8pm';
 
   final TextEditingController _searchController = TextEditingController();
-  List<EventCenter> _allCenters = [];
-  List<EventCenter> _filteredCenters = [];
 
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(_onSearchChanged);
-  }
-
-  void _onSearchChanged() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredCenters =
-          _allCenters.where((center) {
-            return center.name.toLowerCase().contains(query) ||
-                center.address.toLowerCase().contains(
-                  query,
-                ); // customize fields
-          }).toList();
+    _searchController.addListener(() {
+      setState(() {});
     });
   }
 
@@ -68,7 +55,7 @@ class _EventCentersScreenState extends ConsumerState<EventCentersScreen> {
                 controller: _searchController,
                 decoration: InputDecoration(
                   labelText: 'Search',
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search),
                   contentPadding: const EdgeInsets.symmetric(vertical: 8),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -84,9 +71,16 @@ class _EventCentersScreenState extends ConsumerState<EventCentersScreen> {
                 ),
                 const SizedBox(width: 8),
                 CustomFilterChip(
-                  label: selectedSport,
+                  label: selectedSport ?? 'All Sports',
                   backgroundColor: Theme.of(context).colorScheme.primary,
-                  onTap: () => showSelectSportModal(context),
+                  onTap: () async {
+                    final sport = await showSelectSportModal(context);
+                    if (sport != null) {
+                      setState(() {
+                        selectedSport = sport;
+                      });
+                    }
+                  },
                 ),
                 const SizedBox(width: 8),
                 CustomFilterChip(
@@ -104,13 +98,25 @@ class _EventCentersScreenState extends ConsumerState<EventCentersScreen> {
                 onRefresh: () => ref.refresh(eventCentersProvider.future),
                 child: centersAsync.when(
                   data: (centers) {
-                    _allCenters = centers;
-                    _filteredCenters =
-                        _searchController.text.isEmpty
-                            ? centers
-                            : _filteredCenters;
+                    final query = _searchController.text.toLowerCase();
 
-                    if (_filteredCenters.isEmpty) {
+                    final filteredCenters =
+                        centers.where((center) {
+                          final matchesSearch =
+                              center.name.toLowerCase().contains(query) ||
+                              center.address.toLowerCase().contains(query);
+
+                          // Ensure center.sports is not null and contains selectedSport
+                          final matchesSport =
+                              selectedSport == null ||
+                              center.games
+                                  .map((s) => s.toLowerCase())
+                                  .contains(selectedSport!.toLowerCase());
+
+                          return matchesSearch && matchesSport;
+                        }).toList();
+
+                    if (filteredCenters.isEmpty) {
                       return ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         children: const [
@@ -122,9 +128,9 @@ class _EventCentersScreenState extends ConsumerState<EventCentersScreen> {
 
                     return ListView.builder(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: _filteredCenters.length,
+                      itemCount: filteredCenters.length,
                       itemBuilder: (context, index) {
-                        final center = _filteredCenters[index];
+                        final center = filteredCenters[index];
                         return GestureDetector(
                           onTap: () {
                             Navigator.pushNamed(
@@ -138,6 +144,7 @@ class _EventCentersScreenState extends ConsumerState<EventCentersScreen> {
                       },
                     );
                   },
+
                   loading:
                       () => ListView(
                         physics: const AlwaysScrollableScrollPhysics(),

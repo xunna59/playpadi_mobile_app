@@ -8,6 +8,7 @@ import '../models/court_model.dart';
 import '../models/event_center_model.dart';
 import '../routes/app_routes.dart';
 import 'confirm_booking_modal.dart';
+import 'sport_modal_widget.dart';
 
 class BookSectionContent extends StatefulWidget {
   final int bookingId;
@@ -19,6 +20,8 @@ class BookSectionContent extends StatefulWidget {
 }
 
 class _BookSectionContentState extends State<BookSectionContent> {
+  String? selectedSport;
+
   int _selectedDateIndex = 0;
   bool _showAvailableSlotsOnly = false;
   String? _selectedTime;
@@ -66,63 +69,103 @@ class _BookSectionContentState extends State<BookSectionContent> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 100,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: dates.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 16),
-                  itemBuilder: (context, index) {
-                    final date = dates[index];
-                    final isSelected = index == _selectedDateIndex;
-                    return GestureDetector(
-                      onTap: () {
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final sport = await showSelectSportModal(context);
+                      if (sport != null) {
                         setState(() {
-                          _selectedDateIndex = index;
-                          _selectedTime = null;
+                          selectedSport = sport;
                         });
-                      },
+                      }
+                      print(selectedSport);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 5.0, top: 12),
                       child: Container(
-                        width: 60,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              date.weekday,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Container(
-                              padding: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                color:
-                                    isSelected
-                                        ? colorScheme.primary
-                                        : Colors.transparent,
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Text(
-                                date.day,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              date.month,
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ],
+                        height: 100,
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: colorScheme.secondary,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color:
+                                colorScheme.primary, // Customize border color
+                            width: 1.0, // Customize border width
+                          ),
+                        ),
+                        child: Image.asset(
+                          'assets/icons/paddle_bat.png',
+                          width: 25,
+                          height: 25,
+                          fit: BoxFit.contain,
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  ),
+
+                  Expanded(
+                    child: SizedBox(
+                      height: 100,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: dates.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 16),
+                        itemBuilder: (context, index) {
+                          final date = dates[index];
+                          final isSelected = index == _selectedDateIndex;
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedDateIndex = index;
+                                _selectedTime = null;
+                              });
+                            },
+                            child: Container(
+                              width: 60,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    date.weekday,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Container(
+                                    padding: const EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          isSelected
+                                              ? colorScheme.primary
+                                              : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Text(
+                                      date.day,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    date.month,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
 
@@ -283,8 +326,43 @@ class _BookSectionContentState extends State<BookSectionContent> {
                                             child: GestureDetector(
                                               // Inside your GestureDetector onTap:
                                               onTap: () {
-                                                if (_selectedTime == null)
-                                                  return; // don’t open unless a time is chosen
+                                                if (selectedSport == null) {
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                        "Please select a game first.",
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                      backgroundColor:
+                                                          Colors
+                                                              .redAccent, // ← here
+                                                    ),
+                                                  );
+                                                  return;
+                                                }
+
+                                                if (_selectedTime == null) {
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                        "Please select a time first.",
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                      backgroundColor:
+                                                          Colors
+                                                              .redAccent, // ← here
+                                                    ),
+                                                  );
+                                                  return;
+                                                }
 
                                                 final dateObj =
                                                     dates[_selectedDateIndex];
@@ -300,12 +378,13 @@ class _BookSectionContentState extends State<BookSectionContent> {
 
                                                 final selectedCourt = court;
 
+                                                final selectedGame =
+                                                    selectedSport;
+
                                                 showConfirmBookingModal(
                                                   context,
                                                   sport:
-                                                      center
-                                                          .games
-                                                          .first, // or whatever gameType you use
+                                                      selectedGame!, // or whatever gameType you use
                                                   date:
                                                       dateString, // e.g. "2025-05-03"
                                                   time:
@@ -364,9 +443,9 @@ class _BookSectionContentState extends State<BookSectionContent> {
               Text(
                 //   courtData.price.toString(),
                 '\₦${NumberFormat('#,##0', 'en_NG').format(courtData.price)}',
-                style: GoogleFonts.roboto(
+                style: GoogleFonts.inter(
                   fontSize: 16,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w600,
                   color: Colors.white,
                 ),
               ),

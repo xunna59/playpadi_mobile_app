@@ -34,8 +34,8 @@ final darkTheme = ThemeData(
     tertiary: Colors.black45,
     primaryContainer: Colors.black,
 
-    secondary: Color.fromRGBO(10, 8, 18, 1),
-    // secondary: Color.fromARGB(31, 15, 11, 11),
+    // secondary: Color.fromRGBO(10, 8, 18, 1),
+    secondary: Color(0xFF1B1D25),
     onSecondary: Colors.black,
     surface: Colors.grey,
     onSurface: Colors.white,

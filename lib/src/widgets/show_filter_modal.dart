@@ -15,7 +15,7 @@ void showFilterModal(BuildContext context) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    backgroundColor: colorScheme.tertiary,
+    backgroundColor: colorScheme.secondary,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),

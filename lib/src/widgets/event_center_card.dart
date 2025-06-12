@@ -67,7 +67,7 @@ class EventCenterCard extends StatelessWidget {
                       ),
                       Text(
                         '${formatted}/hr',
-                        style: GoogleFonts.roboto(
+                        style: GoogleFonts.inter(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),

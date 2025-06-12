@@ -7,7 +7,7 @@ Future<String?> showSelectSportModal(BuildContext context) async {
   String? selected;
 
   return showModalBottomSheet<String>(
-    backgroundColor: colorScheme.tertiary,
+    backgroundColor: colorScheme.secondary,
     context: context,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
@@ -43,11 +43,16 @@ Future<String?> showSelectSportModal(BuildContext context) async {
                   onSelect: (value) => setState(() => selected = value),
                 ),
                 _SportOption(
-                  title: "Dart",
+                  title: "Darts",
                   selected: selected,
                   onSelect: (value) => setState(() => selected = value),
                 ),
 
+                // _SportOption(
+                //   title: "Chess",
+                //   selected: selected,
+                //   onSelect: (value) => setState(() => selected = value),
+                // ),
                 const SizedBox(height: 16),
 
                 // Select Button
