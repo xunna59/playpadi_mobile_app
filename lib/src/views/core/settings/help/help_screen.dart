@@ -5,19 +5,47 @@ import 'package:url_launcher/url_launcher.dart';
 class HelpScreen extends StatelessWidget {
   const HelpScreen({Key? key}) : super(key: key);
 
-  // Replace these with your actual contact details:
-  final String _phoneNumber = '+1234567890';
-  final String _emailAddress = 'help@example.com';
-  final String _whatsAppNumber = '+1234567890';
-  final String _instagramHandle = 'your_instagram';
-  final String _twitterHandle = 'twitter';
+  // Contact details
+  static const String _emailAddress = 'support@playpadi.com';
+  static const String _phoneNumber = '+1234567890';
+  static const String _whatsAppNumber = '+1234567890';
+  static const String _instagramHandle = 'instagram';
+  static const String _twitterHandle = 'twitter';
 
   Future<void> _launchUrl(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      throw 'Could not launch $url';
+      debugPrint('Could not launch $url');
+    }
+  }
+
+  Future<void> _launchEmail(BuildContext context) async {
+    final Uri mailtoUri = Uri(
+      scheme: 'mailto',
+      path: _emailAddress,
+      query: 'subject=Support&body=Hello,',
+    );
+
+    if (await canLaunchUrl(mailtoUri)) {
+      await launchUrl(mailtoUri, mode: LaunchMode.externalApplication);
+    } else {
+      // Fallback to Gmail web compose
+      final Uri gmailUri = Uri.parse(
+        'https://mail.google.com/mail/?view=cm&fs=1&to=$_emailAddress&su=Support&body=Hello',
+      );
+
+      if (await canLaunchUrl(gmailUri)) {
+        await launchUrl(gmailUri, mode: LaunchMode.externalApplication);
+      } else {
+        debugPrint("Gmail composer URL failed");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("No email app or Gmail found on this device."),
+          ),
+        );
+      }
     }
   }
 
@@ -55,39 +83,30 @@ class HelpScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.only(top: 16, bottom: 24),
         children: [
-          // Phone
           _buildTile(
             icon: Icons.phone,
             label: 'Phone',
             onTap: () => _launchUrl('tel:$_phoneNumber'),
             scheme: colorScheme,
           ),
-
-          // Email
           _buildTile(
             icon: Icons.email,
             label: 'Email',
-            onTap: () => _launchUrl('mailto:$_emailAddress'),
+            onTap: () => _launchEmail(context),
             scheme: colorScheme,
           ),
-
-          // WhatsApp
           _buildTile(
             icon: FontAwesomeIcons.whatsapp,
             label: 'WhatsApp',
             onTap: () => _launchUrl('https://wa.me/$_whatsAppNumber'),
             scheme: colorScheme,
           ),
-
-          // Instagram
           _buildTile(
             icon: FontAwesomeIcons.instagram,
             label: 'Instagram',
             onTap: () => _launchUrl('https://instagram.com/$_instagramHandle'),
             scheme: colorScheme,
           ),
-
-          // Twitter
           _buildTile(
             icon: FontAwesomeIcons.twitter,
             label: 'Twitter',

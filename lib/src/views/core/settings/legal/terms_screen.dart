@@ -4,40 +4,99 @@ class TermsOfUseScreen extends StatelessWidget {
   const TermsOfUseScreen({Key? key}) : super(key: key);
 
   final String termsText = '''
-PLAYPADI TERMS AND CONDITIONS
+Effective Date: 01/07/2025
 
-1. Identification of the owner and general information
-The ownership of this Website shop.playtomic.com/en/ ((hereinafter, the Website) is PLAYTOMIC, S.L. (hereinafter, PLAYTOMIC), with NIF [Spanish Tax ID No.]: B-84604792 and registered office at Paseo de la Castellana 93, 10 – Edificio Cadaguamadrid 28046 Madrid, and registered at: Madrid Business Register; and its registration details are: volume 35650, Book 0, Folio 84, Section 8, Page M-430240.
+Welcome to PlayPadi! These Terms of Use ("Terms") govern your use of the PlayPadi mobile application, website, and related services (“Services”). By accessing or using PlayPadi, you agree to be bound by these Terms.
 
-This document (as well as all the other documents mentioned here) governs the conditions that regulate the use of this Website and the purchase or acquisition of products on the same (hereinafter, Conditions).
-For the purpose of these Conditions it is understand that the activity that Playtomic is undertaking via the Website includes: Marketing women's and men's sports clothing and accessories.
 
-In addition to reading these conditions, before accessing, navigating and/or using this web page, the User must have read the Playtomic cookies policy and the privacy and data protection policies. When purchasing a product via the Website and ticking the relevant box in acceptance of these terms, the User agrees to be bound by these Conditions and for all the above and this remains no less valid than a handwritten signature.
+1. Acceptance of Terms
 
-Please be informed that these Conditions may be modified. The User is responsible for consulting them each time that they access, navigate and/or use the Website, since those in force at the time that the acquisition of products and/or services is made will apply.
+By creating an account, downloading, or using the PlayPadi app, you confirm that you are at least 18 years old (or have parental consent if under 18) and agree to abide by these Terms and our Privacy Policy.
 
-For any questions that the User may have in relation to the Conditions, they may contact the owner by using the contact details provided above, or where appropriate, by using the contact form or via the email address apparel@playtomic.io
 
-2. The User
-The access, navigation and use of the Website confers the condition of user (hereinafter referred indistinctly and individually as User or jointly as Users).
-The User assumes their responsibility of the correct use of the Website. This responsibility will include:
-Hacer uso de este Sitio Web únicamente para realizar consultas y compras o adquisiciones legalmente válidas.
-Not making any false or fraudulent purchases. If it could be reasonably considered that a purchase of this nature has been made, it may be cancelled and reported to the relevant authorities.
-Providing true and lawful contact details such as an email address, postal address and/or other details.
-The User states that they are above 18 years old and have the legal capacity to enter into agreements via this Website.
-This Website is aimed primarily at Users residing in Europe. Playtomic does not guarantee that the Website complies with legislation in other countries, either fully or partially. Playtomic accepts no responsibility that may arise from the said access, nor does it guarantee the provision of goods or services outside of Europe.
+2. Our Services
 
-The User may formalise the purchase agreement with Playtomic for the desired products in any of the languages that these conditions are available in on this Website, according to their choice.
+PlayPadi allows users to:
 
-Users are not required to register to access the Website, although a user's details will be requested when any purchase is made, with the option to register and create a user account.
+- Discover and book sports courts (e.g., padel tennis)
+- Pay for reservations securely within the app
+- Join or host open matches with other players
+- Explore sports centers and connect with other users
 
-3. Purchasing process
-The opportunity to purchase sports clothing and other accessories is offered to users via the PLAYTOMIC Website. To make the purchase, users must follow the purchasing procedure on the Website, during which several products can be selected and added to the cart or basket, so that payment can be subsequently made.
+We may update, modify, or discontinue some or all of the Services at any time.
 
-The user may create a user account or purchase as a guest. The User must complete and/or check the information that is requested at each step, during the purchasing process, before completing the payment.\
 
-The User will then receive an email confirming that Playtomic has received their purchase order, that is, the order confirmation. Where appropriate, this information may also be made available to the user via their user account.
-In accordance with the provisions of the applicable legislation, agreements entered into electronically will have all the effects provided for in the legal system when consent and the other requirements necessary for its validity are agreed.
+3. User Accounts
+
+To use certain features, you must create an account. You agree to:
+
+- Provide accurate and complete information
+- Keep your login credentials secure
+- Be responsible for any activity under your account
+
+PlayPadi is not responsible for any loss resulting from unauthorized access to your account.
+
+
+4. Bookings and Payments
+
+All court reservations made through PlayPadi are subject to availability and the terms set by individual sports centers. Users are responsible for:
+
+- Reviewing the booking and cancellation policy before confirming
+- Making timely payments
+- Arriving on time for reservations
+
+
+5. Cancellations and Refunds
+
+Cancellation policies are determined by individual sports centers. PlayPadi is not liable for refunds unless specifically stated. Please review the terms shown during the booking process.
+
+
+6. User Conduct
+
+You agree not to:
+
+- Misuse the app or disrupt its operation
+- Upload false, harmful, or abusive content
+- Attempt to exploit, reverse-engineer, or hack any part of the Service
+- Use PlayPadi for any illegal or unauthorized purpose
+
+Violation of these terms may lead to suspension or termination of your account.
+
+
+7. Content Ownership
+
+PlayPadi retains all rights to the app, branding, design, and related content. You may not copy, reproduce, or redistribute any part of our platform without written permission.
+
+
+8. Third-Party Services
+
+We may display or integrate third-party services (like payment processors or social logins). We are not responsible for third-party content, services, or privacy practices.
+
+
+9. Limitation of Liability
+
+PlayPadi is provided "as is." We are not liable for:
+
+- Inaccuracies in sports center information
+- Injuries or disputes arising during games or court usage
+- Interruptions in service
+
+Your use of the app is at your own risk.
+
+
+10. Termination
+
+We reserve the right to suspend or terminate your access if you violate these Terms or misuse the Service.
+
+
+11. Changes to Terms
+
+We may update these Terms periodically. Continued use of PlayPadi means you accept any updated Terms.
+
+
+12. Contact Us
+
+For questions or support, please contact us at: support@playpadi.com
 ''';
 
   @override

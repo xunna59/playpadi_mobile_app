@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/class_model.dart';
 import '../models/event_center_model.dart';
 import '../models/match_model.dart';
+import '../models/notification_model.dart';
 import '../models/user_profile_model.dart';
 import '../views/auth/completed_screen.dart';
 import '../views/auth/final_step_screen.dart';
@@ -14,7 +15,9 @@ import '../views/core/bookings/center_details_screen.dart';
 import '../views/core/bookings/confirm_booking_screen.dart';
 import '../views/core/bookings/event_centers_screen.dart';
 import '../views/core/bookings/match_details_screen.dart';
+import '../views/core/notification_details.dart';
 import '../views/core/notifications.dart';
+import '../views/core/settings/activities/activity_screen.dart';
 import '../views/core/settings/help/faq_screen.dart';
 import '../views/core/settings/help/help_screen.dart';
 import '../views/core/settings/legal/privacy_policy_screen.dart';
@@ -45,6 +48,8 @@ class AppRoutes {
   static const String eventCenterDetails = '/eventCenterDetails';
   static const String playOpenMatches = '/playOpenMatches';
   static const String notifications = '/notifications';
+  static const String notification_details = '/notification_details';
+
   static const String playerPrefernces = '/playerPrefernces';
   static const String profileScreen = '/profile_screen';
   static const String academyScreen = '/academy_screen';
@@ -55,6 +60,7 @@ class AppRoutes {
   static const String termsOfUseScreen = 'termsOfUseScreen';
   static const String privacyPolicyScreen = 'privacyPolicyScreen';
   static const String faqScreen = 'faqScreen';
+  static const String activityScreen = 'activityScreen';
 
   static const String editProfileScreen = 'editProfileScreen';
 
@@ -116,11 +122,20 @@ class AppRoutes {
       case notifications:
         return MaterialPageRoute(builder: (_) => const NotificationsScreen());
 
+      case notification_details:
+        final notification = settings.arguments as NotificationData;
+        return MaterialPageRoute(
+          builder: (_) => NotificationDetailsScreen(notification: notification),
+        );
+
       case helpScreen:
         return MaterialPageRoute(builder: (_) => const HelpScreen());
 
       case faqScreen:
         return MaterialPageRoute(builder: (_) => FaqScreen());
+
+      case activityScreen:
+        return MaterialPageRoute(builder: (_) => ActivityScreen());
 
       case termsOfUseScreen:
         return MaterialPageRoute(builder: (_) => const TermsOfUseScreen());

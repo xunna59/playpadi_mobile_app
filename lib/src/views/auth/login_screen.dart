@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../playpadi_library.dart';
 import '../../controllers/user_Profile_controller.dart';
 import '../../core/activity_overlay.dart';
+import '../../services/device_info.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/primary_button.dart';
 import '../../routes/app_routes.dart';
@@ -27,9 +28,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _processLogin() async {
+    final deviceInfo = await getDeviceInfo();
+
     Map<String, String> data = {
       'email': _emailController.text,
       'password': _passwordController.text,
+      'device_type': deviceInfo['type']!,
+      'device_name': deviceInfo['name']!,
     };
 
     LoadingOverlay.show(context);

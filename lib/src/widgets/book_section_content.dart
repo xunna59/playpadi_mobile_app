@@ -172,7 +172,7 @@ class _BookSectionContentState extends State<BookSectionContent> {
               Row(
                 children: [
                   const Text(
-                    'Show available slots only',
+                    'Show Available Slots Only',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const Spacer(),
@@ -251,12 +251,12 @@ class _BookSectionContentState extends State<BookSectionContent> {
               const SizedBox(height: 30),
 
               const Text(
-                'Book a court',
+                'Book a Court',
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
               const Text(
-                'Create a private match where you can invite your friends',
+                'Create a Private Match Where You Can Invite Your Friends',
                 style: TextStyle(fontSize: 12),
               ),
 

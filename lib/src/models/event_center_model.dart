@@ -20,6 +20,7 @@ class EventCenter {
   final int? total_courts;
   final String? website;
   final String? phone;
+  final bool isFavourite;
 
   EventCenter({
     required this.id,
@@ -40,6 +41,7 @@ class EventCenter {
     this.total_courts,
     this.website,
     this.phone,
+    required this.isFavourite,
   });
 
   factory EventCenter.fromJson(Map<String, dynamic> json) {
@@ -80,6 +82,7 @@ class EventCenter {
       total_courts: getInt(json, 'total_courts'),
       website: getString(json, 'website'),
       phone: getString(json, 'phone'),
+      isFavourite: castOrNull<bool>(json['isSaved']) ?? false,
     );
   }
 }

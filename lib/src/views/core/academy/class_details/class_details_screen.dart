@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../../core/constants.dart';
 import '../../../../models/class_model.dart';
 import '../../../../widgets/primary_button.dart';
@@ -19,10 +20,20 @@ class ClassDetailsScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
 
         leading: const BackButton(),
-        actions: const [
+        actions: [
           Padding(
-            padding: EdgeInsets.only(right: 16.0),
-            child: Icon(Icons.share),
+            padding: const EdgeInsets.only(right: 16.0),
+            child: IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: () {
+                SharePlus.instance.share(
+                  ShareParams(
+                    text:
+                        'PlayPadi Upcoming ${classData.title} visit https://playpadi.com to Book Place',
+                  ),
+                );
+              },
+            ),
           ),
         ],
         elevation: 0,

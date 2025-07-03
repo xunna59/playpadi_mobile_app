@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:PlayPadi/src/services/exceptions.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../controllers/user_Profile_controller.dart';
@@ -159,31 +160,76 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   //   }
   // }
 
+  // Future<void> _pickImage() async {
+  //   final img = await _picker.pickImage(source: ImageSource.gallery);
+  //   if (img != null) {
+  //     setState(() => _pickedImage = img);
+
+  //     try {
+  //       final file = File(img.path);
+  //       await controller.updateDisplayPicture(file);
+
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(
+  //           content: Text('Profile picture updated successfully'),
+  //           backgroundColor: Colors.green,
+  //         ),
+  //       );
+  //     } catch (e, stacktrace) {
+  //       print(stacktrace);
+
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('Failed to update image: $e'),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+  //   }
+  // }
+
   Future<void> _pickImage() async {
-    final img = await _picker.pickImage(source: ImageSource.gallery);
-    if (img != null) {
-      setState(() => _pickedImage = img);
+    final picked = await _picker.pickImage(source: ImageSource.gallery);
+    if (picked == null) return;
 
-      try {
-        final file = File(img.path);
-        await controller.updateDisplayPicture(file);
+    // Crop the selected image
+    final croppedFile = await ImageCropper().cropImage(
+      sourcePath: picked.path,
+      //    aspectRatioPresets: [CropAspectRatioPreset.square],
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: Color.fromRGBO(120, 66, 255, 1),
+          toolbarWidgetColor: Colors.white,
+          activeControlsWidgetColor: Color.fromRGBO(120, 66, 255, 1),
+          lockAspectRatio: true,
+        ),
+        IOSUiSettings(title: 'Crop Image', aspectRatioLockEnabled: true),
+      ],
+    );
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile picture updated successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } catch (e, stacktrace) {
-        print(stacktrace);
+    if (croppedFile == null) return;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to update image: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+    final croppedImgFile = File(croppedFile.path);
+
+    setState(() => _pickedImage = XFile(croppedFile.path));
+
+    try {
+      await controller.updateDisplayPicture(croppedImgFile);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Profile picture updated successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e, stacktrace) {
+      print(stacktrace);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to update image: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

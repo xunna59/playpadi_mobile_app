@@ -78,6 +78,22 @@ class _ProfileTabState extends State<ProfileTab> {
     // Example chart data
     final spots = <FlSpot>[FlSpot(1, 1), FlSpot(6, 2), FlSpot(12, 5)];
 
+    double points = double.tryParse(profile.points) ?? 0;
+
+    String getLevel(double points) {
+      if (points <= 1.5) return 'Beginner';
+      if (points <= 3.5) return 'Amateur';
+      if (points <= 5.0) return 'Pro';
+      return 'Expert';
+    }
+
+    Color getLevelColor(double points) {
+      if (points <= 1.5) return Colors.red;
+      if (points <= 3.5) return Colors.orange;
+      if (points <= 5.0) return Colors.green;
+      return Colors.blue;
+    }
+
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -213,26 +229,27 @@ class _ProfileTabState extends State<ProfileTab> {
                       ),
                     ),
                   ),
-                  Positioned(
-                    left: 16,
-                    bottom: 40,
-                    child: Text(
-                      'Level reliability: ${(profile.points * 100)}%',
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
+                  // Positioned(
+                  //   left: 16,
+                  //   top: 60,
+                  //   child: Text(
+                  //     'Level Reliability',
+                  //     style: const TextStyle(color: Colors.white, fontSize: 16),
+                  //   ),
+                  // ),
+                  if (points <= 5.0)
+                    Positioned(
+                      left: 16,
+                      bottom: 12,
+                      child: Chip(
+                        label: Text(getLevel(points)),
+                        backgroundColor: getLevelColor(points),
+                        labelStyle: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  const Positioned(
-                    left: 16,
-                    bottom: 12,
-                    child: Chip(
-                      label: Text('Medium'),
-                      backgroundColor: Colors.orange,
-                      labelStyle: TextStyle(color: Colors.white),
-                    ),
-                  ),
                 ],
               ),
             ),

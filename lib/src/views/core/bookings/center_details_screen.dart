@@ -28,6 +28,14 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
     _loadCenter();
   }
 
+  void addToFavorites(int? eventCenter) {
+    // your logic here, e.g. call API, update state, etc.
+  }
+
+  void removeFromFavorites(int? eventCenter) {
+    // your logic here, e.g. call API, update state, etc.
+  }
+
   Future<void> _loadCenter() async {
     try {
       final fetchedCenter = await EventCentersController().fetchCenterById(
@@ -37,6 +45,8 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
       setState(() {
         eventCenter = fetchedCenter;
       });
+
+      print(eventCenter?.isFavourite);
     } on NetworkErrorException catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -148,8 +158,22 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
                           CircleAvatar(
                             backgroundColor: Colors.transparent,
                             child: IconButton(
-                              icon: const Icon(Icons.favorite_border),
-                              onPressed: () {},
+                              icon: Icon(
+                                eventCenter?.isFavourite == true
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color:
+                                    eventCenter?.isFavourite == true
+                                        ? Color.fromRGBO(199, 3, 125, 1)
+                                        : Colors.grey,
+                              ),
+                              onPressed: () {
+                                if (eventCenter?.isFavourite == true) {
+                                  removeFromFavorites(eventCenter?.id);
+                                } else {
+                                  // addToFavorites(eventCenter);
+                                }
+                              },
                             ),
                           ),
                         ],

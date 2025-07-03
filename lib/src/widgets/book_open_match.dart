@@ -80,7 +80,7 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
                           selectedSport = sport;
                         });
                       }
-                      print(selectedSport);
+                      // print(selectedSport);
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(right: 5.0, top: 12),
@@ -255,7 +255,7 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
               ),
               const SizedBox(height: 4),
               const Text(
-                'Create a private match where you can invite your friends',
+                'Create an Open Match and Let Others Join the Game.',
                 style: TextStyle(fontSize: 12),
               ),
 

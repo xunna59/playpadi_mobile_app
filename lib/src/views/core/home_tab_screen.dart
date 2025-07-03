@@ -32,7 +32,7 @@ class HomeTab extends ConsumerWidget {
                     fit: BoxFit.contain,
                   ),
                   title: const Text(
-                    'Edit your player preferences',
+                    'Edit player preferences',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: const Text(

@@ -162,12 +162,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 _buildListTile(
                   Icons.sports_tennis,
                   'Your activity',
-                  'Matches, classes, competitions, group, ...',
-                  onTap: () {},
-                  // () => Navigator.pushNamed(
-                  //   context,
-                  //   'AppRoutes.activityScreen',
-                  // ),
+                  'Login Activity, Matches, Classes, Membership, ...',
+                  onTap:
+                      () => Navigator.pushNamed(
+                        context,
+                        AppRoutes.activityScreen,
+                      ),
                 ),
                 _buildListTile(
                   Icons.credit_card,
@@ -236,9 +236,57 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: OutlinedButton.icon(
-                  onPressed: () {
-                    client.logout(); // Call logout from ApiClient
-                    Navigator.pushReplacementNamed(context, AppRoutes.auth);
+                  onPressed: () async {
+                    final bool? confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        final colorScheme = Theme.of(context).colorScheme;
+
+                        return AlertDialog(
+                          backgroundColor: colorScheme.secondary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          title: const Text(
+                            'Confirm Logout',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          content: const Text(
+                            'Are you sure you want to log out?',
+                            style: TextStyle(fontSize: 16, height: 1.5),
+                          ),
+                          actionsPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          actions: [
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor: colorScheme.onSurface,
+                                textStyle: const TextStyle(fontSize: 14),
+                              ),
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: const Text('No'),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                textStyle: const TextStyle(fontSize: 14),
+                              ),
+                              onPressed: () {
+                                client.logout(); // Call logout from ApiClient
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  AppRoutes.auth,
+                                );
+                              },
+                              child: const Text('Yes'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
                   icon: const Icon(Icons.logout),
                   label: const Text('Logout'),
