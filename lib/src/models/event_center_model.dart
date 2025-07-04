@@ -44,6 +44,50 @@ class EventCenter {
     required this.isFavourite,
   });
 
+  EventCenter copyWith({
+    int? id,
+    String? name,
+    String? address,
+    String? coverImage,
+    String? sessionPrice,
+    List<String>? features,
+    List<String>? games,
+    List<String>? availableTimes,
+    String? description,
+    bool? status,
+    double? latitude,
+    double? longitude,
+    Map<String, dynamic>? openingHours,
+    List<CourtModel>? courts,
+    Map<String, dynamic>? bookingInfo,
+    int? total_courts,
+    String? website,
+    String? phone,
+    bool? isFavourite,
+  }) {
+    return EventCenter(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      address: address ?? this.address,
+      coverImage: coverImage ?? this.coverImage,
+      sessionPrice: sessionPrice ?? this.sessionPrice,
+      features: features ?? this.features,
+      games: games ?? this.games,
+      availableTimes: availableTimes ?? this.availableTimes,
+      description: description ?? this.description,
+      status: status ?? this.status,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      openingHours: openingHours ?? this.openingHours,
+      courts: courts ?? this.courts,
+      bookingInfo: bookingInfo ?? this.bookingInfo,
+      total_courts: total_courts ?? this.total_courts,
+      website: website ?? this.website,
+      phone: phone ?? this.phone,
+      isFavourite: isFavourite ?? this.isFavourite,
+    );
+  }
+
   factory EventCenter.fromJson(Map<String, dynamic> json) {
     // Safely pull out courts, default to empty list if missing or not a List
     final courtsJson = json['courts'];

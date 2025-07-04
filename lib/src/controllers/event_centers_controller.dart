@@ -59,4 +59,60 @@ class EventCentersController {
       return null;
     }
   }
+
+  Future<List<EventCenter?>> addToFavourite(
+    Map<String, dynamic> payload,
+  ) async {
+    try {
+      final response = await client.addToFavourite(payload);
+
+      List<dynamic> rawList;
+
+      if (response is Map<String, dynamic> && response.containsKey('data')) {
+        final data = response['data'];
+        rawList = data is List ? data : [data];
+      } else if (response is Map<String, dynamic>) {
+        // Handle plain object like {id: ..., user_id: ..., ...}
+        rawList = [response];
+      } else if (response is List) {
+        rawList = response;
+      } else {
+        throw FormatException('Unexpected response format: $response');
+      }
+
+      return rawList
+          .map((e) => EventCenter.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<EventCenter?>> removeFromFavourite(
+    Map<String, dynamic> payload,
+  ) async {
+    try {
+      final response = await client.removeFromFavourite(payload);
+
+      List<dynamic> rawList;
+
+      if (response is Map<String, dynamic> && response.containsKey('data')) {
+        final data = response['data'];
+        rawList = data is List ? data : [data];
+      } else if (response is Map<String, dynamic>) {
+        // Accept plain object response
+        rawList = [response];
+      } else if (response is List) {
+        rawList = response;
+      } else {
+        throw FormatException('Unexpected response format: $response');
+      }
+
+      return rawList
+          .map((e) => EventCenter.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

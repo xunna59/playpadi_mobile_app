@@ -28,12 +28,37 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
     _loadCenter();
   }
 
-  void addToFavorites(int? eventCenter) {
-    // your logic here, e.g. call API, update state, etc.
+  void addToFavorites(int? eventCenter) async {
+    if (eventCenter == null) return;
+
+    //   print(eventCenter);
+
+    Map<String, String> payload = {'sports_center_id': eventCenter.toString()};
+
+    try {
+      final addToFavouriteStatus = await EventCentersController()
+          .addToFavourite(payload);
+    } catch (e) {
+      // handle error
+      print('Error adding to favorites: $e');
+    }
   }
 
-  void removeFromFavorites(int? eventCenter) {
-    // your logic here, e.g. call API, update state, etc.
+  void removeFromFavorites(int? eventCenter) async {
+    if (eventCenter == null) return;
+
+    //   print(eventCenter);
+
+    Map<String, String> payload = {'sports_center_id': eventCenter.toString()};
+
+    try {
+      final removeFromFavouriteStatus = await EventCentersController()
+          .removeFromFavourite(payload);
+      // handle fetchedCenter if needed
+    } catch (e) {
+      // handle error
+      print('Error removing from favorites: $e');
+    }
   }
 
   Future<void> _loadCenter() async {
@@ -167,11 +192,31 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
                                         ? Color.fromRGBO(199, 3, 125, 1)
                                         : Colors.grey,
                               ),
-                              onPressed: () {
-                                if (eventCenter?.isFavourite == true) {
-                                  removeFromFavorites(eventCenter?.id);
+
+                              // onPressed: () {
+                              //   if (eventCenter?.isFavourite == true) {
+                              //     removeFromFavorites(eventCenter?.id);
+                              //   } else {
+                              //     addToFavorites(eventCenter?.id);
+                              //   }
+                              // },
+                              onPressed: () async {
+                                if (eventCenter == null) return;
+
+                                if (eventCenter!.isFavourite == true) {
+                                  removeFromFavorites(eventCenter!.id);
+                                  setState(() {
+                                    eventCenter = eventCenter!.copyWith(
+                                      isFavourite: false,
+                                    );
+                                  });
                                 } else {
-                                  // addToFavorites(eventCenter);
+                                  addToFavorites(eventCenter!.id);
+                                  setState(() {
+                                    eventCenter = eventCenter!.copyWith(
+                                      isFavourite: true,
+                                    );
+                                  });
                                 }
                               },
                             ),

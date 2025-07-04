@@ -81,7 +81,7 @@ class ClassCard extends StatelessWidget {
               children: [
                 const Icon(Icons.equalizer, size: 16),
                 const SizedBox(width: 4),
-                Text('5 Joined'),
+                Text('${c.academy_students.students.length} Joined'),
                 const SizedBox(width: 16),
                 const Icon(Icons.wc, size: 16),
                 const SizedBox(width: 4),
@@ -129,12 +129,20 @@ class ClassCard extends StatelessWidget {
                 // Participant indicator
                 Row(
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 12,
-                      backgroundColor: Colors.blue,
+                      backgroundImage:
+                          c.sportsCenter.coverImage != null
+                              ? NetworkImage(
+                                '${imageBaseUrl}${c.sportsCenter.coverImage}',
+                              )
+                              : null,
+
+                      backgroundColor: Colors.grey[800],
+                      //  backgroundColor: Colors.blue,
                     ),
                     const SizedBox(width: 8),
-                    Text('+${c.sessionActivity}'),
+                    Text('${c.sportsCenter.name}'),
                   ],
                 ),
 

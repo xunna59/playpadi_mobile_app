@@ -574,6 +574,81 @@ class APIClient {
     });
   }
 
+  Future<dynamic> addToFavourite(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/api/sports-center/add-favourite',
+      method: 'post',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
+      body: jsonEncode(data),
+    );
+    //  print('This is body sent: ${payload.body}');
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
+  Future<dynamic> removeFromFavourite(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/api/sports-center/remove-favourite/${data['sports_center_id']}',
+      method: 'delete',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
+      body: null,
+    );
+    //  print('This is body sent: ${payload.body}');
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
+  Future<dynamic> joinAcademy(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/api/academy/join-class/${data['academy_id']}',
+      method: 'post',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
+      body: null,
+    );
+    //  print('This is body sent: ${payload.body}');
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
   void _resetToken() {
     isAuthorized = false;
     token = null;

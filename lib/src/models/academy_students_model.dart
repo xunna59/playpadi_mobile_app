@@ -29,13 +29,19 @@ class AcademyStudents {
 class Student {
   final String firstName;
   final String? displayPicture;
+  final String total_students;
 
-  Student({required this.firstName, this.displayPicture});
+  Student({
+    required this.firstName,
+    this.displayPicture,
+    required this.total_students,
+  });
 
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
       firstName: json['name']?.toString() ?? '',
       displayPicture: json['image']?.toString(),
+      total_students: json['total_students']?.toString() ?? '',
     );
   }
 }

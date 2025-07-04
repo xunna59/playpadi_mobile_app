@@ -8,6 +8,7 @@ class AcademyController {
   Future<List<ClassModel>> getAcademyClasses() async {
     try {
       final response = await client.fetchAcademyClasses();
+      //  print(response);
       List<dynamic> rawList = [];
       if (response is Map<String, dynamic>) {
         if (response['data'] is Map<String, dynamic> &&
@@ -30,6 +31,32 @@ class AcademyController {
     } catch (e) {
       print('Error fetching: $e');
       return [];
+    }
+  }
+
+  Future<List<ClassModel?>> joinAcademy(Map<String, dynamic> payload) async {
+    try {
+      final response = await client.joinAcademy(payload);
+
+      List<dynamic> rawList;
+
+      if (response is Map<String, dynamic> && response.containsKey('student')) {
+        final student = response['student'];
+        rawList = student is List ? student : [student];
+      } else if (response is Map<String, dynamic>) {
+        // Handle plain object like {id: ..., user_id: ..., ...}
+        rawList = [response];
+      } else if (response is List) {
+        rawList = response;
+      } else {
+        throw FormatException('Unexpected response format: $response');
+      }
+
+      return rawList
+          .map((e) => ClassModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      rethrow;
     }
   }
 }
