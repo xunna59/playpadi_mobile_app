@@ -173,11 +173,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   Icons.credit_card,
                   'Your payments',
                   'Payment methods, transactions, club, ...',
-                  onTap: () {},
-                  // () => Navigator.pushNamed(
-                  //   context,
-                  //   'AppRoutes.paymentsScreen',
-                  // ),
+                  onTap:
+                      () =>
+                          Navigator.pushNamed(context, AppRoutes.paymentScreen),
                 ),
               ]),
 

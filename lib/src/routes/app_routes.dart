@@ -17,6 +17,8 @@ import '../views/core/bookings/event_centers_screen.dart';
 import '../views/core/bookings/match_details_screen.dart';
 import '../views/core/notification_details.dart';
 import '../views/core/notifications.dart';
+import '../views/core/payments/payment_confirmation_screen.dart';
+import '../views/core/payments/payment_screen.dart';
 import '../views/core/settings/activities/activity_screen.dart';
 import '../views/core/settings/help/faq_screen.dart';
 import '../views/core/settings/help/help_screen.dart';
@@ -61,6 +63,8 @@ class AppRoutes {
   static const String privacyPolicyScreen = 'privacyPolicyScreen';
   static const String faqScreen = 'faqScreen';
   static const String activityScreen = 'activityScreen';
+  static const String paymentScreen = 'paymentScreen';
+  static const String paymentConfirmationScreen = 'paymentConfirmationScreen';
 
   static const String editProfileScreen = 'editProfileScreen';
 
@@ -143,6 +147,18 @@ class AppRoutes {
       case privacyPolicyScreen:
         return MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen());
 
+      case paymentScreen:
+        return MaterialPageRoute(builder: (_) => const PaymentScreen());
+
+      case paymentConfirmationScreen:
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder:
+              (_) => PaymentConfirmationScreen(
+                purpose: args['purpose'],
+                amount: args['amount'],
+              ),
+        );
       case eventCenter:
         return MaterialPageRoute(builder: (_) => const EventCentersScreen());
 

@@ -6,6 +6,7 @@ import '../controllers/booking_controller.dart';
 import '../controllers/match_controller.dart';
 import '../core/activity_overlay.dart';
 import '../models/match_model.dart';
+import '../routes/app_routes.dart';
 
 void showConfirmBookingModal(
   BuildContext context, {
@@ -23,6 +24,7 @@ void showConfirmBookingModal(
   required String bookingType,
   required int sports_center_id,
   required int court_id,
+  required String purpose,
 }) {
   final cs = Theme.of(context).colorScheme;
 
@@ -48,6 +50,7 @@ void showConfirmBookingModal(
           address: address,
           sports_center_id: sports_center_id,
           court_id: court_id,
+          purpose: purpose,
         ),
   );
 }
@@ -63,7 +66,8 @@ class _ConfirmBookingModalContent extends StatefulWidget {
       court,
       sportsCenter,
       bookingType,
-      address;
+      address,
+      purpose;
   final int court_id, sports_center_id;
 
   const _ConfirmBookingModalContent({
@@ -82,6 +86,7 @@ class _ConfirmBookingModalContent extends StatefulWidget {
     required this.address,
     required this.sports_center_id,
     required this.court_id,
+    required this.purpose,
   }) : super(key: key);
 
   @override
@@ -257,8 +262,53 @@ class _ConfirmBookingModalContentState
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {
-                _onConfirmBooking();
+              onPressed: () async {
+                // 1. Parse session price
+                final double fullAmount =
+                    double.tryParse(widget.sessionPrice) ?? 0.0;
+
+                // 2. Determine number of players for public games
+                int numPlayers = 1;
+                if (widget.bookingType.toLowerCase() == 'public') {
+                  switch (widget.sport.toLowerCase()) {
+                    case 'padel':
+                      numPlayers = 4;
+                      break;
+                    case 'snooker':
+                    case 'darts':
+                      numPlayers = 2;
+                      break;
+                    default:
+                      numPlayers = 1; // fallback
+                  }
+                }
+
+                // 3. Calculate per-player price
+                final double perPlayerAmount =
+                    widget.bookingType.toLowerCase() == 'public'
+                        ? (fullAmount / numPlayers)
+                        : fullAmount;
+
+                // 4. Proceed to payment screen
+                final result = await Navigator.pushNamed(
+                  context,
+                  AppRoutes.paymentConfirmationScreen,
+                  arguments: {
+                    'purpose': widget.purpose,
+                    'amount': perPlayerAmount,
+                  },
+                );
+
+                if (result == true) {
+                  // ✅ Payment was successful, do something (e.g., refresh, notify, etc.)
+                  // ScaffoldMessenger.of(context).showSnackBar(
+                  //   const SnackBar(
+                  //     content: Text('Payment confirmed and returned!'),
+                  //   ),
+                  // );
+
+                  _onConfirmBooking();
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: cs.primary,

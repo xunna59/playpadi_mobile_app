@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../playpadi_library.dart';
 import '../../../controllers/event_centers_controller.dart';
@@ -126,7 +127,14 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
                   backgroundColor: colorScheme.primary,
                   child: IconButton(
                     icon: const Icon(Icons.share),
-                    onPressed: () {},
+                    onPressed: () {
+                      SharePlus.instance.share(
+                        ShareParams(
+                          text:
+                              'Book a Match in ${widget.eventCenter.name} visit https://playpadi.com to Get Started',
+                        ),
+                      );
+                    },
                   ),
                 ),
 

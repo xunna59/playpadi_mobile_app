@@ -403,6 +403,7 @@ class _BookSectionContentState extends State<BookSectionContent> {
                                                   court_id: selectedCourt.id,
                                                   bookingType: 'private',
                                                   address: center.address,
+                                                  purpose: 'Book Private Match',
                                                 );
                                               },
 

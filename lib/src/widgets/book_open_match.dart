@@ -405,6 +405,7 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
                                                   address: center.address,
                                                   sports_center_id: center.id,
                                                   court_id: selectedCourt.id,
+                                                  purpose: 'Book Open Match',
                                                 );
                                               },
 

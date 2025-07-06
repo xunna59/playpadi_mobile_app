@@ -649,6 +649,144 @@ class APIClient {
     });
   }
 
+  Future<dynamic> initializePayment(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/api/paystack/initialize',
+      method: 'post',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
+      body: jsonEncode(data),
+    );
+    //  print('This is body sent: ${payload.body}');
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
+  Future<dynamic> fetchSavedCards([dynamic callback]) async {
+    if (!isAuthorized) {
+      throw UnauthorizedRequestException();
+    }
+
+    Request payload = Request(
+      '${baseUrl}/api/user/saved-cards',
+      method: 'get',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
+      body: null,
+    );
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
+  Future<dynamic> fetchTransactions({
+    int page = 1,
+    int limit = 20,
+    dynamic callback,
+  }) async {
+    if (!isAuthorized) {
+      throw UnauthorizedRequestException();
+    }
+
+    final url = Uri.parse(
+      '$baseUrl/api/user/fetch-transactions?page=$page&limit=$limit',
+    );
+
+    Request payload = Request(
+      url.toString(),
+      method: 'get',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
+      body: null,
+    );
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+      return callback is Function ? callback(response.data) : response.data;
+    });
+  }
+
+  Future<dynamic> fetchUserActivity({
+    int page = 1,
+    int limit = 20,
+    dynamic callback,
+  }) async {
+    if (!isAuthorized) {
+      throw UnauthorizedRequestException();
+    }
+
+    final url = Uri.parse(
+      '$baseUrl/api/fetch-activities?page=$page&limit=$limit',
+    );
+
+    Request payload = Request(
+      url.toString(),
+      method: 'get',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
+      body: null,
+    );
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+      return callback is Function ? callback(response.data) : response.data;
+    });
+  }
+
+  Future<dynamic> chargeCard(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/api/paystack/charge/token',
+      method: 'post',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
+      body: jsonEncode(data),
+    );
+    //  print('This is body sent: ${payload.body}');
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
   void _resetToken() {
     isAuthorized = false;
     token = null;

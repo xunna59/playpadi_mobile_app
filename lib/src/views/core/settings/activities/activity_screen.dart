@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../controllers/user_activity_controller.dart';
 import '../../../../models/user_activity_model.dart';
 
 class ActivityScreen extends StatefulWidget {
@@ -11,46 +12,10 @@ class ActivityScreen extends StatefulWidget {
 }
 
 class _ActivityScreenState extends State<ActivityScreen> {
-  String _selectedFilter = 'All';
-
+  final userActivityController _controller = userActivityController();
+  String _selectedFilter = 'All Activities';
   List<UserActivity> _activities = [];
-
-  Future<void> fetchActivities() async {
-    // Simulated API response
-    final response = [
-      {
-        "type": "login",
-        "description": "You recently logged into your account",
-        "device_type": "Android - Redmi Note 10",
-        "timestamp":
-            DateTime.now().subtract(const Duration(hours: 1)).toIso8601String(),
-      },
-      {
-        "type": "match",
-        "description": "You played a match at Court 3",
-        "device_type": null,
-        "timestamp":
-            DateTime.now().subtract(const Duration(days: 1)).toIso8601String(),
-      },
-      {
-        "type": "class",
-        "description": "You booked a tennis class at Arena Sports",
-        "device_type": null,
-        "timestamp":
-            DateTime.now().subtract(const Duration(days: 2)).toIso8601String(),
-      },
-      {
-        "type": "unknown_type",
-        "description": "An unknown activity",
-        "device_type": null,
-        "timestamp": DateTime.now().toIso8601String(),
-      },
-    ];
-
-    setState(() {
-      _activities = response.map((e) => UserActivity.fromJson(e)).toList();
-    });
-  }
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -58,35 +23,43 @@ class _ActivityScreenState extends State<ActivityScreen> {
     fetchActivities();
   }
 
+  Future<void> fetchActivities() async {
+    final activities = await _controller.fetchUserActivity();
+    setState(() {
+      _activities = activities;
+      _isLoading = false;
+    });
+  }
+
   List<String> get _filterOptions => [
-    'All',
+    'All Activities',
     ...{for (var a in _activities) a.type},
   ];
 
   List<UserActivity> get _filteredActivities {
-    if (_selectedFilter == 'All') return _activities;
+    if (_selectedFilter == 'All Activities') return _activities;
     return _activities.where((a) => a.type == _selectedFilter).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
     final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Your Activity')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Filter Row
+            /// Filter Dropdown
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Filter:',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+                // const Text(
+                //   'Filter:',
+                //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                // ),
                 Theme(
                   data: Theme.of(context).copyWith(
                     popupMenuTheme: PopupMenuThemeData(
@@ -143,18 +116,19 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 ),
               ],
             ),
-
             const SizedBox(height: 16),
 
-            // Activity List
+            /// Activity List
             Expanded(
               child:
-                  _filteredActivities.isEmpty
+                  _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : _filteredActivities.isEmpty
                       ? const Center(child: Text('No activities found.'))
                       : ListView.separated(
                         itemCount: _filteredActivities.length,
                         separatorBuilder:
-                            (context, index) => const Divider(
+                            (_, __) => const Divider(
                               height: 1,
                               thickness: 0.5,
                               color: Colors.grey,
@@ -167,10 +141,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
                           String dateTimeStr = DateFormat(
                             'EEE, MMM d, h:mm a',
                           ).format(activity.timestamp);
-                          String? deviceStr = activity.deviceType;
+
                           String subtitleText =
-                              deviceStr != null && deviceStr.isNotEmpty
-                                  ? "$deviceStr | $dateTimeStr"
+                              activity.device != null &&
+                                      activity.device!.isNotEmpty
+                                  ? "${activity.device} | $dateTimeStr"
                                   : dateTimeStr;
 
                           return ListTile(

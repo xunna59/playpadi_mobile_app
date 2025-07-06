@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../core/constants.dart';
 import '../models/class_model.dart';
 
 class ClassSection extends StatelessWidget {
@@ -24,7 +25,14 @@ class ClassSection extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(radius: 20, backgroundColor: Colors.grey[800]),
+                CircleAvatar(
+                  radius: 20,
+                  backgroundImage:
+                      c.coach.displayPicture != null
+                          ? NetworkImage('${imageBaseUrl}${c.coverImage!}')
+                          : null,
+                  backgroundColor: Colors.grey[800],
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -88,12 +96,20 @@ class ClassSection extends StatelessWidget {
                 // Participant indicator
                 Row(
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 12,
-                      backgroundColor: Colors.blue,
+                      backgroundImage:
+                          c.sportsCenter.coverImage != null
+                              ? NetworkImage(
+                                '${imageBaseUrl}${c.sportsCenter.coverImage}',
+                              )
+                              : null,
+
+                      backgroundColor: Colors.grey[800],
+                      //  backgroundColor: Colors.blue,
                     ),
                     const SizedBox(width: 8),
-                    Text('+${c.sessionActivity}'),
+                    Text('${c.sportsCenter.name}'),
                   ],
                 ),
 

@@ -8,6 +8,8 @@ import '../../../core/constants.dart';
 import '../../../models/match_model.dart';
 import 'package:intl/intl.dart';
 
+import '../../../routes/app_routes.dart';
+
 class MatchDetailsScreen extends StatefulWidget {
   final MatchModel match;
   const MatchDetailsScreen({Key? key, required this.match}) : super(key: key);
@@ -134,7 +136,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                             Expanded(
                               child: _infoColumn(
                                 'Gender',
-                                widget.match.availability,
+                                widget.match.gender_allowed,
                               ),
                             ),
                             Expanded(
@@ -293,13 +295,13 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                     children: [
                       ListTile(
                         leading: const Icon(Icons.info_outline),
-                        title: const Text("Information"),
-                        subtitle: Text(widget.match.courtName),
+                        title: const Text("Sports Center"),
+                        subtitle: Text(widget.match.sportsCenterName),
                       ),
 
                       ListTile(
                         leading: const Icon(Icons.info_outline),
-                        title: const Text("Information"),
+                        title: const Text("Court"),
                         subtitle: Text(widget.match.courtName),
                       ),
                       ListTile(
@@ -325,9 +327,39 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    onPressed: () {
-                      _onJoinBooking();
+
+                    onPressed: () async {
+                      if (widget.match.joinedStatus == true) {
+                        // Already joined — maybe show a message or navigate elsewhere
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "You've already joined this match.",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                        return;
+                      }
+
+                      // Not joined yet — proceed with payment
+                      final result = await Navigator.pushNamed(
+                        context,
+                        AppRoutes.paymentConfirmationScreen,
+                        arguments: {
+                          'purpose': 'Join Open Match',
+                          'amount':
+                              widget.match.sessionPrice /
+                              widget.match.totalPlayers,
+                        },
+                      );
+
+                      if (result == true) {
+                        _onJoinBooking(); // Perform the booking join
+                      }
                     },
+
                     child:
                         widget.match.joinedStatus == true
                             ? Text(
