@@ -11,8 +11,15 @@ import 'sport_modal_widget.dart'; // Import the controller
 
 class BookOpenMatch extends StatefulWidget {
   final int bookingId;
+  final String sports_center_address;
+  final String sports_center_name;
 
-  const BookOpenMatch({super.key, required this.bookingId});
+  const BookOpenMatch({
+    super.key,
+    required this.bookingId,
+    required this.sports_center_address,
+    required this.sports_center_name,
+  });
 
   @override
   State<BookOpenMatch> createState() => _BookOpenMatchState();
@@ -62,7 +69,7 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
         final allTimes = dates[_selectedDateIndex].availableTimes;
         final filteredTimes =
             _showAvailableSlotsOnly
-                ? allTimes.where((t) => t.status == 'available').toList()
+                ? allTimes.where((t) => t.totalAvailableCourts > 0).toList()
                 : allTimes;
 
         return SingleChildScrollView(
@@ -203,7 +210,7 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
                 itemBuilder: (context, index) {
                   final time = filteredTimes[index];
                   final isSelected = time.time == _selectedTime;
-                  final isAvailable = time.status == 'available';
+                  final isAvailable = time.totalAvailableCourts > 0;
 
                   return GestureDetector(
                     onTap:
@@ -261,8 +268,8 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
 
               const SizedBox(height: 12),
               // Court Info Section.
-              FutureBuilder<EventCenter?>(
-                future: _fetchedCenter,
+              FutureBuilder<BookingInfo?>(
+                future: _bookingInfoFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -276,12 +283,38 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
                     return const Center(child: Text('No courts available.'));
                   }
 
-                  final center = snapshot.data!;
-                  final courts = center.courts;
+                  final bookingInfo = snapshot.data!;
+                  final selectedDate = bookingInfo.dates[_selectedDateIndex];
 
-                  // Check if the courts list is empty
-                  if (courts == null || courts.isEmpty) {
-                    return const Center(child: Text('No courts available.'));
+                  BookingTime? selectedTimeSlot;
+
+                  if (_selectedTime != null) {
+                    selectedTimeSlot = selectedDate.availableTimes.firstWhere(
+                      (time) => time.time == _selectedTime,
+                      orElse:
+                          () => BookingTime(
+                            time: '',
+                            court_status: '',
+                            totalAvailableCourts: 0,
+                            courts: [],
+                          ),
+                    );
+                  }
+
+                  if (selectedTimeSlot == null ||
+                      selectedTimeSlot.time.isEmpty) {
+                    return const Center(
+                      heightFactor: 5,
+                      child: Text('Select Time to see Available Courts.'),
+                    );
+                  }
+
+                  final courts = selectedTimeSlot.courts;
+
+                  if (courts.isEmpty) {
+                    return const Center(
+                      child: Text('No courts available for this time.'),
+                    );
                   }
 
                   // Display all courts using a Column.
@@ -289,135 +322,131 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children:
                         courts.map((court) {
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 16),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.tertiary,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  court.name,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          final isAvailable = court.courtStatus == 'available';
+
+                          return Opacity(
+                            opacity:
+                                isAvailable ? 1.0 : 0.4, // dim if unavailable
+                            child: IgnorePointer(
+                              // disables interactions if unavailable
+                              ignoring: !isAvailable,
+                              child: Container(
+                                margin: const EdgeInsets.only(bottom: 16),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(court.location),
-
-                                const SizedBox(height: 8),
-                                SingleChildScrollView(
-                                  scrollDirection:
-                                      Axis.horizontal, // Makes it scroll horizontally
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .start, // Align items to the start of the row
-                                    children:
-                                        court.courtData.map<Widget>((
-                                          courtData,
-                                        ) {
-                                          return Padding(
-                                            padding: const EdgeInsets.only(
-                                              right: 16.0,
-                                            ), // Add spacing between items
-                                            child: GestureDetector(
-                                              // Inside your GestureDetector onTap:
-                                              onTap: () {
-                                                if (selectedSport == null) {
-                                                  ScaffoldMessenger.of(
-                                                    context,
-                                                  ).showSnackBar(
-                                                    const SnackBar(
-                                                      content: Text(
-                                                        "Please select a game first.",
-                                                        style: TextStyle(
-                                                          color: Colors.white,
+                                padding: const EdgeInsets.all(12),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      court.name,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        decoration:
+                                            isAvailable
+                                                ? null
+                                                : TextDecoration.lineThrough,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(court.location),
+                                    const SizedBox(height: 8),
+                                    SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        children:
+                                            court.courtData.map<Widget>((
+                                              courtData,
+                                            ) {
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                  right: 16.0,
+                                                ),
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    if (selectedSport == null) {
+                                                      ScaffoldMessenger.of(
+                                                        context,
+                                                      ).showSnackBar(
+                                                        const SnackBar(
+                                                          content: Text(
+                                                            "Please select a game first.",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                          ),
+                                                          backgroundColor:
+                                                              Colors.redAccent,
                                                         ),
-                                                      ),
-                                                      backgroundColor:
-                                                          Colors
-                                                              .redAccent, // ← here
-                                                    ),
-                                                  );
-                                                  return;
-                                                }
+                                                      );
+                                                      return;
+                                                    }
 
-                                                if (_selectedTime == null) {
-                                                  ScaffoldMessenger.of(
-                                                    context,
-                                                  ).showSnackBar(
-                                                    const SnackBar(
-                                                      content: Text(
-                                                        "Please select a time first.",
-                                                        style: TextStyle(
-                                                          color: Colors.white,
+                                                    if (_selectedTime == null) {
+                                                      ScaffoldMessenger.of(
+                                                        context,
+                                                      ).showSnackBar(
+                                                        const SnackBar(
+                                                          content: Text(
+                                                            "Please select a time first.",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                          ),
+                                                          backgroundColor:
+                                                              Colors.redAccent,
                                                         ),
-                                                      ),
-                                                      backgroundColor:
-                                                          Colors
-                                                              .redAccent, // ← here
-                                                    ),
-                                                  );
-                                                  return;
-                                                }
+                                                      );
+                                                      return;
+                                                    }
 
-                                                final dateObj =
-                                                    dates[_selectedDateIndex];
-
-                                                final selectedDateObj =
-                                                    dates[_selectedDateIndex];
-
-                                                final dateString =
-                                                    selectedDateObj.date;
-
-                                                final timeString =
-                                                    _selectedTime!;
-
-                                                final selectedCourt = court;
-
-                                                final selectedGame =
-                                                    selectedSport;
-
-                                                showConfirmBookingModal(
-                                                  context,
-                                                  sport:
-                                                      selectedGame!, // or whatever gameType you use
-                                                  date:
-                                                      dateString, // e.g. "2025-05-03"
-                                                  time:
-                                                      timeString, // e.g. "10:00 AM"
-                                                  gender: 'mixed',
-                                                  level: 2.2.toString(),
-                                                  sessionPrice:
-                                                      courtData.price
-                                                          .toString(),
-                                                  sessionDuration:
-                                                      courtData.duration
-                                                          .toString(),
-                                                  court: selectedCourt.name,
-                                                  sportsCenter: center.name,
-                                                  bookingType: 'public',
-                                                  address: center.address,
-                                                  sports_center_id: center.id,
-                                                  court_id: selectedCourt.id,
-                                                  purpose: 'Book Open Match',
-                                                );
-                                              },
-
-                                              child: _buildPriceOption(
-                                                courtData,
-                                              ),
-                                            ),
-                                          );
-                                        }).toList(),
-                                  ),
+                                                    final selectedDateObj =
+                                                        dates[_selectedDateIndex];
+                                                    showConfirmBookingModal(
+                                                      context,
+                                                      sport: selectedSport!,
+                                                      date:
+                                                          selectedDateObj.date,
+                                                      time: _selectedTime!,
+                                                      gender: 'mixed',
+                                                      level: 2.2.toString(),
+                                                      sessionPrice:
+                                                          courtData.price
+                                                              .toString(),
+                                                      sessionDuration:
+                                                          courtData.duration
+                                                              .toString(),
+                                                      court: court.name,
+                                                      sportsCenter:
+                                                          widget
+                                                              .sports_center_name,
+                                                      bookingType: 'public',
+                                                      address:
+                                                          widget
+                                                              .sports_center_address,
+                                                      sports_center_id:
+                                                          widget.bookingId,
+                                                      court_id: court.id,
+                                                      purpose:
+                                                          'Book Open Match',
+                                                    );
+                                                  },
+                                                  child: _buildPriceOption(
+                                                    courtData,
+                                                  ),
+                                                ),
+                                              );
+                                            }).toList(),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                           );
                         }).toList(),

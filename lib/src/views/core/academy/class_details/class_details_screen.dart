@@ -4,24 +4,30 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../controllers/academy_controller.dart';
 import '../../../../core/constants.dart';
 import '../../../../models/class_model.dart';
+import '../../../../routes/app_routes.dart';
 import '../../../../widgets/currency_primary_button.dart';
 import 'widgets/date_card.dart';
 import 'widgets/player_list.dart';
 import 'widgets/registration_info.dart';
 import 'widgets/coach_info.dart';
 
-class ClassDetailsScreen extends StatelessWidget {
+class ClassDetailsScreen extends StatefulWidget {
   final ClassModel classData;
 
   const ClassDetailsScreen({super.key, required this.classData});
 
+  @override
+  State<ClassDetailsScreen> createState() => _ClassDetailsScreenState();
+}
+
+class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
   void addToFavorites(int? classData) async {
     //   if (classData == null) return;
 
     //   print(eventCenter);
 
     Map<String, String> payload = {'academy_id': classData.toString()};
-    print(payload);
+    //  print(payload);
     try {
       final addToFavouriteStatus = await AcademyController().joinAcademy(
         payload,
@@ -38,7 +44,7 @@ class ClassDetailsScreen extends StatelessWidget {
       locale: 'en_NG',
       symbol: '₦',
       decimalDigits: 0,
-    ).format(classData.sessionPrice);
+    ).format(widget.classData.sessionPrice);
 
     return Scaffold(
       appBar: AppBar(
@@ -54,7 +60,7 @@ class ClassDetailsScreen extends StatelessWidget {
                 SharePlus.instance.share(
                   ShareParams(
                     text:
-                        'PlayPadi Upcoming ${classData.title} visit https://playpadi.com to Book Place',
+                        'PlayPadi Upcoming ${widget.classData.title} visit https://playpadi.com to Book Place',
                   ),
                 );
               },
@@ -72,7 +78,7 @@ class ClassDetailsScreen extends StatelessWidget {
               children: [
                 CircleAvatar(
                   backgroundImage: NetworkImage(
-                    '${imageBaseUrl}${classData.coverImage}',
+                    '${imageBaseUrl}${widget.classData.coverImage}',
                   ),
                   maxRadius: 35,
                   minRadius: 35,
@@ -87,7 +93,7 @@ class ClassDetailsScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      classData.title,
+                      widget.classData.title,
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -101,24 +107,24 @@ class ClassDetailsScreen extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  classData.sessionActivity,
+                  widget.classData.sessionActivity,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(width: 15),
                 Text(
-                  classData.academyType,
+                  widget.classData.academyType,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            DateCard(classData: classData),
+            DateCard(classData: widget.classData),
             const SizedBox(height: 16),
-            RegistrationInfo(classData: classData),
+            RegistrationInfo(classData: widget.classData),
             const SizedBox(height: 16),
-            CoachInfo(classData: classData),
+            CoachInfo(classData: widget.classData),
             const SizedBox(height: 16),
-            PlayersList(classData: classData),
+            PlayersList(classData: widget.classData),
             const SizedBox(height: 32),
             const Text(
               "Proceed to Pay",
@@ -127,11 +133,37 @@ class ClassDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             CurrencyPrimaryButton(
-              text: 'Book Place - ${formatted}',
-              onPressed: () {
-                addToFavorites(classData!.id);
-              },
+              text:
+                  widget.classData.joinedStatus
+                      ? 'Joined'
+                      : 'Book Place - $formatted',
+              onPressed:
+                  widget.classData.joinedStatus
+                      ? null
+                      : () async {
+                        final result = await Navigator.pushNamed(
+                          context,
+                          AppRoutes.paymentConfirmationScreen,
+                          arguments: {
+                            'purpose': 'Join Class',
+                            'amount': widget.classData.sessionPrice,
+                          },
+                        );
+
+                        if (result == true) {
+                          print('🎉Got here!');
+
+                          await AcademyController().joinAcademy({
+                            'academy_id': widget.classData.id.toString(),
+                          });
+
+                          // 🔥 This should be hit after joining
+                          print('🎉 About to pop!');
+                          Navigator.pop(context, true);
+                        }
+                      },
             ),
+
             const SizedBox(height: 16), // Optional spacing at the bottom
           ],
         ),

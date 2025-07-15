@@ -30,4 +30,20 @@ class NotificationController {
       return [];
     }
   }
+
+  Future<void> markNotificationRead(Map<String, dynamic> payload) async {
+    try {
+      final response = await client.markNotificationRead(payload);
+
+      print(response);
+      if (response is Map<String, dynamic> && response['success'] == true) {
+        // Just log or handle success message if needed
+        print('Notification marked as read: ${response['message']}');
+      } else {
+        throw Exception('Unexpected response: $response');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

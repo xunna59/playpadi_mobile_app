@@ -8,7 +8,7 @@ final lightTheme = ThemeData(
     primary: Color.fromRGBO(120, 66, 255, 1),
     onPrimary: Colors.white,
     tertiary: Colors.white,
-    secondary: Colors.white,
+    secondary: Color(0xF9FAFC),
     onSecondary: Colors.black,
     surface: Colors.grey,
     onSurface: Colors.black,

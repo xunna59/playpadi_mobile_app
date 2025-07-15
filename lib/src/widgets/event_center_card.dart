@@ -84,28 +84,28 @@ class EventCenterCard extends StatelessWidget {
                   ),
                 ),
                 // Available times as chips row
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children:
-                        eventCenter.availableTimes
-                            .map(
-                              (time) => Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: Chip(
-                                  label: Text(
-                                    time,
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  backgroundColor: colorScheme.primary,
-                                  side: BorderSide.none,
-                                  //  surfaceTintColor: Colors.white,
-                                ),
-                              ),
-                            )
-                            .toList(),
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: Row(
+                //     children:
+                //         eventCenter.availableTimes
+                //             .map(
+                //               (time) => Padding(
+                //                 padding: const EdgeInsets.only(right: 8.0),
+                //                 child: Chip(
+                //                   label: Text(
+                //                     time,
+                //                     style: TextStyle(color: Colors.white),
+                //                   ),
+                //                   backgroundColor: colorScheme.primary,
+                //                   side: BorderSide.none,
+                //                   //  surfaceTintColor: Colors.white,
+                //                 ),
+                //               ),
+                //             )
+                //             .toList(),
+                //   ),
+                // ),
               ],
             ),
           ),

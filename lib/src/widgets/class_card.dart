@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../core/constants.dart';
 import '../models/class_model.dart';
 
@@ -147,34 +148,36 @@ class ClassCard extends StatelessWidget {
                 ),
 
                 // Join vs Booked
-                // if (!c.booked)
-                //   ElevatedButton(
-                //     onPressed: () {
-                //       /* TODO: join logic */
-                //     },
-                //     style: ElevatedButton.styleFrom(
-                //       shape: const StadiumBorder(),
-                //       backgroundColor: colorScheme.primary,
-                //     ),
-                //     child: Text(
-                //       'Join – \$${c.sessionPrice}',
-                //       style: const TextStyle(color: Colors.white),
-                //     ),
-                //   )
-                // else
-                //   Row(
-                //     children: [
-                //       Icon(Icons.check_circle, color: colorScheme.primary),
-                //       const SizedBox(width: 4),
-                //       Text(
-                //         'Booked',
-                //         style: TextStyle(
-                //           color: colorScheme.primary,
-                //           fontWeight: FontWeight.bold,
-                //         ),
-                //       ),
-                //     ],
-                //   ),
+                if (!c.joinedStatus)
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      shape: const StadiumBorder(),
+                      backgroundColor: colorScheme.primary,
+                    ),
+                    child: Text(
+                      'Join – \₦${c.sessionPrice}',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
+                else
+                  Row(
+                    children: [
+                      Icon(Icons.check_circle, color: colorScheme.primary),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Booked',
+                        style: TextStyle(
+                          color: colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ],

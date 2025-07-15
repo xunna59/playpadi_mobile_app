@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../playpadi_library.dart';
@@ -22,11 +24,15 @@ class EventCenterDetailsScreen extends StatefulWidget {
 
 class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
   EventCenter? eventCenter;
+  late final WebViewController _controller;
+  bool _isMapReady = false;
 
   @override
   void initState() {
     super.initState();
     _loadCenter();
+
+    //  print(widget.eventCenter.latitude);
   }
 
   void addToFavorites(int? eventCenter) async {
@@ -68,8 +74,41 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
         widget.eventCenter.id,
       );
 
+      _controller =
+          WebViewController()
+            ..setJavaScriptMode(JavaScriptMode.unrestricted)
+            ..loadRequest(
+              Uri.dataFromString('''
+      <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            html, body {
+              margin: 0;
+              padding: 0;
+              overflow: hidden;
+              height: 100%;
+              width: 100%;
+            }
+            iframe {
+              pointer-events: none;
+            }
+          </style>
+        </head>
+        <body>
+          <iframe
+            width="100%" height="100%" frameborder="0" style="border:0"
+            src="https://www.google.com/maps?q=${fetchedCenter?.latitude},${fetchedCenter?.longitude}&hl=es;z=14&output=embed"
+            >
+          </iframe>
+        </body>
+      </html>
+      ''', mimeType: 'text/html'),
+            );
+
       setState(() {
         eventCenter = fetchedCenter;
+        _isMapReady = true;
       });
 
       print(eventCenter?.isFavourite);
@@ -370,7 +409,7 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
                                 crossAxisCount:
                                     4, // Adjust to your layout needs
                                 mainAxisSpacing: 10,
-                                crossAxisSpacing: 15,
+                                crossAxisSpacing: 12,
                                 childAspectRatio: 4, // Wider cells
                                 children:
                                     widget.eventCenter.features
@@ -445,7 +484,7 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
                                           mode: LaunchMode.externalApplication,
                                         );
                                       } else {
-                                        print('Could not launch phone dialer.');
+                                        //  print('Could not launch phone dialer.');
                                       }
                                     },
                                   ),
@@ -454,19 +493,22 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
 
                               const SizedBox(height: 20),
                               // Map Container (covers full width)
-                              Align(
-                                alignment: Alignment.center,
-                                child: SizedBox(
-                                  width: screenWidth,
-                                  height: 180,
-                                  child: Container(
-                                    color: Colors.grey[300],
-                                    child: const Center(
-                                      child: Text('Map Placeholder'),
-                                    ),
-                                  ),
-                                ),
+                              SizedBox(
+                                height: 180,
+                                width: double.infinity,
+                                child:
+                                    _isMapReady
+                                        ? WebViewWidget(controller: _controller)
+                                        : Container(
+                                          color: Colors.grey[300],
+                                          child: const Center(
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          ),
+                                        ),
                               ),
+
                               const SizedBox(height: 20),
                               const Text(
                                 'Opening hours',
@@ -520,10 +562,18 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
                           ),
                         ),
                         // --- Book Tab: Booking UI as a Reusable Widget ---
-                        BookSectionContent(bookingId: widget.eventCenter.id),
+                        BookSectionContent(
+                          bookingId: widget.eventCenter.id,
+                          sports_center_address: widget.eventCenter.address,
+                          sports_center_name: widget.eventCenter.name,
+                        ),
 
                         // --- Open Matches Tab ---
-                        BookOpenMatch(bookingId: widget.eventCenter.id),
+                        BookOpenMatch(
+                          bookingId: widget.eventCenter.id,
+                          sports_center_address: widget.eventCenter.address,
+                          sports_center_name: widget.eventCenter.name,
+                        ),
 
                         // --- Academy Tab ---
                         AcademySection(),

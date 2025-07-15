@@ -8,8 +8,6 @@ import '../../../widgets/class_card.dart';
 class UserClassesTab extends StatefulWidget {
   const UserClassesTab({super.key});
 
-  // static final List<ClassModel> classes = [];
-
   @override
   State<UserClassesTab> createState() => _UserClassesTabState();
 }
@@ -37,7 +35,8 @@ class _UserClassesTabState extends State<UserClassesTab> {
     try {
       final data = await _academyController.getAcademyClasses();
       setState(() {
-        _academyClass = data;
+        //  Filter only classes the user has joined
+        _academyClass = data.where((c) => c.joinedStatus == true).toList();
       });
     } catch (e) {
       setState(() {
@@ -61,7 +60,7 @@ class _UserClassesTabState extends State<UserClassesTab> {
     }
 
     if (_academyClass.isEmpty) {
-      return const Center(child: Text('No classes available.'));
+      return const Center(child: Text('You haven’t joined any classes yet.'));
     }
 
     final grouped = <String, List<ClassModel>>{};
@@ -82,12 +81,15 @@ class _UserClassesTabState extends State<UserClassesTab> {
             const SizedBox(height: 8),
             for (final cls in entry.value)
               GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(
+                onTap: () async {
+                  final result = await Navigator.pushNamed(
                     context,
                     AppRoutes.classDetailsScreen,
                     arguments: cls,
                   );
+                  if (result == true) {
+                    _fetchClasses(); // 🔄 Refresh if something changed
+                  }
                 },
                 child: ClassCard(classData: cls),
               ),

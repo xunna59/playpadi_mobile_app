@@ -112,13 +112,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                       : colorScheme.tertiaryContainer,
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(16),
-                                onTap: () {
-                                  // await _notificationController.markAsRead(notification.id);
-                                  //   setState(() {
-                                  //   notifications[index] = notification
-                                  //       .copyWith(
-                                  //         isRead: true,
-                                  //       ); // mark as read locally
+                                onTap: () async {
+                                  // final payload = {
+                                  //   'notificationId': notification.id,
+                                  // };
+
+                                  // final response = await _notificationController
+                                  //     .markNotificationRead(payload);
+
+                                  // setState(() {
+                                  //   _futureNotifications =
+                                  //       _notificationController
+                                  //           .fetchNotifications();
                                   // });
 
                                   Navigator.pushNamed(

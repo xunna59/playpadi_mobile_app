@@ -81,27 +81,37 @@ class HomeTab extends ConsumerWidget {
                 },
               ),
               const SizedBox(height: 16),
-              Column(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary,
-                      borderRadius: BorderRadius.circular(
-                        12,
-                      ), // Adjust the radius as needed
-                    ),
-                    child: IconButton(
-                      icon: Icon(Icons.school, color: Colors.white),
-                      iconSize: 30.0,
-                      onPressed: () {
-                        Navigator.pushNamed(context, AppRoutes.academyScreen);
-                      },
-                    ),
-                  ),
-
-                  Text('Classes'),
-                ],
+              MatchCard(
+                icon: Icons.school,
+                title: 'Classes',
+                subtitle: 'Find and play with others at your skill level',
+                imageUrl: 'assets/background/classes.jpg',
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.academyScreen);
+                  //  ref.invalidate(matchesFutureProvider);
+                },
               ),
+              // Column(
+              //   children: [
+              //     Container(
+              //       decoration: BoxDecoration(
+              //         color: colorScheme.primary,
+              //         borderRadius: BorderRadius.circular(
+              //           12,
+              //         ), // Adjust the radius as needed
+              //       ),
+              //       child: IconButton(
+              //         icon: Icon(Icons.school, color: Colors.white),
+              //         iconSize: 30.0,
+              //         onPressed: () {
+              //           Navigator.pushNamed(context, AppRoutes.academyScreen);
+              //         },
+              //       ),
+              //     ),
+
+              //     Text('Classes'),
+              //   ],
+              // ),
             ],
           ),
         ],

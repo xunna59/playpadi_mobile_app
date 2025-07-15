@@ -1,5 +1,6 @@
 import '../../playpadi_library.dart';
 import '../models/booking_model.dart';
+import '../models/court_model.dart';
 
 class BookingController {
   final APIClient client = APIClient();
@@ -9,43 +10,68 @@ class BookingController {
 
     try {
       final response = await client.fetchSlots(data);
-      // Check if the response is in the expected format
+      print('Raw API response in controller: $response');
+
       if (response is Map<String, dynamic>) {
-        if (response['slots'] is List<dynamic>) {
-          final rawBookingInfo = response['slots']; // Accessing 'slots'
-          List<BookingDate> bookingDates = [];
-
-          // Iterate over each booking slot
-          for (var date in rawBookingInfo) {
-            List<BookingTime> availableTimes = [];
-
-            // Iterate over each available time for the given date
-            for (var time in date['times']) {
-              availableTimes.add(
-                BookingTime(time: time['time'], status: time['status']),
-              );
-            }
-
-            // Add the date and available times to the booking dates list
-            bookingDates.add(
-              BookingDate(
-                weekday: date['weekday'],
-                day: date['day'],
-                month: date['month'],
-                date: date['date'],
-                availableTimes: availableTimes,
-              ),
-            );
-          }
-
-          // Return the booking information as a BookingInfo object
-          return BookingInfo(dates: bookingDates);
-        }
+        return BookingInfo.fromJson(response); // ✅ This triggers the print
       }
 
-      return null; // Return null if the data structure doesn't match the expected format
+      return null;
     } catch (e) {
-      return null; // Return null in case of any error
+      print('Error fetching booking info: $e');
+      return null;
     }
   }
+
+  // Future<BookingInfo?> fetchBookingInfoById(id) async {
+  //   Map<String, String> data = {'id': id.toString()};
+
+  //   try {
+  //     final response = await client.fetchSlots(data);
+
+  //     if (response is Map<String, dynamic>) {
+  //       if (response['slots'] is List<dynamic>) {
+  //         final rawBookingInfo = response['slots'];
+  //         List<BookingDate> bookingDates = [];
+
+  //         for (var date in rawBookingInfo) {
+  //           List<BookingTime> availableTimes = [];
+
+  //           for (var time in date['times']) {
+  //             availableTimes.add(
+  //               BookingTime(
+  //                 time: time['time'],
+  //                 court_status: time['court_status'],
+  //                 totalAvailableCourts: time['total_available_courts'] ?? 0,
+  //                 courts:
+  //                     (time['courts'] as List).map((courtJson) {
+  //                       final courtData = courtJson['court'];
+  //                       return CourtModel.fromJson(
+  //                         courtData,
+  //                       );
+  //                     }).toList(),
+  //               ),
+  //             );
+  //           }
+
+  //           bookingDates.add(
+  //             BookingDate(
+  //               weekday: date['weekday'],
+  //               day: date['day'],
+  //               month: date['month'],
+  //               date: date['date'],
+  //               availableTimes: availableTimes,
+  //             ),
+  //           );
+  //         }
+
+  //         return BookingInfo(dates: bookingDates);
+  //       }
+  //     }
+
+  //     return null;
+  //   } catch (e) {
+  //     return null;
+  //   }
+  // }
 }

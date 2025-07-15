@@ -574,6 +574,31 @@ class APIClient {
     });
   }
 
+  Future<dynamic> markNotificationRead(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/api/notifications/mark-as-read/${data['notificationId']}',
+      method: 'put',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
+      body: null,
+    );
+    //  print('This is body sent: ${payload.body}');
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
   Future<dynamic> addToFavourite(Map data, [dynamic callback]) async {
     Request payload = Request(
       '${baseUrl}/api/sports-center/add-favourite',
@@ -771,6 +796,31 @@ class APIClient {
         'Authorization: Bearer $token',
       ],
       body: jsonEncode(data),
+    );
+    //  print('This is body sent: ${payload.body}');
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+
+      if (callback is Function) {
+        return callback(response.data);
+      } else {
+        return response.data;
+      }
+    });
+  }
+
+  Future<dynamic> leavePublicBooking(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/api/bookings/${data['bookingId']}/leave',
+      method: 'post',
+      headers: [
+        'Content-Type: application/json',
+        'Authorization: Bearer $token',
+      ],
+      body: null,
     );
     //  print('This is body sent: ${payload.body}');
 

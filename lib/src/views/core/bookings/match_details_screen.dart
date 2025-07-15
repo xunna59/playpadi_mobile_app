@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../controllers/match_controller.dart';
 import '../../../core/activity_overlay.dart';
 import '../../../core/constants.dart';
@@ -47,7 +48,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            "Martch Joined Successfully!",
+            "Match Joined Successfully!",
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: Colors.green, // ← here
@@ -61,6 +62,55 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
             'Booking failed: $e',
             style: TextStyle(color: Colors.white),
           ),
+        ),
+      );
+    } finally {
+      LoadingOverlay.hide();
+    }
+  }
+
+  Future<void> _onLeaveBooking() async {
+    final payload = {'bookingId': bookingId};
+
+    LoadingOverlay.show(context);
+    try {
+      final response = await matchController.leavePublicBooking(payload);
+
+      Navigator.pop(context, true);
+
+      final refundEligible = response['refund'] == true;
+      final refundAmount = num.parse(
+        response['refundAmount'].toString(),
+      ).toStringAsFixed(2);
+      final refundNote = response['refundNote'] ?? 'You left the match.';
+
+      final successMessage =
+          refundEligible
+              ? 'Left match successfully. \n$refundNote Amount: ₦$refundAmount'
+              : 'Left match successfully.\n$refundNote';
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            successMessage,
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Could not leave booking: $e',
+            style: const TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
         ),
       );
     } finally {
@@ -86,7 +136,14 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.share, color: Colors.white),
-                onPressed: () {},
+                onPressed: () {
+                  SharePlus.instance.share(
+                    ShareParams(
+                      text:
+                          'PlayPadi Upcoming ${widget.match.matchLevel} Game visit https://playpadi.com to Join Match',
+                    ),
+                  );
+                },
               ),
             ],
 
@@ -141,7 +198,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                             ),
                             Expanded(
                               child: _infoColumn(
-                                'Level',
+                                'Game',
                                 widget.match.matchLevel,
                               ),
                             ),
@@ -186,7 +243,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                       children: const [
                         Icon(Icons.check_circle, color: Colors.green),
                         SizedBox(width: 4),
-                        Text("Court booked"),
+                        Text("Court Available"),
                       ],
                     ),
                   ],
@@ -330,16 +387,40 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
 
                     onPressed: () async {
                       if (widget.match.joinedStatus == true) {
-                        // Already joined — maybe show a message or navigate elsewhere
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              "You've already joined this match.",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            backgroundColor: Colors.orange,
-                          ),
+                        // Ask for confirmation before cancelling
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder:
+                              (context) => AlertDialog(
+                                backgroundColor: cs.secondary,
+                                title: const Text('Cancel Booking?'),
+                                content: const Text(
+                                  'Are you sure you want to cancel this booking?\nRefunds depend on how early you cancel.',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.of(context).pop(false),
+                                    child: const Text('No'),
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: cs.primary,
+                                      foregroundColor: Colors.white,
+                                      textStyle: const TextStyle(fontSize: 14),
+                                    ),
+                                    onPressed:
+                                        () => Navigator.of(context).pop(true),
+                                    child: const Text('Yes, Cancel'),
+                                  ),
+                                ],
+                              ),
                         );
+
+                        if (confirm == true) {
+                          _onLeaveBooking();
+                        }
+
                         return;
                       }
 
@@ -364,7 +445,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                         widget.match.joinedStatus == true
                             ? Text(
                               'Cancel Booking',
-                              style: GoogleFonts.roboto(
+                              style: GoogleFonts.inter(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white,
@@ -372,7 +453,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                             )
                             : Text(
                               'Book Place - ${_formatPrice(widget.match.sessionPrice / widget.match.totalPlayers)}',
-                              style: GoogleFonts.roboto(
+                              style: GoogleFonts.inter(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white,

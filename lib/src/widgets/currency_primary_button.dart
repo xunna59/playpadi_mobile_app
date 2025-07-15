@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class CurrencyPrimaryButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   const CurrencyPrimaryButton({
     super.key,
@@ -14,13 +14,15 @@ class CurrencyPrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isDisabled = onPressed == null;
 
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: colorScheme.primary,
-          foregroundColor: colorScheme.onPrimary,
+          backgroundColor:
+              isDisabled ? Colors.grey.shade300 : colorScheme.primary,
+          foregroundColor: isDisabled ? Colors.black45 : colorScheme.onPrimary,
           padding: const EdgeInsets.symmetric(vertical: 18),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),

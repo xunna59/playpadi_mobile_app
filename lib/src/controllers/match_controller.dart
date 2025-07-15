@@ -105,4 +105,41 @@ class MatchController {
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> leavePublicBooking(
+    Map<String, dynamic> payload,
+  ) async {
+    try {
+      final response = await client.leavePublicBooking(payload);
+
+      if (response is Map<String, dynamic>) {
+        // ✅ Handle valid expected refund structure
+        if (response.containsKey('refund') &&
+            response.containsKey('refundAmount') &&
+            response.containsKey('refundNote')) {
+          return {
+            'refund': response['refund'],
+            'refundAmount': response['refundAmount'],
+            'refundNote': response['refundNote'],
+          };
+        }
+
+        // Optional: Handle a success message with no refund
+        if (response.containsKey('message')) {
+          return {
+            'refund': false,
+            'refundAmount': 0.0,
+            'refundNote': response['message'],
+          };
+        }
+
+        throw Exception('Unexpected response: $response');
+      }
+
+      // ❌ Fallback for invalid formats
+      throw FormatException('Unexpected response format: $response');
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

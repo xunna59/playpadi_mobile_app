@@ -78,12 +78,16 @@ class _AvailableClassesTabState extends State<AvailableClassesTab> {
             const SizedBox(height: 8),
             for (final cls in entry.value)
               GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(
+                onTap: () async {
+                  final result = await Navigator.pushNamed(
                     context,
                     AppRoutes.classDetailsScreen,
                     arguments: cls,
                   );
+
+                  if (result == true) {
+                    _fetchClasses();
+                  }
                 },
                 child: ClassCard(classData: cls),
               ),

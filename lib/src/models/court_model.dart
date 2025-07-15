@@ -12,6 +12,7 @@ class CourtModel {
   final Map<String, dynamic> bookingInfo; // Now it's a Map
   final String status;
   final List<CourtData> courtData;
+  final String? courtStatus;
 
   CourtModel({
     required this.id,
@@ -25,6 +26,7 @@ class CourtModel {
     required this.bookingInfo,
     required this.status,
     required this.courtData,
+    this.courtStatus,
   });
 
   factory CourtModel.fromJson(Map<String, dynamic> json) {
@@ -43,8 +45,9 @@ class CourtModel {
       bookingInfo: _decodeBookingInfo(
         json['booking_info'],
       ), // Handle decoding logic
-      status: json['status'] ?? '', // Default to empty string if null
-      courtData: _decodeCourtData(
+      status: json['court_status'] ?? '', // Default to empty string if null
+      courtStatus: json['court_status'],
+      courtData: decodeCourtData(
         json['court_data'], // Use the new court_data field
       ),
     );
@@ -67,7 +70,7 @@ class CourtModel {
     return {}; // Return an empty map as fallback
   }
 
-  static List<CourtData> _decodeCourtData(dynamic courtData) {
+  static List<CourtData> decodeCourtData(dynamic courtData) {
     if (courtData == null) {
       return []; // Return an empty list if courtData is null
     }

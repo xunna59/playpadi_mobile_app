@@ -1,12 +1,35 @@
+import 'court_model.dart';
+
 class BookingTime {
   final String time;
-  final String status;
+  final String court_status;
+  final int totalAvailableCourts;
+  final List<CourtModel> courts;
 
-  BookingTime({required this.time, required this.status});
+  BookingTime({
+    required this.time,
+    required this.court_status,
+    required this.totalAvailableCourts,
+    required this.courts,
+  });
 
-  // Factory method to create a BookingTime from JSON
   factory BookingTime.fromJson(Map<String, dynamic> json) {
-    return BookingTime(time: json['time'], status: json['status']);
+    return BookingTime(
+      time: json['time'] ?? '',
+      court_status: json['court_status'] ?? '',
+      totalAvailableCourts: json['total_available_courts'] ?? 0,
+      // courts:
+      //     (json['courts'] as List)
+      //         .map((courtWrapper) => CourtModel.fromJson(courtWrapper['court']))
+      //         .toList(),
+      courts:
+          (json['courts'] as List).map((courtWrapper) {
+            final courtJson = courtWrapper['court'];
+            courtJson['court_status'] =
+                courtWrapper['court_status']; // ✅ inject status
+            return CourtModel.fromJson(courtJson);
+          }).toList(),
+    );
   }
 }
 
@@ -25,18 +48,18 @@ class BookingDate {
     required this.availableTimes,
   });
 
-  // Factory method to create a BookingDate from JSON
   factory BookingDate.fromJson(Map<String, dynamic> json) {
     var timesList =
-        (json['times'] as List)
-            .map((timeJson) => BookingTime.fromJson(timeJson))
-            .toList();
+        (json['times'] as List?)
+            ?.map((timeJson) => BookingTime.fromJson(timeJson))
+            .toList() ??
+        [];
 
     return BookingDate(
-      weekday: json['weekday'],
-      day: json['day'],
-      month: json['month'],
-      date: json['date'], // New field
+      weekday: json['weekday'] ?? '',
+      day: json['day'] ?? '',
+      month: json['month'] ?? '',
+      date: json['date'] ?? '',
       availableTimes: timesList,
     );
   }
@@ -47,13 +70,13 @@ class BookingInfo {
 
   BookingInfo({required this.dates});
 
-  // Factory method to create a BookingInfo from JSON
   factory BookingInfo.fromJson(Map<String, dynamic> json) {
+    print('Raw booking data response: $json');
     var datesList =
-        (json['slots'] as List)
-            .map((dateJson) => BookingDate.fromJson(dateJson))
-            .toList();
-
+        (json['slots'] as List?)
+            ?.map((dateJson) => BookingDate.fromJson(dateJson))
+            .toList() ??
+        [];
     return BookingInfo(dates: datesList);
   }
 }
