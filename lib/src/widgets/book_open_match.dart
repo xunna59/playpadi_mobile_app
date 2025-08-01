@@ -7,18 +7,21 @@ import '../controllers/booking_controller.dart';
 import '../models/court_model.dart';
 import '../models/event_center_model.dart';
 import 'confirm_booking_modal.dart';
-import 'sport_modal_widget.dart'; // Import the controller
+import 'inkwell_modal.dart';
+import 'match_sports_modal.dart';
 
 class BookOpenMatch extends StatefulWidget {
   final int bookingId;
   final String sports_center_address;
   final String sports_center_name;
+  final List<String> games;
 
   const BookOpenMatch({
     super.key,
     required this.bookingId,
     required this.sports_center_address,
     required this.sports_center_name,
+    required this.games,
   });
 
   @override
@@ -38,10 +41,16 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
   void initState() {
     super.initState();
 
-    _bookingInfoFuture = BookingController().fetchBookingInfoById(
-      widget.bookingId,
-    );
+    if (widget.games.isNotEmpty) {
+      selectedSport = widget.games.first;
+    }
 
+    final payload = {
+      'id': widget.bookingId.toString(),
+      'game_type': (selectedSport ?? '').toLowerCase(),
+    };
+
+    _bookingInfoFuture = BookingController().fetchBookingInfoById(payload);
     _fetchedCenter = EventCentersController().fetchCenterById(widget.bookingId);
   }
 
@@ -77,41 +86,57 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              CustomFilterChip(
+                label: selectedSport ?? 'Select Game',
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                onTap: () async {
+                  final sport = await showMatchSelectSportModal(
+                    context,
+                    sports: widget.games,
+                  );
+
+                  if (sport != null) {
+                    setState(() {
+                      selectedSport = sport;
+                    });
+                  }
+                },
+              ),
               Row(
                 children: [
-                  GestureDetector(
-                    onTap: () async {
-                      final sport = await showSelectSportModal(context);
-                      if (sport != null) {
-                        setState(() {
-                          selectedSport = sport;
-                        });
-                      }
-                      // print(selectedSport);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 5.0, top: 12),
-                      child: Container(
-                        height: 100,
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: colorScheme.secondary,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color:
-                                colorScheme.primary, // Customize border color
-                            width: 1.0, // Customize border width
-                          ),
-                        ),
-                        child: Image.asset(
-                          'assets/icons/paddle_bat.png',
-                          width: 25,
-                          height: 25,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                  ),
+                  // GestureDetector(
+                  //   onTap: () async {
+                  //     final sport = await showMatchSelectSportModal(context);
+                  //     if (sport != null) {
+                  //       setState(() {
+                  //         selectedSport = sport;
+                  //       });
+                  //     }
+                  //     // print(selectedSport);
+                  //   },
+                  //   child: Padding(
+                  //     padding: const EdgeInsets.only(right: 5.0, top: 12),
+                  //     child: Container(
+                  //       height: 100,
+                  //       padding: const EdgeInsets.all(8),
+                  //       decoration: BoxDecoration(
+                  //         color: colorScheme.secondary,
+                  //         borderRadius: BorderRadius.circular(8),
+                  //         border: Border.all(
+                  //           color:
+                  //               colorScheme.primary, // Customize border color
+                  //           width: 1.0, // Customize border width
+                  //         ),
+                  //       ),
+                  //       child: Image.asset(
+                  //         'assets/icons/paddle_bat.png',
+                  //         width: 25,
+                  //         height: 25,
+                  //         fit: BoxFit.contain,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                   Expanded(
                     child: SizedBox(
                       height: 100,
@@ -343,7 +368,7 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
                                     Text(
                                       court.name,
                                       style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.bold,
                                         decoration:
                                             isAvailable
@@ -352,7 +377,10 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
                                       ),
                                     ),
                                     const SizedBox(height: 4),
-                                    Text(court.location),
+                                    Text(
+                                      court.location,
+                                      style: TextStyle(fontSize: 12),
+                                    ),
                                     const SizedBox(height: 8),
                                     SingleChildScrollView(
                                       scrollDirection: Axis.horizontal,
@@ -465,7 +493,7 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
             color: cs.primary,
             borderRadius: BorderRadius.circular(8),
@@ -476,15 +504,15 @@ class _BookOpenMatchState extends State<BookOpenMatch> {
                 //   courtData.price.toString(),
                 '\₦${NumberFormat('#,##0', 'en_NG').format(courtData.price)}',
                 style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
                   color: Colors.white,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 courtData.duration.toString() + " min",
-                style: const TextStyle(fontSize: 14, color: Colors.white),
+                style: const TextStyle(fontSize: 12, color: Colors.white),
               ),
             ],
           ),

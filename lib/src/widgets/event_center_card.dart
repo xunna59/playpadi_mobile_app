@@ -52,6 +52,7 @@ class EventCenterCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header row with name and price
+                SizedBox(height: 15),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
@@ -83,6 +84,7 @@ class EventCenterCard extends StatelessWidget {
                     style: TextStyle(color: Colors.grey),
                   ),
                 ),
+                SizedBox(height: 20),
                 // Available times as chips row
                 // Padding(
                 //   padding: const EdgeInsets.all(8.0),

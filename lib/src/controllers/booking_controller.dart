@@ -5,15 +5,15 @@ import '../models/court_model.dart';
 class BookingController {
   final APIClient client = APIClient();
 
-  Future<BookingInfo?> fetchBookingInfoById(id) async {
-    Map<String, String> data = {'id': id.toString()};
+  Future<BookingInfo?> fetchBookingInfoById(Map<String, dynamic> data) async {
+    //   Map<String, String> data = {'id': id.toString()};
 
     try {
       final response = await client.fetchSlots(data);
-      print('Raw API response in controller: $response');
+      //  print('Raw API response in controller: $response');
 
       if (response is Map<String, dynamic>) {
-        return BookingInfo.fromJson(response); // ✅ This triggers the print
+        return BookingInfo.fromJson(response);
       }
 
       return null;

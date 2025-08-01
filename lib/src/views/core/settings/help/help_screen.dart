@@ -101,18 +101,18 @@ class HelpScreen extends StatelessWidget {
             onTap: () => _launchUrl('https://wa.me/$_whatsAppNumber'),
             scheme: colorScheme,
           ),
-          _buildTile(
-            icon: FontAwesomeIcons.instagram,
-            label: 'Instagram',
-            onTap: () => _launchUrl('https://instagram.com/$_instagramHandle'),
-            scheme: colorScheme,
-          ),
-          _buildTile(
-            icon: FontAwesomeIcons.twitter,
-            label: 'Twitter',
-            onTap: () => _launchUrl('https://twitter.com/$_twitterHandle'),
-            scheme: colorScheme,
-          ),
+          // _buildTile(
+          //   icon: FontAwesomeIcons.instagram,
+          //   label: 'Instagram',
+          //   onTap: () => _launchUrl('https://instagram.com/$_instagramHandle'),
+          //   scheme: colorScheme,
+          // ),
+          // _buildTile(
+          //   icon: FontAwesomeIcons.twitter,
+          //   label: 'Twitter',
+          //   onTap: () => _launchUrl('https://twitter.com/$_twitterHandle'),
+          //   scheme: colorScheme,
+          // ),
         ],
       ),
     );

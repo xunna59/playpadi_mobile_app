@@ -62,7 +62,7 @@ class FormController extends StateNotifier<FormState> {
 
   final List<Map<String, dynamic>> steps = [
     {
-      'question': 'What is your previous experience of padel tennis?',
+      'question': 'What is your Previous Experience of Padel Tennis?',
       'options': [
         {'option': 'Excellent', 'points': 2.0},
         {'option': 'Minimal', 'points': 1.0},
@@ -70,7 +70,23 @@ class FormController extends StateNotifier<FormState> {
       ],
     },
     {
-      'question': 'What is your previous experience of Snooker?',
+      'question':
+          'Are you Familiar with the Scoring System Applicapble in Padel Tennis?',
+      'options': [
+        {'option': 'Yes', 'points': 1.0},
+        {'option': 'No', 'points': 0.1},
+      ],
+    },
+    // {
+    //   'question': 'What is your previous experience of Snooker?',
+    //   'options': [
+    //     {'option': 'Excellent', 'points': 1.0},
+    //     {'option': 'Minimal', 'points': 0.4},
+    //     {'option': 'None', 'points': 0.1},
+    //   ],
+    // },
+    {
+      'question': 'How Confident are you in Your Ability to Learn a New Sport?',
       'options': [
         {'option': 'Excellent', 'points': 1.0},
         {'option': 'Minimal', 'points': 0.4},
@@ -78,15 +94,7 @@ class FormController extends StateNotifier<FormState> {
       ],
     },
     {
-      'question': 'What is your previous experience of Darts?',
-      'options': [
-        {'option': 'Excellent', 'points': 1.0},
-        {'option': 'Minimal', 'points': 0.4},
-        {'option': 'None', 'points': 0.1},
-      ],
-    },
-    {
-      'question': 'Have you played any other racquet sports?',
+      'question': 'Have you Played any Other Racquet Sports?',
       'options': [
         {'option': 'Yes', 'points': 1.0},
         {'option': 'No', 'points': 0.1},

@@ -27,6 +27,8 @@ class _UserClassesTabState extends State<UserClassesTab> {
   }
 
   Future<void> _fetchClasses() async {
+    if (!mounted) return;
+
     setState(() {
       _isLoading = true;
       _error = null;
@@ -34,15 +36,20 @@ class _UserClassesTabState extends State<UserClassesTab> {
 
     try {
       final data = await _academyController.getAcademyClasses();
+      if (!mounted) return;
+
       setState(() {
-        //  Filter only classes the user has joined
         _academyClass = data.where((c) => c.joinedStatus == true).toList();
       });
     } catch (e) {
+      if (!mounted) return;
+
       setState(() {
         _error = e.toString();
       });
     } finally {
+      if (!mounted) return;
+
       setState(() {
         _isLoading = false;
       });
@@ -88,7 +95,7 @@ class _UserClassesTabState extends State<UserClassesTab> {
                     arguments: cls,
                   );
                   if (result == true) {
-                    _fetchClasses(); // 🔄 Refresh if something changed
+                    _fetchClasses();
                   }
                 },
                 child: ClassCard(classData: cls),

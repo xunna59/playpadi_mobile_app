@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/steps_controller.dart';
 import '../../controllers/user_Profile_controller.dart';
@@ -20,10 +21,22 @@ class CompletedScreen extends ConsumerWidget {
 
     final controller = UserProfileController();
 
+    void _updateFCMToken(updates) async {
+      final updatedProfile = await controller.updateFCMToken(updates);
+    }
+
     void _saveProfile() async {
       final updates = {'points': totalPoints};
       LoadingOverlay.show(context);
       try {
+        String? fcmToken = await FirebaseMessaging.instance.getToken();
+
+        final update_fcm = {'fcm_token': fcmToken};
+
+        if (fcmToken != null) {
+          _updateFCMToken(update_fcm);
+        }
+
         final updatedProfile = await controller.updateUserProfile(updates);
         Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
       } catch (e) {
@@ -45,12 +58,12 @@ class CompletedScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.notifications),
-          ),
-        ],
+        // actions: const [
+        //   Padding(
+        //     padding: EdgeInsets.only(right: 16),
+        //     child: Icon(Icons.notifications),
+        //   ),
+        // ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),

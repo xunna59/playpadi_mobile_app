@@ -41,11 +41,11 @@ class EventCentersController {
         if (response['data'] is Map<String, dynamic> &&
             response['data']['sportsCenter'] is Map<String, dynamic>) {
           final rawCenter = response['data']['sportsCenter'];
-          print('Fetched sportsCenter: $rawCenter'); // Log the raw center data
+          //     print('Fetched sportsCenter: $rawCenter'); // Log the raw center data
           return EventCenter.fromJson(rawCenter);
         } else if (response['sportsCenter'] is Map<String, dynamic>) {
           final rawCenter = response['sportsCenter'];
-          print('Fetched sportsCenter: $rawCenter'); // Log the raw center data
+          //     print('Fetched sportsCenter: $rawCenter'); // Log the raw center data
           return EventCenter.fromJson(rawCenter);
         }
 
@@ -54,8 +54,8 @@ class EventCentersController {
 
       return null;
     } catch (e, st) {
-      print('Error fetching center: $e');
-      print('Stacktrace: $st');
+      // print('Error fetching center: $e');
+      // print('Stacktrace: $st');
       return null;
     }
   }

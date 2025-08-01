@@ -8,6 +8,7 @@ import '../../../playpadi_library.dart';
 import '../../controllers/user_Profile_controller.dart';
 import '../../core/constants.dart';
 import '../../models/user_profile_model.dart';
+import '../../providers/user_provider.dart';
 import '../../routes/app_routes.dart';
 
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -57,13 +58,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       if (!mounted) return;
       setState(() {
         _profile = profile;
-
-        if (_profile!.points == '0.00') {
-          Navigator.pushNamed(context, AppRoutes.finalSteps);
-        }
       });
 
-      print(_profile!.preferences);
+      ref.read(firstNameProvider.notifier).state = profile.firstName;
+      ref.read(lastNameProvider.notifier).state = profile.lastName;
+      ref.read(displayImageProvider.notifier).state = profile.displayPicture;
+      ref.read(accountTypeProvider.notifier).state = profile.accountType;
+
+      if (profile!.points == '0.00') {
+        Navigator.pushNamed(context, AppRoutes.finalSteps);
+      }
+      //     print(profile.points);
+
+      print(_profile);
     } on ServerErrorException catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

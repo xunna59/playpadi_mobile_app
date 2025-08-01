@@ -87,12 +87,16 @@ class _AcademySectionState extends State<AcademySection> {
           // Render each card; you could also pass a callback down to ClassCard
           for (final cls in entry.value)
             GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(
+              onTap: () async {
+                final result = await Navigator.pushNamed(
                   context,
                   AppRoutes.classDetailsScreen,
                   arguments: cls,
                 );
+
+                if (result == true) {
+                  _fetchClasses();
+                }
               },
               child: ClassSection(classData: cls),
             ),

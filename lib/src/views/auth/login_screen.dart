@@ -50,8 +50,8 @@ class _LoginScreenState extends State<LoginScreen> {
         if (!mounted) return; // <- Important
 
         if (fcmToken != null) {
-          print('FCM Token: ${fcmToken}');
-          print('for server: $updates');
+          // print('FCM Token: ${fcmToken}');
+          // print('for server: $updates');
           _updateFCMToken(updates);
         }
 

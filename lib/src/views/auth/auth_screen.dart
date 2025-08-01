@@ -53,8 +53,9 @@ class _AuthScreenState extends State<AuthScreen> {
       await client.signInWithGoogle();
 
       if (!mounted) return;
+      Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
 
-      Navigator.pushReplacementNamed(context, AppRoutes.home);
+      //   Navigator.pushReplacementNamed(context, AppRoutes.home);
     } catch (e) {
       String message = switch (e) {
         UserCanceledSignInException => 'Sign-in was canceled.',

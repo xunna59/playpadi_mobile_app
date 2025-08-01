@@ -1,3 +1,4 @@
+import '../../../../core/capitalization_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
@@ -84,22 +85,27 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
                   minRadius: 35,
                 ),
                 const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Hurry Up! Limited Slots Available",
-                      style: TextStyle(color: Colors.red),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      widget.classData.title,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                Expanded(
+                  // 👈 Wrap here to allow title to break lines
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Limited Slots Available",
+                        style: TextStyle(color: Colors.red),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      Text(
+                        widget.classData.title,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -107,12 +113,12 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
             Row(
               children: [
                 Text(
-                  widget.classData.sessionActivity,
+                  widget.classData.sessionActivity.capitalizeFirst(),
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(width: 15),
                 Text(
-                  widget.classData.academyType,
+                  widget.classData.academyType.capitalizeFirst(),
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ],

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../../../../src/core/capitalization_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,6 +8,7 @@ import '../../../controllers/theme_controller.dart';
 import '../../../controllers/user_Profile_controller.dart';
 import '../../../core/constants.dart';
 import '../../../models/user_profile_model.dart';
+import '../../../providers/user_provider.dart';
 import '../../../routes/app_routes.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -28,31 +30,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Future<void> _loadUserProfile() async {
-    try {
-      final profile = await controller.fetchUserProfile();
-      if (!mounted) return;
-      setState(() => _profile = profile);
-    } on ServerErrorException {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'There was a server error. Please try again later.',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      );
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Failed to load profile. Please try again later.',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      );
-    }
+    // try {
+    //   final profile = await controller.fetchUserProfile();
+    //   if (!mounted) return;
+    //   setState(() => _profile = profile);
+    // } on ServerErrorException {
+    //   if (!mounted) return;
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text(
+    //         'There was a server error. Please try again later.',
+    //         style: TextStyle(color: Colors.white),
+    //       ),
+    //     ),
+    //   );
+    // } catch (_) {
+    //   if (!mounted) return;
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text(
+    //         'Failed to load profile. Please try again later.',
+    //         style: TextStyle(color: Colors.white),
+    //       ),
+    //     ),
+    //   );
+    // }
   }
 
   @override
@@ -62,6 +64,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     // watch theme provider
     final themeMode = ref.watch(themeControllerProvider);
     final themeNotifier = ref.read(themeControllerProvider.notifier);
+    final firstName = ref.watch(firstNameProvider);
+    final lastName = ref.watch(lastNameProvider);
+    final displayImage = ref.watch(displayImageProvider);
+    final accountType = ref.watch(accountTypeProvider);
 
     final isDark =
         themeMode == ThemeMode.dark ||
@@ -96,12 +102,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               // Profile Header
               Row(
                 children: [
-                  _profile?.displayPicture != null
+                  displayImage != null
                       ? CircleAvatar(
                         radius: 30,
                         backgroundColor: colorScheme.tertiary,
                         backgroundImage: NetworkImage(
-                          '${display_picture}${_profile!.displayPicture!}',
+                          '${display_picture}${displayImage}',
                         ),
                       )
                       : const CircleAvatar(
@@ -113,14 +119,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${_profile?.firstName ?? ''} ${_profile?.lastName ?? ''}',
+                        '${firstName} ${lastName}',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
                       Text(
-                        _profile?.accountType ?? 'Standard account',
+                        accountType?.capitalizeFirst() ?? 'Standard',
                         style: const TextStyle(color: Colors.grey),
                       ),
                     ],

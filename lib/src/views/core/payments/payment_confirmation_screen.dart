@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../controllers/cards_controller.dart';
 import '../../../controllers/transaction_controller.dart';
 import '../../../models/saved_cards_model.dart';
+import '../../../routes/app_routes.dart';
 
 class PaymentConfirmationScreen extends StatefulWidget {
   final String purpose;
@@ -141,9 +142,10 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
                       TextButton.icon(
                         onPressed: () {
                           Navigator.pop(context); // Go back
-                          DefaultTabController.of(
+                          Navigator.pushNamed(
                             context,
-                          )?.animateTo(0); // Switch tab
+                            AppRoutes.paymentScreen,
+                          ); // Switch tab
                         },
                         icon: const Icon(Icons.add_card),
                         label: const Text('Add a payment card'),

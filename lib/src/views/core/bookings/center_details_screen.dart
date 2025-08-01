@@ -566,6 +566,7 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
                           bookingId: widget.eventCenter.id,
                           sports_center_address: widget.eventCenter.address,
                           sports_center_name: widget.eventCenter.name,
+                          games: widget.eventCenter.games,
                         ),
 
                         // --- Open Matches Tab ---
@@ -573,6 +574,7 @@ class _EventCenterDetailsScreenState extends State<EventCenterDetailsScreen> {
                           bookingId: widget.eventCenter.id,
                           sports_center_address: widget.eventCenter.address,
                           sports_center_name: widget.eventCenter.name,
+                          games: widget.eventCenter.games,
                         ),
 
                         // --- Academy Tab ---

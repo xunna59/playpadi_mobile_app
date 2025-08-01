@@ -1,9 +1,9 @@
+import '../core/capitalization_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../core/constants.dart';
 import '../models/match_model.dart';
-import 'dart:convert';
 
 class AvailableMatchCard extends StatefulWidget {
   final MatchModel match;
@@ -61,7 +61,7 @@ class _AvailableMatchCardState extends State<AvailableMatchCard> {
                 const Icon(Icons.wc, size: 16),
                 const SizedBox(width: 4),
                 Text(
-                  widget.match.gender_allowed,
+                  widget.match.gender_allowed.capitalizeFirst(),
                   style: const TextStyle(fontSize: 12),
                 ),
               ],

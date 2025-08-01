@@ -25,6 +25,8 @@ class _AvailableClassesTabState extends State<AvailableClassesTab> {
   }
 
   Future<void> _fetchClasses() async {
+    if (!mounted) return; // prevent running if already disposed
+
     setState(() {
       _isLoading = true;
       _error = null;
@@ -32,14 +34,18 @@ class _AvailableClassesTabState extends State<AvailableClassesTab> {
 
     try {
       final data = await _academyController.getAcademyClasses();
+
+      if (!mounted) return; // check again after async gap
       setState(() {
         _academyClass = data;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = e.toString();
       });
     } finally {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });

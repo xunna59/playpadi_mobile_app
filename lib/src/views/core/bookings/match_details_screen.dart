@@ -1,5 +1,4 @@
-import 'dart:ffi';
-
+import '../../../core/capitalization_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
@@ -193,7 +192,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                             Expanded(
                               child: _infoColumn(
                                 'Gender',
-                                widget.match.gender_allowed,
+                                widget.match.gender_allowed.capitalizeFirst(),
                               ),
                             ),
                             Expanded(

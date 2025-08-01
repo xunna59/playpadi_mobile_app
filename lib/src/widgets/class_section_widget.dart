@@ -1,8 +1,10 @@
+import '../core/capitalization_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../core/constants.dart';
 import '../models/class_model.dart';
+import '../routes/app_routes.dart';
 
 class ClassSection extends StatelessWidget {
   final ClassModel classData;
@@ -66,7 +68,7 @@ class ClassSection extends StatelessWidget {
               children: [
                 const Icon(Icons.sports_tennis, size: 16),
                 const SizedBox(width: 4),
-                Text(c.sessionActivity),
+                Text(c.sessionActivity.capitalizeFirst()),
                 const SizedBox(width: 16),
                 const Icon(Icons.location_on, size: 16),
                 const SizedBox(width: 4),
@@ -80,11 +82,11 @@ class ClassSection extends StatelessWidget {
               children: [
                 const Icon(Icons.equalizer, size: 16),
                 const SizedBox(width: 4),
-                Text(' ${c.academyType}'),
+                Text(' ${c.academyType.capitalizeFirst()}'),
                 const SizedBox(width: 16),
                 const Icon(Icons.wc, size: 16),
                 const SizedBox(width: 4),
-                Text(c.category),
+                Text(c.category.capitalizeFirst()),
               ],
             ),
             const SizedBox(height: 12),
@@ -116,20 +118,28 @@ class ClassSection extends StatelessWidget {
 
                 // Join vs Booked
                 if (!c.joinedStatus)
-                  ElevatedButton(
-                    onPressed: () {
-                      /* TODO: join logic */
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: const StadiumBorder(),
-                      backgroundColor: colorScheme.primary,
-                    ),
-                    child: Text(
-                      'Join – \₦${c.sessionPrice}',
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                  Flexible(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.classDetailsScreen,
+                          arguments: c,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: const StadiumBorder(),
+                        backgroundColor: colorScheme.primary,
+                      ),
+                      child: FittedBox(
+                        child: Text(
+                          'Join – ₦${NumberFormat('#,##0', 'en_NG').format(c.sessionPrice)}',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                   )

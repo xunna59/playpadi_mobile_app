@@ -25,8 +25,7 @@ class BookingTime {
       courts:
           (json['courts'] as List).map((courtWrapper) {
             final courtJson = courtWrapper['court'];
-            courtJson['court_status'] =
-                courtWrapper['court_status']; // ✅ inject status
+            courtJson['court_status'] = courtWrapper['court_status'];
             return CourtModel.fromJson(courtJson);
           }).toList(),
     );
@@ -71,7 +70,7 @@ class BookingInfo {
   BookingInfo({required this.dates});
 
   factory BookingInfo.fromJson(Map<String, dynamic> json) {
-    print('Raw booking data response: $json');
+    // print('Raw booking data response: $json');
     var datesList =
         (json['slots'] as List?)
             ?.map((dateJson) => BookingDate.fromJson(dateJson))

@@ -32,9 +32,9 @@ class APIClient {
   factory APIClient() => _instance;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
-    // clientId:
-    //     '512656274553-68brrrinihdoh61emr0oqkkuj2jv4i7d.apps.googleusercontent.com',
+    scopes: ['email', 'profile', 'openid'],
+    serverClientId:
+        '512656274553-e4itibodo8q8keoamp5t4p6n798ungfd.apps.googleusercontent.com',
   );
 
   Future<dynamic> request(
@@ -47,6 +47,9 @@ class APIClient {
         payload.method,
         payload.url,
       );
+
+      //   print(payload.url);
+
       req.headers.removeAll(HttpHeaders.acceptEncodingHeader);
       for (final header in payload.headers) {
         final parts = header.split(':');
@@ -114,6 +117,7 @@ class APIClient {
       }
 
       final googleAuth = await googleUser.authentication;
+      print('googleAuth: $googleAuth');
       final idToken = googleAuth.idToken;
 
       print('Google idToken: $idToken');
@@ -143,25 +147,25 @@ class APIClient {
   }
 
   Future<String?> _exchangeIdTokenWithBackend(String idToken) async {
-    final url = Uri.parse('https://playpadi.xunnatech.com/auth/google');
+    final url = Uri.parse('https://app.playpadi.com/auth/google-auth');
     print('Sending idToken to backend...');
 
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'id_token': idToken}),
+      body: jsonEncode({'idToken': idToken}),
     );
 
-    print('Backend response status: ${response.statusCode}');
-    print('Backend response body: ${response.body}');
+    // print('Backend response status: ${response.statusCode}');
+    // print('Backend response body: ${response.body}');
 
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
       final backendToken = body['token'];
-      print('Received app token: $backendToken');
+      //   print('Received app token: $backendToken');
       return backendToken;
     } else {
-      print('Failed to get app token from backend.');
+      //   print('Failed to get app token from backend.');
       return null;
     }
   }
@@ -398,7 +402,7 @@ class APIClient {
 
   Future<dynamic> fetchSlots(Map data, [dynamic callback]) async {
     Request payload = Request(
-      '${baseUrl}/api/fetch-slots/${data['id']}',
+      '${baseUrl}/api/fetch-slots/${data['id']}?game_type=${data['game_type']}',
       method: 'get',
       headers: [
         'Content-Type: application/json',
@@ -406,6 +410,7 @@ class APIClient {
       ],
       body: null,
     );
+
     return await request(payload, (Response response) {
       if (response.status != Response.SUCCESS) {
         throw ServerErrorException(response.code, response.message);

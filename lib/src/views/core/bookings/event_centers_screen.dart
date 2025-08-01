@@ -63,35 +63,39 @@ class _EventCentersScreenState extends ConsumerState<EventCentersScreen> {
                 ),
               ),
             ),
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.tune),
-                  onPressed: () => showFilterModal(context),
-                ),
-                const SizedBox(width: 8),
-                CustomFilterChip(
-                  label: selectedSport ?? 'All Sports',
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  onTap: () async {
-                    final sport = await showSelectSportModal(context);
-                    if (sport != null) {
-                      setState(() {
-                        selectedSport = sport;
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(width: 8),
-                CustomFilterChip(
-                  label: selectedTime,
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  onTap: () {
-                    // Implement time selector
-                  },
-                ),
-              ],
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.tune),
+                    onPressed: () => showFilterModal(context),
+                  ),
+                  const SizedBox(width: 8),
+                  CustomFilterChip(
+                    label: selectedSport ?? 'All Sports',
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    onTap: () async {
+                      final sport = await showSelectSportModal(context);
+                      if (sport != null) {
+                        setState(() {
+                          selectedSport = sport;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  CustomFilterChip(
+                    label: selectedTime,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    onTap: () {
+                      // Implement time selector
+                    },
+                  ),
+                ],
+              ),
             ),
+
             const SizedBox(height: 16),
             Expanded(
               child: RefreshIndicator(

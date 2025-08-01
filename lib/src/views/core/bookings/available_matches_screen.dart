@@ -12,6 +12,8 @@ class AvailableMatchesScreen extends StatefulWidget {
 }
 
 class _AvailableMatchesScreenState extends State<AvailableMatchesScreen> {
+  String? _selectedLevel;
+
   final MatchController _controller = MatchController();
   List<MatchModel> _matches = [];
   bool _isLoading = true;
@@ -76,6 +78,17 @@ class _AvailableMatchesScreenState extends State<AvailableMatchesScreen> {
         _isLoadingMore = false;
       });
     }
+  }
+
+  List<String> get _uniqueMatchLevels {
+    final levels = _matches.map((m) => m.matchLevel).toSet().toList();
+    levels.sort();
+    return levels;
+  }
+
+  List<MatchModel> get _filteredMatches {
+    if (_selectedLevel == null) return _matches;
+    return _matches.where((m) => m.matchLevel == _selectedLevel).toList();
   }
 
   // Future<void> _loadMatches({bool loadMore = false}) async {
@@ -155,17 +168,41 @@ class _AvailableMatchesScreenState extends State<AvailableMatchesScreen> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildFilterChip(label: 'Padel', selected: true),
-                  const SizedBox(width: 8),
-                  _buildFilterChip(label: '24 Clubs'),
-                  const SizedBox(width: 8),
-                  _buildFilterChip(label: 'Today'),
-                  const SizedBox(width: 8),
-                  _buildFilterChip(
-                    label: 'Clear',
-                    backgroundColor: Colors.grey[200],
-                    textColor: Colors.red,
-                  ),
+                  // Filter Chips for Levels
+                  ..._uniqueMatchLevels.map((level) {
+                    final isSelected = _selectedLevel == level;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedLevel = isSelected ? null : level;
+                          });
+                        },
+                        child: _buildFilterChip(
+                          label: level,
+                          selected: isSelected,
+                        ),
+                      ),
+                    );
+                  }),
+
+                  // Conditionally show Clear Filter chip
+                  if (_selectedLevel != null) ...[
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedLevel = null;
+                        });
+                      },
+                      child: _buildFilterChip(
+                        label: 'Clear Filter',
+                        backgroundColor: Colors.grey.shade300,
+                        textColor: Colors.black,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -185,8 +222,13 @@ class _AvailableMatchesScreenState extends State<AvailableMatchesScreen> {
                       : ListView.builder(
                         controller: _scrollController,
                         padding: const EdgeInsets.only(bottom: 80),
+
+                        // itemCount:
+                        // _matches.length +
+                        // 1 +
+                        // (_hasMore && _isLoadingMore ? 1 : 0),
                         itemCount:
-                            _matches.length +
+                            _filteredMatches.length +
                             1 +
                             (_hasMore && _isLoadingMore ? 1 : 0),
 
@@ -219,7 +261,10 @@ class _AvailableMatchesScreenState extends State<AvailableMatchesScreen> {
                           }
 
                           if (i > 0 && i <= _matches.length) {
-                            final match = _matches[i - 1];
+                            //   final match = _matches[i - 1];
+
+                            final match = _filteredMatches[i - 1];
+
                             return Padding(
                               padding: const EdgeInsets.symmetric(
                                 // vertical: 4.0,

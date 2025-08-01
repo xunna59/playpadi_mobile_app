@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../core/constants.dart';
 import '../models/class_model.dart';
+import '../routes/app_routes.dart';
+import '../core/capitalization_extension.dart';
 
 class ClassCard extends StatelessWidget {
   final ClassModel classData;
@@ -42,7 +45,7 @@ class ClassCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        c.academyType,
+                        c.academyType.capitalizeFirst(),
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 12,
@@ -68,7 +71,7 @@ class ClassCard extends StatelessWidget {
               children: [
                 const Icon(Icons.sports_tennis, size: 16),
                 const SizedBox(width: 4),
-                Text(c.sessionActivity),
+                Text(c.sessionActivity.capitalizeFirst()),
                 const SizedBox(width: 16),
                 const Icon(Icons.location_on, size: 16),
                 const SizedBox(width: 4),
@@ -82,11 +85,13 @@ class ClassCard extends StatelessWidget {
               children: [
                 const Icon(Icons.equalizer, size: 16),
                 const SizedBox(width: 4),
-                Text('${c.academy_students.students.length} Joined'),
+                Text(
+                  '${c.academy_students.students.length} / ${c.numOfPlayers} Joined',
+                ),
                 const SizedBox(width: 16),
                 const Icon(Icons.wc, size: 16),
                 const SizedBox(width: 4),
-                Text(c.category),
+                Text(c.category.capitalizeFirst()),
               ],
             ),
             const SizedBox(height: 8),
@@ -127,7 +132,7 @@ class ClassCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Participant indicator
+                // Participant info
                 Row(
                   children: [
                     CircleAvatar(
@@ -138,29 +143,40 @@ class ClassCard extends StatelessWidget {
                                 '${imageBaseUrl}${c.sportsCenter.coverImage}',
                               )
                               : null,
-
                       backgroundColor: Colors.grey[800],
-                      //  backgroundColor: Colors.blue,
                     ),
                     const SizedBox(width: 8),
-                    Text('${c.sportsCenter.name}'),
+                    Text(
+                      '${c.sportsCenter.name}',
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ),
-
-                // Join vs Booked
+                // NumberFormat('#,##0', 'en_NG').format()
+                // Join or Booked status
                 if (!c.joinedStatus)
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      shape: const StadiumBorder(),
-                      backgroundColor: colorScheme.primary,
-                    ),
-                    child: Text(
-                      'Join – \₦${c.sessionPrice}',
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                  Flexible(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.classDetailsScreen,
+                          arguments: c,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: const StadiumBorder(),
+                        backgroundColor: colorScheme.primary,
+                      ),
+                      child: FittedBox(
+                        child: Text(
+                          'Join – ₦${NumberFormat('#,##0', 'en_NG').format(c.sessionPrice)}',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                   )

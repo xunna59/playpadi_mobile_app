@@ -1,8 +1,6 @@
+import '../core/capitalization_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
-
-import '../controllers/booking_controller.dart';
 import '../controllers/match_controller.dart';
 import '../core/activity_overlay.dart';
 import '../models/match_model.dart';
@@ -208,7 +206,7 @@ class _ConfirmBookingModalContentState
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _infoColumn('Gender', widget.gender, cs),
+                    _infoColumn('Gender', widget.gender.capitalizeFirst(), cs),
                     _infoColumn(
                       'Duration',
                       '${widget.sessionDuration} Mins',
@@ -250,7 +248,11 @@ class _ConfirmBookingModalContentState
                   //   cs,
                   // ),
                   const SizedBox(height: 12),
-                  _iconRow(Icons.lock, widget.bookingType, cs),
+                  _iconRow(
+                    Icons.lock,
+                    widget.bookingType.capitalizeFirst(),
+                    cs,
+                  ),
                 ],
               ),
             ),

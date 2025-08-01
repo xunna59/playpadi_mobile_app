@@ -8,7 +8,7 @@ class AcademyController {
   Future<List<ClassModel>> getAcademyClasses() async {
     try {
       final response = await client.fetchAcademyClasses();
-      //  print(response);
+      //   print(response);
       List<dynamic> rawList = [];
       if (response is Map<String, dynamic>) {
         if (response['data'] is Map<String, dynamic> &&
@@ -26,7 +26,7 @@ class AcademyController {
               .map((e) => ClassModel.fromJson(e as Map<String, dynamic>))
               .toList();
 
-      print("Parsed classes: ${parsed.length}");
+      //   print("Parsed classes: ${parsed.length}");
       return parsed;
     } catch (e) {
       print('Error fetching: $e');
