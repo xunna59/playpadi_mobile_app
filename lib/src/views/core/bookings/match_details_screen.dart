@@ -34,9 +34,12 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
     bookingId = widget.match.id;
   }
 
-  Future<void> _onJoinBooking() async {
+  Future<void> _onJoinBooking({required String transaction_ref_id}) async {
     // Build up your payload
-    final payload = {'bookind_id': bookingId};
+    final payload = {
+      'bookind_id': bookingId,
+      'transaction_reference_id': transaction_ref_id,
+    };
 
     LoadingOverlay.show(context);
     try {
@@ -435,8 +438,11 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                         },
                       );
 
-                      if (result == true) {
-                        _onJoinBooking(); // Perform the booking join
+                      if (result != null &&
+                          result is Map &&
+                          result['success'] == true) {
+                        print("Transaction Reference: ${result['reference']}");
+                        _onJoinBooking(transaction_ref_id: result['reference']);
                       }
                     },
 

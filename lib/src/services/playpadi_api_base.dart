@@ -482,7 +482,7 @@ class APIClient {
 
   Future<dynamic> addBooking(Map data, [dynamic callback]) async {
     Request payload = Request(
-      '${baseUrl}/api/create-booking/${data['sports_center_id']}/${data['court_id']}',
+      '${baseUrl}/api/create-booking/${data['sports_center_id']}/${data['court_id']}?transaction_reference_id=${data['transaction_reference_id']}',
       method: 'post',
       headers: [
         'Content-Type: application/json',
@@ -490,7 +490,7 @@ class APIClient {
       ],
       body: jsonEncode(data),
     );
-    //  print('This is body sent: ${payload.body}');
+    print('This is body sent: ${payload.body}');
 
     return await request(payload, (Response response) {
       if (response.status != Response.SUCCESS) {
@@ -507,7 +507,7 @@ class APIClient {
 
   Future<dynamic> joinOpenMatch(Map data, [dynamic callback]) async {
     Request payload = Request(
-      '${baseUrl}/api/join/open-match/${data['bookind_id']}',
+      '${baseUrl}/api/join/open-match/${data['bookind_id']}?transaction_reference_id=${data['transaction_reference_id']}',
       method: 'post',
       headers: [
         'Content-Type: application/json',

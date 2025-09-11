@@ -156,17 +156,25 @@ class _ClassDetailsScreenState extends State<ClassDetailsScreen> {
                           },
                         );
 
-                        if (result == true) {
-                          print('🎉Got here!');
-
+                        if (result != null &&
+                            result is Map &&
+                            result['success'] == true) {
+                          //  print("Transaction Reference: ${result['reference']}");
                           await AcademyController().joinAcademy({
                             'academy_id': widget.classData.id.toString(),
                           });
 
-                          // 🔥 This should be hit after joining
-                          print('🎉 About to pop!');
                           Navigator.pop(context, true);
                         }
+
+                        // if (result == true) {
+
+                        //   await AcademyController().joinAcademy({
+                        //     'academy_id': widget.classData.id.toString(),
+                        //   });
+
+                        //   Navigator.pop(context, true);
+                        // }
                       },
             ),
 

@@ -41,13 +41,14 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
 
     try {
       final payload = {
-        'amount': widget.amount.toInt(), // e.g. ₦6000 becomes 600000
+        'amount': widget.amount.toInt(),
         'purpose': widget.purpose,
       };
 
       final response = await _txController.chargeCard(payload);
 
       if (response['status'] == 'success') {
+        //  print(response);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: Colors.green,
@@ -57,7 +58,10 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
             ),
           ),
         );
-        Navigator.pop(context, true); // return success
+        Navigator.pop(context, {
+          'success': true,
+          'reference': response['reference'],
+        });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

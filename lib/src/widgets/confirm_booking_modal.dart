@@ -100,7 +100,7 @@ class _ConfirmBookingModalContentState
     final MatchController matchController = MatchController();
     List<MatchModel> _bookedMatches = [];
 
-    Future<void> _onConfirmBooking() async {
+    Future<void> _onConfirmBooking({required String transaction_ref_id}) async {
       // Build up your payload
       final payload = {
         'sports_center_id': widget.sports_center_id,
@@ -112,6 +112,7 @@ class _ConfirmBookingModalContentState
         'session_duration': widget.sessionDuration,
         'game_type': widget.sport,
         'gender_allowed': widget.gender,
+        'transaction_reference_id': transaction_ref_id,
       };
 
       LoadingOverlay.show(context);
@@ -134,7 +135,7 @@ class _ConfirmBookingModalContentState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Booking failed: $e',
+              'Booking failed: ${e}',
               style: TextStyle(color: Colors.white),
             ),
           ),
@@ -301,16 +302,24 @@ class _ConfirmBookingModalContentState
                   },
                 );
 
-                if (result == true) {
-                  // ✅ Payment was successful, do something (e.g., refresh, notify, etc.)
-                  // ScaffoldMessenger.of(context).showSnackBar(
-                  //   const SnackBar(
-                  //     content: Text('Payment confirmed and returned!'),
-                  //   ),
-                  // );
-
-                  _onConfirmBooking();
+                if (result != null &&
+                    result is Map &&
+                    result['success'] == true) {
+                  //  print("Transaction Reference: ${result['reference']}");
+                  _onConfirmBooking(transaction_ref_id: result['reference']);
                 }
+
+                // if (result == true) {
+                //   print(result);
+
+                //   // ScaffoldMessenger.of(context).showSnackBar(
+                //   //   const SnackBar(
+                //   //     content: Text('Payment confirmed and returned!'),
+                //   //   ),
+                //   // );
+
+                //   _onConfirmBooking();
+                // }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: cs.primary,

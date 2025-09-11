@@ -71,7 +71,8 @@ class MatchController {
       return rawList
           .map((item) => MatchModel.fromJson(item as Map<String, dynamic>))
           .toList();
-    } catch (e) {
+    } catch (e, stack) {
+      print(stack);
       rethrow;
     }
   }
@@ -82,15 +83,15 @@ class MatchController {
 
       List<dynamic> rawList;
 
-      // 1️⃣ If the API returns a single booking under `booking`
+      //  If the API returns a single booking under `booking`
       if (response is Map<String, dynamic> && response['player'] != null) {
         rawList = [response['player']];
       }
-      // 2️⃣ Else if it returns a list directly
+      //  Else if it returns a list directly
       else if (response is List) {
         rawList = response;
       }
-      // 3️⃣ Or if it returns { data: [...] }
+      //  Or if it returns { data: [...] }
       else if (response is Map<String, dynamic> && response['data'] is List) {
         rawList = response['data'] as List;
       } else {
