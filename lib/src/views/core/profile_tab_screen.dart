@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../../../playpadi_library.dart';
+import '../../core/activity_overlay.dart';
 import '../../core/constants.dart';
 import '../../models/user_profile_model.dart';
 import '../../controllers/user_Profile_controller.dart';
@@ -13,6 +15,8 @@ class ProfileTab extends StatefulWidget {
 }
 
 class _ProfileTabState extends State<ProfileTab> {
+  final client = APIClient();
+
   UserProfile? _profile;
   bool _loading = true;
   String? _error;
@@ -94,6 +98,82 @@ class _ProfileTabState extends State<ProfileTab> {
       return Colors.blue;
     }
 
+    void _processResendEmailVerification() async {
+      Map<String, String> data = {'email': profile.email};
+
+      LoadingOverlay.show(context);
+
+      try {
+        await client.resendEmailVerification(data, () {
+          //  debugPrint('Login successful');
+
+          if (!mounted) return;
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Verification Email sent. Please check your inbox',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.green,
+            ),
+          );
+        });
+      } on NetworkErrorException catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } on InvalidResponseException {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'An Error Occured, Try Again',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } on ServerErrorException catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } finally {
+        LoadingOverlay.hide();
+      }
+    }
+
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -141,30 +221,60 @@ class _ProfileTabState extends State<ProfileTab> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      TextButton(
-                        onPressed: () {
-                          // handle location
-                        },
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size(0, 0),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                              maskEmail(profile.email),
-                              style: TextStyle(color: colorScheme.primary),
-                            ),
-                            const SizedBox(width: 6),
-                            const Icon(
-                              Icons.verified,
-                              color: Colors.lightGreen,
-                              size: 18,
-                            ),
-                          ],
-                        ),
-                      ),
+                      profile.email_verified == true
+                          ? Row(
+                            children: [
+                              Text(
+                                maskEmail(profile.email),
+                                style: TextStyle(color: colorScheme.primary),
+                              ),
+                              const SizedBox(width: 6),
+                              const Icon(
+                                Icons.verified,
+                                color: Colors.lightGreen,
+                                size: 18,
+                              ),
+                            ],
+                          )
+                          : Row(
+                            children: [
+                              Text(
+                                maskEmail(profile.email),
+                                style: TextStyle(color: colorScheme.primary),
+                              ),
+                              const SizedBox(width: 6),
+                              const Icon(
+                                Icons.error_outline,
+                                color: Colors.redAccent,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 12),
+                              OutlinedButton(
+                                onPressed: () {
+                                  _processResendEmailVerification();
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(
+                                    color: Color.fromRGBO(199, 3, 125, 1),
+                                    width: 1,
+                                  ), // outline color
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
+                                  minimumSize: const Size(0, 0),
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: Text(
+                                  "Resend",
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(199, 3, 125, 1),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                     ],
                   ),
                 ),
@@ -229,14 +339,7 @@ class _ProfileTabState extends State<ProfileTab> {
                       ),
                     ),
                   ),
-                  // Positioned(
-                  //   left: 16,
-                  //   top: 60,
-                  //   child: Text(
-                  //     'Level Reliability',
-                  //     style: const TextStyle(color: Colors.white, fontSize: 16),
-                  //   ),
-                  // ),
+
                   if (points <= 5.0)
                     Positioned(
                       left: 16,

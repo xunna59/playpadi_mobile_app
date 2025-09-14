@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-
 import '../models/class_model.dart';
 import '../models/event_center_model.dart';
 import '../models/match_model.dart';
 import '../models/notification_model.dart';
-import '../models/user_profile_model.dart';
+// import '../models/user_profile_model.dart';
 import '../views/auth/completed_screen.dart';
 import '../views/auth/final_step_screen.dart';
-import '../views/auth/login_screen.dart';
+import '../views/auth/forgot_password_screen.dart';
 import '../views/core/academy/academy_screen.dart';
 import '../views/core/academy/class_details/class_details_screen.dart';
 import '../views/core/bookings/available_matches_screen.dart';
@@ -30,6 +29,7 @@ import '../views/core/settings/profile_screen.dart';
 import '../views/home_screen.dart';
 import '../views/splash_screen.dart';
 import '../views/auth/auth_screen.dart';
+import '../views/auth/login_screen.dart';
 import '../views/auth/register_step_one.dart';
 import '../views/auth/register_step_two.dart';
 import '../views/core/dashboard_screen.dart';
@@ -42,16 +42,14 @@ class AppRoutes {
   static const String registerStepTwo = '/registerStepTwo';
   static const String finalSteps = '/finalSteps';
   static const String completedSteps = '/completedSteps';
-
   static const String login = '/login';
+  static const String forgot_password = '/forgot_password';
   static const String dashboard = '/dashboard';
-
   static const String eventCenter = '/eventCenter';
   static const String eventCenterDetails = '/eventCenterDetails';
   static const String playOpenMatches = '/playOpenMatches';
   static const String notifications = '/notifications';
   static const String notification_details = '/notification_details';
-
   static const String playerPrefernces = '/playerPrefernces';
   static const String profileScreen = '/profile_screen';
   static const String academyScreen = '/academy_screen';
@@ -89,6 +87,8 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const CompletedScreen());
       case login:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
+      case forgot_password:
+        return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
       case dashboard:
         return MaterialPageRoute(builder: (_) => const DashboardScreen());
       case academyScreen:

@@ -216,6 +216,46 @@ class APIClient {
     });
   }
 
+  Future<dynamic> forgotPassword(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/auth/forgot-password',
+      method: 'post',
+      headers: ['Content-Type: application/json'],
+      body: jsonEncode(data),
+    );
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+
+      if (callback is Function) {
+        return callback();
+      }
+    });
+  }
+
+  Future<dynamic> resendEmailVerification(Map data, [dynamic callback]) async {
+    Request payload = Request(
+      '${baseUrl}/auth/resend-email-verification',
+      method: 'post',
+      headers: ['Content-Type: application/json'],
+      body: jsonEncode(data),
+    );
+
+    print(payload.body);
+
+    return await request(payload, (Response response) {
+      if (response.status != Response.SUCCESS) {
+        throw ServerErrorException(response.code, response.message);
+      }
+
+      if (callback is Function) {
+        return callback();
+      }
+    });
+  }
+
   Future<dynamic> validateEmail(Map data, [dynamic callback]) async {
     Request payload = Request(
       '${baseUrl}/auth/validate-email',

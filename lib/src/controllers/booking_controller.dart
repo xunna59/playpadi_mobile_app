@@ -1,6 +1,5 @@
 import '../../playpadi_library.dart';
 import '../models/booking_model.dart';
-import '../models/court_model.dart';
 
 class BookingController {
   final APIClient client = APIClient();

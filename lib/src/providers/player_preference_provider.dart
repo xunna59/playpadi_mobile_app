@@ -30,6 +30,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
       interests: state.interests,
       displayPicture: state.displayPicture,
       total_matches_played: state.total_matches_played,
+      email_verified: state.email_verified,
     );
   }
 }
@@ -52,6 +53,7 @@ final userProfileProvider =
         },
         interests: {},
         total_matches_played: '0',
+        email_verified: false,
       );
       return UserProfileNotifier(initial);
     });

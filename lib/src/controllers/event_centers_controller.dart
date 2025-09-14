@@ -53,7 +53,7 @@ class EventCentersController {
       }
 
       return null;
-    } catch (e, st) {
+    } catch (e) {
       // print('Error fetching center: $e');
       // print('Stacktrace: $st');
       return null;

@@ -22,7 +22,7 @@ class CompletedScreen extends ConsumerWidget {
     final controller = UserProfileController();
 
     void _updateFCMToken(updates) async {
-      final updatedProfile = await controller.updateFCMToken(updates);
+      await controller.updateFCMToken(updates);
     }
 
     void _saveProfile() async {
@@ -37,7 +37,7 @@ class CompletedScreen extends ConsumerWidget {
           _updateFCMToken(update_fcm);
         }
 
-        final updatedProfile = await controller.updateUserProfile(updates);
+        await controller.updateUserProfile(updates);
         Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
       } catch (e) {
         // show error to the user…

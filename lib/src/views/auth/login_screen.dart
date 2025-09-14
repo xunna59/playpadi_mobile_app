@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final updates = {'fcm_token': fcmToken};
 
       await client.login(data, () {
-        debugPrint('Login successful');
+        //   debugPrint('Login successful');
 
         if (!mounted) return; // <- Important
 
@@ -205,10 +205,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRoutes.forgot_password);
+                    },
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
                     child: const Text(
-                      'Forgot password?',
+                      'Forgot Password?',
                       style: TextStyle(color: Color.fromRGBO(199, 3, 125, 1)),
                     ),
                   ),
